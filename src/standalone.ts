@@ -7,46 +7,56 @@ declare global {
   interface Window {
     __GV_ENTRY_STARTED__?: boolean;
     __GV_CANVAS_READY__?: boolean;
+    __GV_START_REQUESTED__?: boolean;
+    __GV_ON_CANVAS_READY__?: () => void;
     __GV_SHOW_ERROR__?: (message: unknown) => void;
   }
 }
 
-try {
-  if (typeof window !== "undefined") window.__GV_ENTRY_STARTED__ = true;
+let launched = false;
 
-  const boot = startGame({
-    ...configClient,
-    providers: [configClient.providers, provideRpg(startServer)],
-  });
+function launchGame() {
+  if (launched) return;
+  launched = true;
+  window.__GV_ENTRY_STARTED__ = true;
 
-  Promise.resolve(boot).catch((error) => {
-    console.error("[Greenvale RPGJS async boot failed]", error);
-    window.__GV_SHOW_ERROR__?.(
-      "RPGJS ASYNC BOOT ERROR\n" + (error?.stack || error?.message || String(error)),
-    );
-  });
+  try {
+    const boot = startGame({
+      ...configClient,
+      providers: [configClient.providers, provideRpg(startServer)],
+    });
 
-  if (typeof window !== "undefined") {
+    Promise.resolve(boot).catch((error) => {
+      console.error("[Greenvale RPGJS async boot failed]", error);
+      window.__GV_SHOW_ERROR__?.(
+        "RPGJS ASYNC BOOT ERROR\n" + (error?.stack || error?.message || String(error)),
+      );
+    });
+
     let checks = 0;
     const timer = window.setInterval(() => {
       checks++;
-      const canvas = document.querySelector("#rpg canvas");
-      if (canvas) {
+      if (document.querySelector("#rpg canvas")) {
         window.__GV_CANVAS_READY__ = true;
         window.clearInterval(timer);
         const stamp = document.getElementById("build-stamp");
-        if (stamp) stamp.textContent = "RPGJS V2.3 • CANVAS READY";
-      } else if (checks >= 20) {
+        if (stamp) stamp.textContent = "GREENVALE • GAME READY";
+        window.__GV_ON_CANVAS_READY__?.();
+      } else if (checks >= 60) {
         window.clearInterval(timer);
+        window.__GV_SHOW_ERROR__?.("RPGJS did not create a canvas within 24 seconds");
       }
     }, 400);
-  }
-} catch (error: any) {
-  console.error("[Greenvale RPGJS boot failed]", error);
-  if (typeof window !== "undefined") {
+  } catch (error: any) {
+    console.error("[Greenvale RPGJS boot failed]", error);
     window.__GV_SHOW_ERROR__?.(
       "RPGJS SYNC BOOT ERROR\n" + (error?.stack || error?.message || String(error)),
     );
+    throw error;
   }
-  throw error;
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("greenvale:start", launchGame);
+  if (window.__GV_START_REQUESTED__) launchGame();
 }

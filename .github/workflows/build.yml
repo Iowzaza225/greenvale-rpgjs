@@ -2,7 +2,9 @@ name: Greenvale Build Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/greenvale-menu-quests ]
+  pull_request:
+    branches: [ main, feature/greenvale-menu-quests ]
   workflow_dispatch:
 
 jobs:
@@ -35,6 +37,22 @@ jobs:
           cat dist/index.html
           echo "=== DIST FILES ==="
           find dist -maxdepth 2 -type f -printf "%p %s bytes\n" | sort
+
+      - name: Install WebKit for phase QA
+        if: github.event_name == 'pull_request'
+        run: pnpm exec playwright install --with-deps webkit
+
+      - name: Phase 0 iPhone WebKit boot smoke
+        if: github.event_name == 'pull_request'
+        run: pnpm run test:phase0
+
+      - name: Upload Playwright traces on failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase0-playwright-results
+          path: test-results
+          if-no-files-found: ignore
 
       - name: Upload dist
         uses: actions/upload-artifact@v4
