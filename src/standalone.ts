@@ -2,7 +2,6 @@ import { provideRpg, startGame } from "@rpgjs/client";
 import configClient from "./config/config.client";
 import startServer from "./server";
 import "./styles.css";
-import { installWeaponFx } from "./weapon-fx";
 
 declare global {
   interface Window {
@@ -19,7 +18,6 @@ let launched = false;
 function launchGame() {
   if (launched) return;
   launched = true;
-  installWeaponFx();
   window.__GV_ENTRY_STARTED__ = true;
 
   try {
