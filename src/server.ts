@@ -147,6 +147,7 @@ type Profile = {
 };
 
 const CLASS_STATS: Record<string, { hp: number; sp: number; atk: number; pdef: number; speed: number }> = {
+  novice:     { hp: 120, sp: 50,  atk: 12, pdef: 5,  speed: 3.1 },
   scavenger:  { hp: 165, sp: 85,  atk: 14, pdef: 6,  speed: 3.1 },
   hunter:     { hp: 150, sp: 80,  atk: 18, pdef: 5,  speed: 3.7 },
   medic:      { hp: 145, sp: 125, atk: 12, pdef: 6,  speed: 3.0 },
@@ -156,6 +157,7 @@ const CLASS_STATS: Record<string, { hp: number; sp: number; atk: number; pdef: n
 };
 
 const STARTER_WEAPONS: Record<string, any> = {
+  novice: TrainingBlade,
   scavenger: TrainingBlade,
   hunter: HunterKnife,
   medic: MedicBlade,
@@ -165,7 +167,7 @@ const STARTER_WEAPONS: Record<string, any> = {
 };
 
 function getProfile(): Profile {
-  const fallback: Profile = { name: "Survivor", classId: "scavenger", started: true, kills: 0, completed: false };
+  const fallback: Profile = { name: "Survivor", classId: "novice", started: true, kills: 0, completed: false };
   try {
     if (typeof localStorage === "undefined") return fallback;
     const data = JSON.parse(localStorage.getItem("greenvale.profile.v1") || "null");
@@ -173,7 +175,7 @@ function getProfile(): Profile {
     return {
       ...fallback,
       name: String(data.name || fallback.name).slice(0, 18),
-      classId: CLASS_STATS[data.classId] ? data.classId : "scavenger",
+      classId: CLASS_STATS[data.classId] ? data.classId : "novice",
       kills: Math.min(3, Math.max(0, Number(data.kills) || 0)),
       completed: data.completed === true,
     };
@@ -298,7 +300,7 @@ const Mara: EventDefinition = {
 const player = {
   async onConnected(player: RpgPlayer) {
     const profile = getProfile();
-    const stats = CLASS_STATS[profile.classId] || CLASS_STATS.scavenger;
+    const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
     player.name = profile.name;
     player.setGraphic("hero");
     player.initializeDefaultStats();
