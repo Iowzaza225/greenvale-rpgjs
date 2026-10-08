@@ -235,7 +235,8 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
       this.addItem(WolfClaw, 1);
       this.equip(WolfClaw.id);
       this.teleport({ x, y });
-      // Single text nameplate (avoid multi-component HP bar sync).\n      this.setComponentsTop(Components.text("Mutant Wolf"));
+      // Single text nameplate (avoid multi-component HP bar sync).
+      this.setComponentsTop(Components.text("Mutant Wolf"));
 
       (this as any).battleAi = new BattleAi(this, {
         preset: "aggressive",
@@ -307,7 +308,8 @@ const player = {
 
 
 
-    // Render a single lightweight label rather than a compound UI layout.\n    player.setComponentsTop(Components.text(profile.name));
+    // Render a single lightweight label rather than a compound UI layout.
+    player.setComponentsTop(Components.text(profile.name));
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
   },
