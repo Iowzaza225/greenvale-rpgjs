@@ -232,7 +232,8 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
       this.param[PDEF] = 3;
       this.hp = 90;
       this.sp = 20;
-      // Safe boot: no event equipment sync.
+      this.addItem(WolfClaw, 1);
+      this.equip(WolfClaw.id);
       this.teleport({ x, y });
       // Safe boot: disable entity UI components while isolating sync errors.
 
@@ -301,11 +302,12 @@ const player = {
     player.setHitbox(30, 38);
 
     const starterWeapon = STARTER_WEAPONS[profile.classId] || TrainingBlade;
-    // Safe boot: equipment sync disabled temporarily.
+    player.addItem(starterWeapon, 1);
+    player.equip(starterWeapon.id);
 
 
 
-    // Safe boot: no player overlay sync.
+    // Player overlay stays disabled to avoid the previous sync crash.
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
   },
