@@ -394,12 +394,14 @@ export default createServer({
             const damage = Math.max(4, Math.min(12, Math.round(10 - safeDefense * 0.25)));
             const nextHp = Math.max(0, oldHp - damage);
             target.hp = nextHp;
-            context.damage = {
-              ...context.damage,
-              damage,
-              defeated: nextHp === 0,
-              raw: context.damage?.raw,
-            };
+            // RPGJS hit.ts captures the original damage object before afterDamage.
+            // Mutate that object in place so floating damage numbers and hit results
+            // read the corrected value instead of the stale zero.
+            if (context.damage) {
+              context.damage.damage = damage;
+              context.damage.raw = damage;
+              context.damage.defeated = nextHp === 0;
+            }
             return context;
           },
         },
