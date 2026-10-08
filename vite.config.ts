@@ -3,15 +3,14 @@ import { rpgjs } from "@rpgjs/vite";
 import startServer from "./src/server";
 
 export default defineConfig({
-  // Keep deploy previews and production deploys portable on Netlify.
   base: "./",
   optimizeDeps: { include: ["pixi.js > @xmldom/xmldom"] },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        // CanvasEngine lazy-loads Pixi. Safari on Netlify deploy previews can
-        // fail that secondary module request, so ship one self-contained JS bundle.
-        inlineDynamicImports: true,
+        // Safari on Netlify deploy previews was failing CanvasEngine's
+        // secondary dynamic Pixi module import. Ship a single JS bundle.
+        codeSplitting: false,
       },
     },
   },
