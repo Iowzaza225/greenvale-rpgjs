@@ -5,6 +5,7 @@ import { loadGameConfig } from "./core/config";
 import { gameEvents } from "./core/event-bus";
 import { initI18n } from "./core/i18n";
 import { buildInfo, renderBuildStamp } from "./core/build-info";
+import { initOnboarding } from "./ui/onboarding";
 import "./styles.css";
 
 declare global {
@@ -21,6 +22,7 @@ declare global {
 
 let launched = false;
 let foundationReady = false;
+let onboardingReady = false;
 
 function errorText(error: unknown): string {
   if (error instanceof Error) return error.stack || error.message;
@@ -53,6 +55,17 @@ function setupFoundation(): boolean {
     window.__GV_PHASE0_READY__ = false;
     window.__GV_SHOW_ERROR__?.("PHASE 0 FOUNDATION ERROR\n" + errorText(error));
     return false;
+  }
+}
+
+function mountOnboarding(): void {
+  if (onboardingReady) return;
+  try {
+    initOnboarding();
+    onboardingReady = true;
+    gameEvents.emit("onboarding:ready", { build: buildInfo.id });
+  } catch (error) {
+    window.__GV_SHOW_ERROR__?.("PHASE 1 ONBOARDING ERROR\n" + errorText(error));
   }
 }
 
@@ -107,6 +120,12 @@ function launchGame() {
 
 if (typeof window !== "undefined") {
   setupFoundation();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mountOnboarding, { once: true });
+  } else {
+    mountOnboarding();
+  }
+
   window.addEventListener("greenvale:start", launchGame);
   if (window.__GV_START_REQUESTED__) launchGame();
 }
