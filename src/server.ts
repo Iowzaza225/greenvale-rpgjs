@@ -321,7 +321,7 @@ const player = {
 
 
     // Render a single lightweight label rather than a compound UI layout.
-    player.setComponentsTop(Components.hpBar({ width: 84, height: 7, fontSize: 11, fillColor: "#51c77b", bgColor: "#18251c", borderColor: "#e8edda" }, profile.name + "  {$current}/{$max}"), { width: 110, marginBottom: 12 });
+    player.setComponentsTop(Components.hpBar({ width: 64, height: 5, fontSize: 10, fillColor: "#51c77b", bgColor: "#18251c", borderColor: "#e8edda" }, "{name}  {$current}/{$max}"), { width: 86, marginBottom: 10 });
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
   },
@@ -369,39 +369,29 @@ export default createServer({
         pvp: false,
         hooks: {
           beforeHit(context: any) {
-            // Preserve the pre-hit HP so a broken engine formula cannot corrupt player state.
+            const attacker = context.attacker as any;
             const target = context.target as any;
-            if (typeof target?.getVariable === "function") {
-              const hp = Number(target.hp);
-              context.metadata = {
-                ...context.metadata,
-                greenvaleHpBefore: Number.isFinite(hp) && hp > 0 ? hp : undefined,
-              };
-            }
+            if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
+            const hp = Number(target.hp);
+            if (!Number.isFinite(hp) || hp <= 0) return false;
+            const defense = Number(target.param?.[PDEF]);
+            const safeDefense = Number.isFinite(defense) ? defense : 6;
+            const damage = Math.max(4, Math.min(12, Math.round(10 - safeDefense * 0.25)));
+            // Provide the damage object before RPGJS resolves damage; the engine's
+            // default resolveDamage must not write invalid/zero HP first.
+            context.damage = { damage, raw: damage, defeated: hp <= damage };
+            context.metadata = { ...context.metadata, greenvaleHpBefore: hp };
             return context;
           },
           afterDamage(context: any) {
             const attacker = context.attacker as any;
             const target = context.target as any;
             if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
-            const oldHp = Number(context.metadata?.greenvaleHpBefore);
-            if (!Number.isFinite(oldHp) || oldHp <= 0) return;
-            const rawDamage = Number(context.damage?.damage);
-            // RPGJS can produce a non-finite HP even when its displayed damage is 0.
-            // For wolves, use a bounded and predictable damage value per successful hit.
-            const defense = Number(target.param?.[PDEF]);
-            const safeDefense = Number.isFinite(defense) ? defense : 6;
-            const damage = Math.max(4, Math.min(12, Math.round(10 - safeDefense * 0.25)));
-            const nextHp = Math.max(0, oldHp - damage);
-            target.hp = nextHp;
-            // RPGJS hit.ts captures the original damage object before afterDamage.
-            // Mutate that object in place so floating damage numbers and hit results
-            // read the corrected value instead of the stale zero.
-            if (context.damage) {
-              context.damage.damage = damage;
-              context.damage.raw = damage;
-              context.damage.defeated = nextHp === 0;
-            }
+            const hp = Number(context.metadata?.greenvaleHpBefore);
+            const damage = Number(context.damage?.damage);
+            if (!Number.isFinite(hp) || hp <= 0 || !Number.isFinite(damage)) return;
+            // Apply exactly one bounded hit, using the same number as the popup.
+            target.hp = Math.max(0, hp - damage);
             return context;
           },
         },
