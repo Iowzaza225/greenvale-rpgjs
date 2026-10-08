@@ -689,9 +689,9 @@ function onRootClick(event: MouseEvent): void {
     const requested = target.dataset.localeTarget;
     const next: Locale = requested === "en" ? "en" : "th";
     setLocale(next);
-    render();
-    renderInGameShell();
-    renderTutorial();
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", next);
+    window.location.replace(url.toString());
     return;
   }
   if (action === "sound") {
