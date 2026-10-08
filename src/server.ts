@@ -321,7 +321,7 @@ const player = {
 
 
     // Render a single lightweight label rather than a compound UI layout.
-    player.setComponentsTop(Components.text(profile.name, { fontSize: 12, fill: "#f6f6e5", stroke: "#182a1d" }), { width: 110, marginBottom: 12 });
+    player.setComponentsTop(Components.hpBar({ width: 84, height: 7, fontSize: 11, fillColor: "#51c77b", bgColor: "#18251c", borderColor: "#e8edda" }, profile.name + "  {$current}/{$max}"), { width: 110, marginBottom: 12 });
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
   },
@@ -355,6 +355,22 @@ export default createServer({
       animations: { attack: { animationName: "attack2", repeat: 1 } },
       combat: {
         pvp: false,
+        hooks: {
+          afterDamage(context: any) {
+            // Some RPGJS event->player basic hits resolve to zero despite a valid collision.
+            // Only correct zero-damage hits from BattleAi enemies; leave player attacks untouched.
+            const attacker = context.attacker as any;
+            const target = context.target as any;
+            if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
+            if ((context.damage?.damage ?? 0) > 0 || typeof target.hp !== "number" || target.hp <= 0) return;
+            const defense = Number(target.param?.[PDEF] ?? 0);
+            const attack = Number(attacker.param?.[ATK] ?? 13);
+            const damage = Math.max(3, Math.round(attack * 0.8 - defense * 0.35));
+            target.hp = Math.max(0, target.hp - damage);
+            context.damage = { ...context.damage, damage, defeated: target.hp <= 0 };
+            return context;
+          },
+        },
         player: {
           combo: { bufferMs: 145, resetMs: 720 },
           dodge: { durationMs: 190, cooldownMs: 650, invincibilityMs: 225, additionalSpeed: 8 },
