@@ -407,6 +407,10 @@ function render(): void {
 
   localizeErrorOverlay();
 
+  host.querySelectorAll<HTMLElement>("[data-action]").forEach((element) => {
+    element.addEventListener("click", (event) => onRootClick(event as MouseEvent));
+  });
+
   const nameInput = document.getElementById("gv-name") as HTMLInputElement | null;
   if (nameInput) {
     nameInput.addEventListener("input", () => {
@@ -795,7 +799,8 @@ export function initOnboarding(): void {
   if (host.dataset.gvOnboardingBound === "1") return;
   host.dataset.gvOnboardingBound = "1";
 
-  host.addEventListener("click", onRootClick);
+  // Bind action buttons after each render. Direct handlers are more reliable on
+  // iPhone/WebKit than delegating all title-screen taps through a replaced root.
   window.__GV_ON_CANVAS_READY__ = onCanvasReady;
   window.addEventListener("greenvale:progress", () => {
     syncSelectedFromLegacy();
