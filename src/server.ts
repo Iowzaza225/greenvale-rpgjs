@@ -340,21 +340,23 @@ const player = {
     }
   },
 
-  async onDead(player: RpgPlayer) {
-    // Changing to the same map during death can leave a duplicate player entity.
-    // Keep the existing player and respawn in place instead.
+  onDead(player: RpgPlayer) {
+    // RPGJS v5 HP setter calls onDead BEFORE writing hpSignal=0.
+    // Healing synchronously here is overwritten by that final zero write.
     if (player.getVariable("greenvale.respawning")) return;
     player.setVariable("greenvale.respawning", true);
-    try {
-      const maxHp = Number(player.param[MAXHP]);
-      const maxSp = Number(player.param[MAXSP]);
-      player.hp = Number.isFinite(maxHp) && maxHp > 0 ? maxHp : 165;
-      player.sp = Number.isFinite(maxSp) && maxSp > 0 ? maxSp : 85;
-      player.teleport({ x: 760, y: 720 });
-      await player.showText("คุณหมดสติและถูกพากลับ Greenvale Camp");
-    } finally {
-      player.setVariable("greenvale.respawning", false);
-    }
+    setTimeout(() => {
+      try {
+        const maxHp = Number(player.param[MAXHP]);
+        const maxSp = Number(player.param[MAXSP]);
+        player.hp = Number.isFinite(maxHp) && maxHp > 0 ? maxHp : 165;
+        player.sp = Number.isFinite(maxSp) && maxSp > 0 ? maxSp : 85;
+        player.teleport({ x: 760, y: 720 });
+        void player.showText("คุณหมดสติและถูกพากลับ Greenvale Camp");
+      } finally {
+        player.setVariable("greenvale.respawning", false);
+      }
+    }, 0);
   },
 };
 
