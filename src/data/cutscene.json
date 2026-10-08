@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "afterfall_prologue",
+  "frames": [
+    {
+      "id": "fall",
+      "titleKey": "cutscene.1.title",
+      "textKey": "cutscene.1.text",
+      "tone": "ember"
+    },
+    {
+      "id": "wild",
+      "titleKey": "cutscene.2.title",
+      "textKey": "cutscene.2.text",
+      "tone": "toxic"
+    },
+    {
+      "id": "road",
+      "titleKey": "cutscene.3.title",
+      "textKey": "cutscene.3.text",
+      "tone": "storm"
+    },
+    {
+      "id": "signal",
+      "titleKey": "cutscene.4.title",
+      "textKey": "cutscene.4.text",
+      "tone": "signal"
+    },
+    {
+      "id": "walls",
+      "titleKey": "cutscene.5.title",
+      "textKey": "cutscene.5.text",
+      "tone": "greenvale"
+    },
+    {
+      "id": "dawn",
+      "titleKey": "cutscene.6.title",
+      "textKey": "cutscene.6.text",
+      "tone": "dawn"
+    }
+  ]
+}

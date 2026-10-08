@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "classes": [
+    {
+      "id": "novice",
+      "nameKey": "class.novice.name",
+      "descriptionKey": "class.novice.description",
+      "baseHp": 100,
+      "baseSp": 40,
+      "aspd": 1,
+      "weapons": [
+        "blade"
+      ],
+      "role": "all-rounder",
+      "difficulty": 1,
+      "next": [
+        "vanguard",
+        "arcanist",
+        "ranger",
+        "mender",
+        "shade",
+        "trader"
+      ],
+      "recommendedStats": [
+        "STR",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "pulse"
+    },
+    {
+      "id": "vanguard",
+      "nameKey": "class.vanguard.name",
+      "descriptionKey": "class.vanguard.description",
+      "baseHp": 150,
+      "baseSp": 35,
+      "aspd": 0.95,
+      "weapons": [
+        "blade",
+        "shield"
+      ],
+      "role": "tank",
+      "difficulty": 2,
+      "recommendedStats": [
+        "STR",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "shock"
+    },
+    {
+      "id": "arcanist",
+      "nameKey": "class.arcanist.name",
+      "descriptionKey": "class.arcanist.description",
+      "baseHp": 90,
+      "baseSp": 90,
+      "aspd": 0.9,
+      "weapons": [
+        "staff"
+      ],
+      "role": "magic-dps",
+      "difficulty": 3,
+      "recommendedStats": [
+        "INT",
+        "DEX",
+        "VIT"
+      ],
+      "previewFx": "orb"
+    },
+    {
+      "id": "ranger",
+      "nameKey": "class.ranger.name",
+      "descriptionKey": "class.ranger.description",
+      "baseHp": 105,
+      "baseSp": 50,
+      "aspd": 1.1,
+      "weapons": [
+        "bow"
+      ],
+      "role": "ranged-dps",
+      "difficulty": 2,
+      "recommendedStats": [
+        "DEX",
+        "AGI",
+        "LUK"
+      ],
+      "previewFx": "arrow"
+    },
+    {
+      "id": "mender",
+      "nameKey": "class.mender.name",
+      "descriptionKey": "class.mender.description",
+      "baseHp": 100,
+      "baseSp": 80,
+      "aspd": 0.95,
+      "weapons": [
+        "mace",
+        "staff"
+      ],
+      "role": "support",
+      "difficulty": 2,
+      "recommendedStats": [
+        "INT",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "heal"
+    },
+    {
+      "id": "shade",
+      "nameKey": "class.shade.name",
+      "descriptionKey": "class.shade.description",
+      "baseHp": 100,
+      "baseSp": 50,
+      "aspd": 1.2,
+      "weapons": [
+        "dagger"
+      ],
+      "role": "burst",
+      "difficulty": 4,
+      "recommendedStats": [
+        "AGI",
+        "STR",
+        "LUK"
+      ],
+      "previewFx": "slash"
+    },
+    {
+      "id": "trader",
+      "nameKey": "class.trader.name",
+      "descriptionKey": "class.trader.description",
+      "baseHp": 115,
+      "baseSp": 55,
+      "aspd": 1,
+      "weapons": [
+        "cart",
+        "blade"
+      ],
+      "role": "utility",
+      "difficulty": 3,
+      "recommendedStats": [
+        "DEX",
+        "LUK",
+        "VIT"
+      ],
+      "previewFx": "coin"
+    }
+  ]
+}
