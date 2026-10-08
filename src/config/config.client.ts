@@ -30,7 +30,7 @@ export default {
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
       ui: createActionBattleUi({
-        hotbar: false,
+        hotbar: { enabled: true, autoOpen: true },
         targeting: true,
         attackPreview: true,
       }),
@@ -53,7 +53,7 @@ export default {
         },
         buttons: {
           action: { enabled: true, width: 70, height: 70 },
-          back: false,
+          back: { enabled: true, width: 54, height: 54 },
           dash: { enabled: true, width: 56, height: 56 },
         },
       }),
@@ -75,6 +75,14 @@ export default {
               width: 1728,
               height: 5568,
               ratio: 1.5,
+            });
+          }
+          if (id === "potion" || id === "focus-slash") {
+            return Presets.IconPreset({
+              id,
+              image: ASSET_BASE + "wood.png",
+              framesWidth: 1,
+              framesHeight: 1,
             });
           }
           return undefined;
