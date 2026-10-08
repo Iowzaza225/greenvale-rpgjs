@@ -36,26 +36,26 @@
   <link rel="stylesheet" href="./node_modules/@rpgjs/ui-css/theme-default.css">
 
 <style>
-  #gv-menu,#gv-panel { position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;overflow:auto;padding:calc(16px + env(safe-area-inset-top)) 18px calc(16px + env(safe-area-inset-bottom));color:#f5eaca;background:radial-gradient(ellipse at 50% 22%,#2c543f 0%,#122a24 45%,#08140f 100%);font-family:system-ui,sans-serif;touch-action:pan-y }
+  #gv-menu,#gv-panel { position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;overflow:auto;padding:calc(16px + env(safe-area-inset-top)) 18px calc(16px + env(safe-area-inset-bottom));color:#f5eaca;background:radial-gradient(ellipse at 50% 20%,#3c4141 0%,#162427 40%,#080e14 100%);font-family:system-ui,sans-serif;touch-action:pan-y }
   #gv-menu[hidden],#gv-panel[hidden],#gv-in-game[hidden],.gv-view[hidden] {display:none!important}
-  .gv-shell {width:min(100%,560px);max-height:100%;overflow:auto;border:1px solid #9a8050;background:linear-gradient(155deg,#1e342b,#0e1a19);box-shadow:0 20px 55px #0009,inset 0 0 0 5px #ffffff04;border-radius:19px;padding:clamp(18px,4vw,32px);text-align:center}
+  .gv-shell {width:min(100%,560px);max-height:100%;overflow:auto;border:1px solid #9a8050;background:linear-gradient(155deg,#202c32,#0d151c);box-shadow:0 20px 55px #0009,inset 0 0 0 5px #ffffff04;border-radius:19px;padding:clamp(18px,4vw,32px);text-align:center}
   .gv-kicker {letter-spacing:.24em;color:#c5a96d;font-size:11px;font-weight:800;text-transform:uppercase}
   .gv-title {margin:12px 0 0;color:#f3de9e;font:900 clamp(30px,7vw,51px)/1.03 Georgia,serif;text-shadow:0 3px #000b}
   .gv-subtitle {margin:8px 0 19px;color:#d0d9c3;font:700 13px/1.4 system-ui}
-  .gv-lobby-status{display:flex;justify-content:space-between;gap:10px;margin:18px 0 5px;padding:12px;border:1px solid #526e58;border-radius:9px;background:#0b201b;color:#c7d9ad;font:800 10px system-ui;letter-spacing:.05em}
+  .gv-lobby-status{display:flex;justify-content:space-between;gap:10px;margin:18px 0 5px;padding:12px;border:1px solid #526e58;border-radius:9px;background:#121f24;color:#c7d9ad;font:800 10px system-ui;letter-spacing:.05em}
   .gv-copy {font-size:14px;line-height:1.65;color:#bccfc2;margin:12px 0 25px}
   .gv-btn {display:block;width:100%;padding:13px 18px;margin:9px 0;border-radius:10px;border:1px solid #bca171;background:linear-gradient(#b99b53,#7e6035);color:#162821;font:800 15px system-ui;cursor:pointer;touch-action:manipulation}
-  .gv-btn.secondary {background:#18302b;color:#f1e4c2;border-color:#627a65}
+  .gv-btn.secondary {background:#1b2a30;color:#f1e4c2;border-color:#627a65}
   .gv-btn:disabled {opacity:.43;cursor:default}
   .gv-small {font-size:11px;line-height:1.5;color:#9eb2a7;margin:12px 0 0}
-  .gv-field {width:100%;font:600 16px system-ui;color:#fff1d1;background:#081715;border:1px solid #5c795e;border-radius:9px;padding:12px;margin:7px 0 13px}
+  .gv-field {width:100%;font:600 16px system-ui;color:#fff1d1;background:#101b20;border:1px solid #5c795e;border-radius:9px;padding:12px;margin:7px 0 13px}
   .gv-classes {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;text-align:left}
-  .gv-class {text-align:left;padding:12px 10px;border:1px solid #456352;background:#122920;border-radius:10px;color:#f4e5bb;font:800 13px system-ui;cursor:pointer;touch-action:manipulation}
+  .gv-class {text-align:left;padding:12px 10px;border:1px solid #456352;background:#1b2a2c;border-radius:10px;color:#f4e5bb;font:800 13px system-ui;cursor:pointer;touch-action:manipulation}
   .gv-class span {display:block;color:#a9bdad;font:400 11px/1.35 system-ui;margin-top:4px}
-  .gv-class.active {border-color:#e1c270;background:#36503a;box-shadow:0 0 0 1px #cfb46c}
+  .gv-class.active {border-color:#e1c270;background:#3b3b39;box-shadow:0 0 0 1px #cfb46c}
   #gv-in-game {position:fixed;inset:0;pointer-events:none;z-index:90000;font-family:system-ui,sans-serif}
-  #gv-quest {position:absolute;top:calc(35px + env(safe-area-inset-top));left:10px;max-width:65%;background:#11251ddc;color:#fff2c8;border:1px solid #7f946d;border-radius:9px;padding:8px 10px;font-size:12px;text-shadow:0 1px #000}
-  #gv-menu-btn {position:absolute;right:12px;top:calc(37px + env(safe-area-inset-top));pointer-events:auto;border:1px solid #cfad65;border-radius:9px;background:#152f2de0;color:#f5dfa4;font:800 12px system-ui;padding:9px 11px}
+  #gv-quest {position:absolute;top:calc(35px + env(safe-area-inset-top));left:10px;max-width:65%;background:#101c25e8;color:#fff2c8;border:1px solid #7f946d;border-radius:9px;padding:8px 10px;font-size:12px;text-shadow:0 1px #000}
+  #gv-menu-btn {position:absolute;right:12px;top:calc(37px + env(safe-area-inset-top));pointer-events:auto;border:1px solid #cfad65;border-radius:9px;background:#19232eea;color:#f5dfa4;font:800 12px system-ui;padding:9px 11px}
   #gv-panel {background:#000b;pointer-events:auto;z-index:190000}
   #gv-panel .gv-shell {max-width:430px}
   #gv-panel h2 {color:#f1d99e;margin:0 0 18px}
@@ -64,7 +64,7 @@
 </style>
 </head>
 <body class="rpg-ui-app">
-  <div id="build-stamp">GREENVALE · SAFE BOOT NO HOTBAR</div>
+  <div id="build-stamp">GREENVALE · DARK FANTASY ALPHA</div>
   <div id="rpg"></div>
   <section id="gv-menu" aria-label="Greenvale start menu">
     <div class="gv-shell">
@@ -72,7 +72,7 @@
       <h1 class="gv-title">GREENVALE</h1>
       <div class="gv-subtitle">AFTER THE FALL · SURVIVAL RPG</div><div class="gv-lobby-status"><span>● GREENVALE CAMP</span><span>ACT I · FIRST HUNT</span></div>
       <div id="gv-home" class="gv-view">
-        <p class="gv-copy">เมื่อโลกเก่าล่มสลาย ผู้รอดชีวิตต้องสร้างชีวิตใหม่<br>ออกสำรวจ ต่อสู้ และค้นหาความลับของ Greenvale</p>
+        <p class="gv-copy">ค่ายสุดท้ายท่ามกลางเงามืด ผู้รอดชีวิตต้องรวมพลัง<br>ออกสำรวจ ต่อสู้ และค้นหาความลับของ Greenvale</p>
         <button id="gv-new" class="gv-btn" type="button">เริ่มเกมใหม่ · NEW GAME</button>
         <button id="gv-continue" class="gv-btn secondary" type="button" disabled>เล่นต่อ · CONTINUE</button>
         <p class="gv-small">รองรับมือถือ · Joystick &amp; Action Combat<br>บันทึกความคืบหน้าเควสบนอุปกรณ์นี้</p>
