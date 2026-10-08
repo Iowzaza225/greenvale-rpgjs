@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "maps": [
+    {
+      "id": "greenvale-camp",
+      "nameKey": "map.greenvale_camp.name",
+      "width": 1600,
+      "height": 1000,
+      "bgm": "placeholder_camp_bgm",
+      "channels": [
+        1,
+        2,
+        3
+      ],
+      "safeZone": true,
+      "spawn": {
+        "x": 760,
+        "y": 720
+      }
+    }
+  ]
+}
