@@ -319,7 +319,6 @@ const player = {
           { id: "status", label: "rpg.menu.status" },
           { id: "items", label: "rpg.menu.items" },
           { id: "skills", label: "rpg.menu.skills" },
-          { id: "equip", label: "rpg.menu.equip" },
           { id: "options", label: "rpg.menu.options" },
           { id: "exit", label: "rpg.menu.exit" },
         ],
