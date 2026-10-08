@@ -12,7 +12,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: "pnpm run preview -- --host 127.0.0.1 --port 4173",
+    command: "pnpm exec vite preview --host 127.0.0.1 --port 4173",
     port: 4173,
     reuseExistingServer: false,
     timeout: 30_000,
