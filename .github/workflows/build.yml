@@ -29,4 +29,15 @@ jobs:
           RPG_TYPE: rpg
 
       - name: Check dist
-        run: test -f dist/index.html
+        run: |
+          test -f dist/index.html
+          echo "=== DIST INDEX ==="
+          cat dist/index.html
+          echo "=== DIST FILES ==="
+          find dist -maxdepth 2 -type f -printf "%p %s bytes\n" | sort
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: greenvale-dist
+          path: dist
