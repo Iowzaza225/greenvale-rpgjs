@@ -323,15 +323,6 @@ const player = {
     player.addItem(starterWeapon);
     player.equip(starterWeapon.id);
 
-    if (!player.getSkill(FocusSlash as any)) player.learnSkill(FocusSlash as any);
-    if ((player.getItem(FieldPotion.id)?.quantity() ?? 0) < 3) player.addItem(FieldPotion, 3);
-
-    player.initializeHotbar([
-      { type: "skill", id: FocusSlash.id },
-      { type: "item", id: FieldPotion.id },
-    ]);
-    player.configureHotbar({ capacity: 4, allowedEntryTypes: ["skill", "item"] });
-    await player.showHotbar();
 
     if (profile.completed) {
       player.addItem(GreenvaleSaber, 1);
@@ -389,7 +380,7 @@ export default createServer({
         },
       },
       ui: {
-        hotbar: { enabled: true, autoOpen: true, capacity: 4, allowedEntryTypes: ["skill", "item"] },
+        hotbar: { enabled: false, autoOpen: false },
       },
       ai: {
         presets: {
