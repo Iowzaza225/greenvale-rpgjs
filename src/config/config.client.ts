@@ -53,7 +53,7 @@ export default {
         },
         buttons: {
           action: { enabled: true, width: 70, height: 70 },
-          back: { enabled: true, width: 54, height: 54 },
+          back: { enabled: false, width: 54, height: 54 },
           dash: { enabled: true, width: 56, height: 56 },
         },
       }),
