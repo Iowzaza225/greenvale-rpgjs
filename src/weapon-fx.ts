@@ -27,9 +27,9 @@ function frame(now:number) {
   // Camera tracks the player near the center of the playable canvas.
   const gameCanvas = document.querySelector("#rpg canvas") as HTMLCanvasElement | null;
   const rect = gameCanvas?.getBoundingClientRect();
-  if (!rect || !rect.width || !rect.height) {raf=0;return;}
-  const x=rect.left+rect.width*.5, y=rect.top+rect.height*.52;
-  const scale=Math.max(.65,Math.min(1.4,rect.width/650));
+  const x=rect && rect.width ? rect.left+rect.width*.5 : w*.5;
+  const y=rect && rect.height ? rect.top+rect.height*.52 : h*.52;
+  const scale=Math.max(.65,Math.min(1.4,(rect?.width || w)/650));
   const angle=(-2.3+t*2.8);
   ctx.save();
   ctx.translate(x,y);ctx.scale(scale,scale);ctx.rotate(angle);
@@ -49,7 +49,7 @@ function frame(now:number) {
 export function installWeaponFx() {
   if (typeof document==="undefined") return;
   ensure();
-  const swing=()=>{const now=performance.now();if(now-last<135)return;last=now;started=now;if(!raf)raf=requestAnimationFrame(frame);};
+  const swing=()=>{ensure();const now=performance.now();if(now-last<135)return;last=now;started=now;if(!raf)raf=requestAnimationFrame(frame);};
   document.addEventListener("keydown",e=>{if(e.repeat)return;if(["KeyA","Space","Enter"].includes(e.code) && !(e.target instanceof HTMLInputElement))swing();},true);
   // RPGJS mobile controls may be rendered as canvas/custom elements, not HTML buttons.
   // Capture touch coordinates without cancelling the engine's original input.
@@ -63,6 +63,6 @@ export function installWeaponFx() {
     const w=window.innerWidth, h=window.innerHeight;
     const rightCluster = e.pointerType === "touch" || e.pointerType === "pen" || e.pointerType === "mouse";
     const actionZone = e.clientX > w*0.59 && e.clientY > h*0.57 && e.clientY < h*0.91;
-    if (namedAttack || (rightCluster && actionZone && !button)) swing();
+    if (namedAttack || (rightCluster && actionZone)) swing();
   }, true);
 }
