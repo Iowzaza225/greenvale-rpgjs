@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, feature/greenvale-menu-quests, phase/0-foundation ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, feature/greenvale-menu-quests ]
   workflow_dispatch:
 
 jobs:
