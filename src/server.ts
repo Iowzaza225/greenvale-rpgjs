@@ -324,8 +324,9 @@ const player = {
     player.setComponentsTop(Components.hpBar({ width: 64, height: 5, fontSize: 10, fillColor: "#51c77b", bgColor: "#18251c", borderColor: "#e8edda" }, "{name}  {$current}/{$max}"), { width: 86, marginBottom: 10 });
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
-    // SkillManager requires the player to be on a map before learning skills.
-    player.learnSkill(FocusSlash);
+    // Phase 0 stability gate: skill/hotbar definitions remain registered, but we
+    // do not mutate the synchronized skill state while Safari is hydrating the
+    // initial player/map snapshot. Skill assignment returns in Phase 3.
   },
 
   onInput(player: RpgPlayer, { action }: any) {
@@ -404,7 +405,7 @@ export default createServer({
         },
       },
       ui: {
-        hotbar: { enabled: true, autoOpen: false },
+        hotbar: false,
       },
       ai: {
         presets: {
