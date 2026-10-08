@@ -1,0 +1,16 @@
+<Container>
+  <Rect x={0} y={0} width={1600} height={1000} color="#477c4b" />
+  <Rect x={0} y={0} width={1600} height={1000} color="#163b27" alpha={0.16} />
+  <Rect x={460} y={0} width={680} height={1000} color="#c9b27b" alpha={0.72} />
+  <Rect x={0} y={430} width={1600} height={145} color="#c9b27b" alpha={0.78} />
+  <Rect x={70} y={85} width={390} height={255} color="#3b89a8" alpha={0.92} />
+  <Rect x={510} y={190} width={280} height={170} color="#76513c" />
+  <Rect x={240} y={210} width={180} height={105} color="#59636a" />
+  <Rect x={1070} y={620} width={230} height={135} color="#6e4835" />
+  <Rect x={810} y={680} width={220} height={155} color="#826448" alpha={0.9} />
+  <EventLayerComponent />
+</Container>
+
+<script>
+  import { EventLayerComponent } from "@rpgjs/client";
+</script>
