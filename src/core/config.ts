@@ -9,6 +9,8 @@ import statusEffects from "../data/status_effects.json";
 import drops from "../data/drops.json";
 import formulas from "../data/formulas.json";
 import effects from "../data/effects.json";
+import characterCreation from "../data/character_creation.json";
+import cutscene from "../data/cutscene.json";
 
 type Dataset = { schemaVersion?: number; [key: string]: unknown };
 
@@ -24,6 +26,8 @@ const datasets: Record<string, Dataset> = {
   drops,
   formulas,
   effects,
+  characterCreation,
+  cutscene,
 };
 
 function assertArray(name: string, value: unknown): asserts value is unknown[] {
@@ -63,6 +67,12 @@ export function validateGameConfig(): void {
   assertArray("status_effects.statuses", statusEffects.statuses);
   assertArray("drops.dropTables", drops.dropTables);
   assertArray("effects.effects", effects.effects);
+  assertArray("character_creation.genders", characterCreation.genders);
+  assertArray("character_creation.hairStyles", characterCreation.hairStyles);
+  assertArray("character_creation.hairColors", characterCreation.hairColors);
+  assertArray("character_creation.skinColors", characterCreation.skinColors);
+  assertArray("character_creation.outfits", characterCreation.outfits);
+  assertArray("cutscene.frames", cutscene.frames);
 
   assertUniqueIds("classes", classes.classes);
   assertUniqueIds("skills", skills.skills);
@@ -74,6 +84,12 @@ export function validateGameConfig(): void {
   assertUniqueIds("statuses", statusEffects.statuses);
   assertUniqueIds("dropTables", drops.dropTables);
   assertUniqueIds("effects", effects.effects);
+  assertUniqueIds("genders", characterCreation.genders);
+  assertUniqueIds("hairStyles", characterCreation.hairStyles);
+  assertUniqueIds("hairColors", characterCreation.hairColors);
+  assertUniqueIds("skinColors", characterCreation.skinColors);
+  assertUniqueIds("outfits", characterCreation.outfits);
+  assertUniqueIds("cutsceneFrames", cutscene.frames);
 }
 
 export const gameConfig = Object.freeze({
@@ -88,6 +104,8 @@ export const gameConfig = Object.freeze({
   drops,
   formulas,
   effects,
+  characterCreation,
+  cutscene,
 });
 
 export type GameConfig = typeof gameConfig;
