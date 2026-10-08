@@ -142,6 +142,7 @@
       function enterGame() {
         if (running) return;
         running = true;
+        window.__GV_START_REQUESTED__ = true;
         showView('gv-loading');
         window.dispatchEvent(new Event('greenvale:start'));
         setTimeout(() => {
@@ -188,7 +189,7 @@
         ? 'RPGJS entry started แต่ยังไม่สร้าง canvas'
         : 'RPGJS entry ยังไม่เริ่ม';
       window.__GV_SHOW_ERROR__('BOOT WATCHDOG\n' + state + '\nURL: ' + location.href);
-    }, 8000);
+    }, 20000);
   </script>
 </body>
 </html>
