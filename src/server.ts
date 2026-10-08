@@ -235,7 +235,7 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
       this.addItem(WolfClaw, 1);
       this.equip(WolfClaw.id);
       this.teleport({ x, y });
-      // Safe boot: disable entity UI components while isolating sync errors.
+      // Single text nameplate (avoid multi-component HP bar sync).\n      this.setComponentsTop(Components.text("Mutant Wolf"));
 
       (this as any).battleAi = new BattleAi(this, {
         preset: "aggressive",
@@ -269,7 +269,7 @@ const Mara: EventDefinition = {
     this.name = "Mara";
     this.through = false;
     this.teleport({ x: 690, y: 390 });
-    // Safe boot: no NPC overlay sync.
+    this.setComponentsTop(Components.text("Mara"));
   },
   async onAction(player: RpgPlayer) {
     const kills = Number(player.getVariable("greenvale.quest.kills") || 0);
@@ -307,7 +307,7 @@ const player = {
 
 
 
-    // Player overlay stays disabled to avoid the previous sync crash.
+    // Render a single lightweight label rather than a compound UI layout.\n    player.setComponentsTop(Components.text(profile.name));
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
   },
