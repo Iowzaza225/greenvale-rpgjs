@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-  <meta name="theme-color" content="#13251a" />
+  <meta name="theme-color" content="#0d1716" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Greenvale Afterfall</title>
   <script>
     window.__GV_BOOT_ERRORS__ = [];
@@ -29,7 +31,7 @@
       const status = document.getElementById('runtime-error-copy-status');
       try {
         await navigator.clipboard.writeText(report);
-        if (status) status.textContent = 'คัดลอกแล้ว · Copied';
+        if (status) status.textContent = 'Copied';
       } catch (_) {
         const area = document.createElement('textarea');
         area.value = report;
@@ -40,7 +42,7 @@
         area.select();
         document.execCommand('copy');
         area.remove();
-        if (status) status.textContent = 'คัดลอกแล้ว · Copied';
+        if (status) status.textContent = 'Copied';
       }
     };
 
@@ -58,180 +60,52 @@
       };
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', render, { once:true });
-      } else render();
+      } else {
+        render();
+      }
     };
 
     window.addEventListener('error', (event) => {
-      const e = event.error;
-      window.__GV_SHOW_ERROR__('JS ERROR\n' + (e?.stack || event.message || 'unknown'));
+      const error = event.error;
+      window.__GV_SHOW_ERROR__('JS ERROR\n' + (error?.stack || event.message || 'unknown'));
     });
     window.addEventListener('unhandledrejection', (event) => {
-      const r = event.reason;
-      window.__GV_SHOW_ERROR__('PROMISE ERROR\n' + (r?.stack || r?.message || String(r)));
+      const reason = event.reason;
+      window.__GV_SHOW_ERROR__('PROMISE ERROR\n' + (reason?.stack || reason?.message || String(reason)));
     });
   </script>
-
-<style>
-  #gv-menu,#gv-panel { position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;overflow:auto;padding:calc(16px + env(safe-area-inset-top)) 18px calc(16px + env(safe-area-inset-bottom));color:#f5eaca;background:radial-gradient(ellipse at 50% 20%,#3c4141 0%,#162427 40%,#080e14 100%);font-family:system-ui,sans-serif;touch-action:pan-y }
-  #gv-menu[hidden],#gv-panel[hidden],#gv-in-game[hidden],.gv-view[hidden] {display:none!important}
-  .gv-shell {width:min(100%,560px);max-height:100%;overflow:auto;border:1px solid #9a8050;background:linear-gradient(155deg,#202c32,#0d151c);box-shadow:0 20px 55px #0009,inset 0 0 0 5px #ffffff04;border-radius:19px;padding:clamp(18px,4vw,32px);text-align:center}
-  .gv-kicker {letter-spacing:.24em;color:#c5a96d;font-size:11px;font-weight:800;text-transform:uppercase}
-  .gv-title {margin:12px 0 0;color:#f3de9e;font:900 clamp(30px,7vw,51px)/1.03 Georgia,serif;text-shadow:0 3px #000b}
-  .gv-subtitle {margin:8px 0 19px;color:#d0d9c3;font:700 13px/1.4 system-ui}
-  .gv-lobby-status{display:flex;justify-content:space-between;gap:10px;margin:18px 0 5px;padding:12px;border:1px solid #526e58;border-radius:9px;background:#121f24;color:#c7d9ad;font:800 10px system-ui;letter-spacing:.05em}
-  .gv-copy {font-size:14px;line-height:1.65;color:#bccfc2;margin:12px 0 25px}
-  .gv-btn {display:block;width:100%;padding:13px 18px;margin:9px 0;border-radius:10px;border:1px solid #bca171;background:linear-gradient(#b99b53,#7e6035);color:#162821;font:800 15px system-ui;cursor:pointer;touch-action:manipulation}
-  .gv-btn.secondary {background:#1b2a30;color:#f1e4c2;border-color:#627a65}
-  .gv-btn:disabled {opacity:.43;cursor:default}
-  .gv-small {font-size:11px;line-height:1.5;color:#9eb2a7;margin:12px 0 0}
-  .gv-field {width:100%;font:600 16px system-ui;color:#fff1d1;background:#101b20;border:1px solid #5c795e;border-radius:9px;padding:12px;margin:7px 0 13px}
-  .gv-classes {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;text-align:left}
-  .gv-class {text-align:left;padding:12px 10px;border:1px solid #456352;background:#1b2a2c;border-radius:10px;color:#f4e5bb;font:800 13px system-ui;cursor:pointer;touch-action:manipulation}
-  .gv-class span {display:block;color:#a9bdad;font:400 11px/1.35 system-ui;margin-top:4px}
-  .gv-class.active {border-color:#e1c270;background:#3b3b39;box-shadow:0 0 0 1px #cfb46c}
-  #gv-in-game {position:fixed;inset:0;pointer-events:none;z-index:90000;font-family:system-ui,sans-serif}
-  #gv-quest {position:absolute;top:calc(35px + env(safe-area-inset-top));left:10px;max-width:65%;background:#101c25e8;color:#fff2c8;border:1px solid #7f946d;border-radius:9px;padding:8px 10px;font-size:12px;text-shadow:0 1px #000}
-  #gv-menu-btn {position:absolute;right:12px;top:calc(37px + env(safe-area-inset-top));pointer-events:auto;border:1px solid #cfad65;border-radius:9px;background:#19232eea;color:#f5dfa4;font:800 12px system-ui;padding:9px 11px}
-  #gv-panel {background:#000b;pointer-events:auto;z-index:190000}
-  #gv-panel .gv-shell {max-width:430px}
-  #gv-panel h2 {color:#f1d99e;margin:0 0 18px}
-  #gv-loading {font-size:14px;color:#ecd69b}
-  @media(min-width:700px){#gv-quest{font-size:14px;top:50px;left:18px}#gv-menu-btn{top:50px;right:18px}}
-</style>
 </head>
 <body class="rpg-ui-app">
   <div id="build-stamp" hidden>Greenvale build</div>
   <div id="rpg"></div>
-  <section id="gv-menu" aria-label="Greenvale start menu">
-    <div class="gv-shell">
-      <div class="gv-kicker">SURVIVOR OUTPOST · LOBBY</div>
-      <h1 class="gv-title">GREENVALE</h1>
-      <div class="gv-subtitle">AFTER THE FALL · SURVIVAL RPG</div><div class="gv-lobby-status"><span>● GREENVALE CAMP</span><span>ACT I · FIRST HUNT</span></div>
-      <div id="gv-home" class="gv-view">
-        <p class="gv-copy">ค่ายสุดท้ายท่ามกลางเงามืด ผู้รอดชีวิตต้องรวมพลัง<br>ออกสำรวจ ต่อสู้ และค้นหาความลับของ Greenvale</p>
-        <button id="gv-new" class="gv-btn" type="button">เริ่มเกมใหม่ · NEW GAME</button>
-        <button id="gv-continue" class="gv-btn secondary" type="button" disabled>เล่นต่อ · CONTINUE</button>
-        <p class="gv-small">รองรับมือถือ · Joystick &amp; Action Combat<br>บันทึกความคืบหน้าเควสบนอุปกรณ์นี้</p>
-      </div>
-      <div id="gv-create" class="gv-view" hidden>
-        <p class="gv-copy" style="margin:10px 0">สร้างผู้รอดชีวิตของคุณ</p>
-        <label for="gv-name" style="display:block;text-align:left;font-size:12px">ชื่อตัวละคร</label>
-        <input id="gv-name" class="gv-field" maxlength="18" placeholder="Survivor" value="Survivor" autocomplete="off">
-        <div style="text-align:left;margin:0 0 8px;font-size:12px">เลือกอาชีพ (6 คลาส)</div>
-        <div class="gv-classes" id="gv-classes">
-          <button type="button" data-class="scavenger" class="gv-class active">🎒 Scavenger<span>นักเก็บทรัพยากร · โชคดี</span></button>
-          <button type="button" data-class="hunter" class="gv-class">🏹 Hunter<span>นักล่า · คล่องตัว โจมตีไว</span></button>
-          <button type="button" data-class="medic" class="gv-class">✚ Medic<span>สายสนับสนุน · พลัง SP สูง</span></button>
-          <button type="button" data-class="guardian" class="gv-class">🛡 Guardian<span>แนวหน้า · HP และเกราะสูง</span></button>
-          <button type="button" data-class="beastmaster" class="gv-class">🐾 Beastmaster<span>สายคู่หู · สมดุล (Pet เร็ว ๆ นี้)</span></button>
-          <button type="button" data-class="engineer" class="gv-class">⚙ Engineer<span>สายเทคโนโลยี · SP และทักษะ</span></button>
-        </div>
-        <button id="gv-start" class="gv-btn" type="button">ออกเดินทาง · START</button>
-        <button id="gv-back" class="gv-btn secondary" type="button">ย้อนกลับ</button>
-        <p class="gv-small">เริ่มใหม่จะรีเซ็ตความคืบหน้าเควสของตัวละครเก่าในเบราว์เซอร์นี้</p>
-      </div>
-      <div id="gv-loading" class="gv-view" hidden>กำลังเข้าสู่ Greenvale…</div>
-    </div>
-  </section>
+
+  <main id="gv-app" aria-live="polite"></main>
+
   <div id="gv-in-game" hidden>
-    <div id="gv-quest">ภารกิจหลัก: กำจัด Mutant Wolf 0/3</div>
-    <button id="gv-menu-btn" type="button">☰ MENU</button>
+    <button id="gv-quest" type="button"></button>
+    <button id="gv-menu-btn" type="button">☰</button>
   </div>
-  <section id="gv-panel" hidden aria-label="In-game menu">
-    <div class="gv-shell">
-      <div class="gv-kicker">GREENVALE · SURVIVOR</div>
-      <h2>เมนูผู้รอดชีวิต</h2>
-      <p id="gv-profile" class="gv-copy"></p>
-      <p id="gv-progress" class="gv-copy"></p>
-      <button id="gv-resume" class="gv-btn" type="button">กลับเข้าเกม</button>
-      <button id="gv-title-btn" class="gv-btn secondary" type="button">กลับหน้าแรก</button>
-      <p class="gv-small">ความคืบหน้าเควสจะถูกบันทึกอัตโนมัติในเบราว์เซอร์นี้<br>ตำแหน่งบนแผนที่และอุปกรณ์ยังไม่ถูกบันทึกในรุ่นนี้</p>
+
+  <section id="gv-panel" hidden aria-label="Survivor menu">
+    <div class="gv-modal">
+      <h2 id="gv-panel-title"></h2>
+      <p id="gv-panel-profile"></p>
+      <button id="gv-resume" class="gv-primary" type="button"></button>
+      <button id="gv-title-btn" class="gv-secondary" type="button"></button>
     </div>
   </section>
+
+  <div id="gv-tutorial" hidden></div>
+  <div id="gv-toast" hidden></div>
+
   <div id="runtime-error" role="alert" aria-live="assertive" style="display:none;position:fixed;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));bottom:max(10px,env(safe-area-inset-bottom));z-index:999999;background:#211211;color:#ffe8c4;border:2px solid #e7ad4d;border-radius:16px;padding:16px;font:600 12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto;box-shadow:0 12px 40px #000c">
-    <b style="display:block;color:#ffd66b;font:800 18px system-ui;margin-bottom:10px">GREENVALE RUNTIME ERROR</b>
+    <b id="runtime-error-title" style="display:block;color:#ffd66b;font:800 18px system-ui;margin-bottom:10px">GREENVALE RUNTIME ERROR</b>
     <pre id="runtime-error-text" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font:inherit"></pre>
     <div style="position:sticky;bottom:0;display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:12px;background:linear-gradient(transparent,#211211 28%)">
-      <button type="button" onclick="window.__GV_COPY_ERROR__()" style="min-height:46px;flex:1;border:1px solid #f2c66c;border-radius:10px;background:#f2c66c;color:#201711;font:800 14px system-ui">คัดลอก Error · COPY</button>
-      <button type="button" onclick="document.getElementById('runtime-error').style.display='none'" style="min-height:46px;border:1px solid #8b7658;border-radius:10px;background:#30231e;color:#ffe8c4;font:800 14px system-ui;padding:0 18px">ปิด</button>
+      <button id="runtime-error-copy" type="button" onclick="window.__GV_COPY_ERROR__()" style="min-height:46px;flex:1;border:1px solid #f2c66c;border-radius:10px;background:#f2c66c;color:#201711;font:800 14px system-ui">Copy error</button>
+      <button id="runtime-error-close" type="button" onclick="document.getElementById('runtime-error').style.display='none'" style="min-height:46px;border:1px solid #8b7658;border-radius:10px;background:#30231e;color:#ffe8c4;font:800 14px system-ui;padding:0 18px">Close</button>
       <div id="runtime-error-copy-status" style="width:100%;min-height:18px;color:#d7c49e;font:700 11px system-ui"></div>
     </div>
   </div>
-
-  <script>
-    (function() {
-      const key = 'greenvale.profile.v1';
-      const $ = (id) => document.getElementById(id);
-      const read = () => { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (_) { return null; } };
-      const write = (value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {} };
-      let selectedClass = 'scavenger';
-      let running = false;
-      const names = {scavenger:'Scavenger',hunter:'Hunter',medic:'Medic',guardian:'Guardian',beastmaster:'Beastmaster',engineer:'Engineer'};
-      function showView(name) {
-        ['gv-home','gv-create','gv-loading'].forEach((id) => { $(id).hidden = id !== name; });
-      }
-      function syncProfile() {
-        const profile = read();
-        $('gv-continue').disabled = !(profile && profile.started && names[profile.classId]);
-        $('gv-quest').textContent = profile && profile.completed
-          ? '✓ ภารกิจหลัก: รอยเขี้ยวในป่า — สำเร็จ'
-          : 'ภารกิจหลัก: กำจัด Mutant Wolf ' + Math.min(3, Math.max(0, Number(profile && profile.kills || 0))) + '/3';
-        $('gv-profile').textContent = profile ? (profile.name + ' · ' + (names[profile.classId] || 'Survivor')) : 'Survivor';
-        $('gv-progress').textContent = profile && profile.completed
-          ? 'เควสแรกสำเร็จแล้ว! กลับไปคุยกับ Mara'
-          : 'เควสแรก: กำจัด Mutant Wolf ' + Math.min(3, Math.max(0, Number(profile && profile.kills || 0))) + '/3';
-      }
-      function enterGame() {
-        if (running) return;
-        running = true;
-        window.__GV_START_REQUESTED__ = true;
-        showView('gv-loading');
-        window.dispatchEvent(new Event('greenvale:start'));
-        setTimeout(() => {
-          if (!window.__GV_CANVAS_READY__) {
-            window.__GV_SHOW_ERROR__ && window.__GV_SHOW_ERROR__('เกมยังเปิดไม่สำเร็จหลัง 12 วินาที ตรวจ Console และ Build logs');
-          }
-        }, 12000);
-      }
-      window.__GV_ON_CANVAS_READY__ = function() {
-        $('gv-menu').hidden = true;
-        $('gv-in-game').hidden = false;
-        syncProfile();
-      };
-      window.addEventListener('greenvale:progress', syncProfile);
-      document.addEventListener('DOMContentLoaded', function() {
-        syncProfile();
-        $('gv-new').onclick = () => showView('gv-create');
-        $('gv-back').onclick = () => showView('gv-home');
-        $('gv-continue').onclick = () => { if (!read()) return; enterGame(); };
-        document.querySelectorAll('#gv-classes [data-class]').forEach((el) => {
-          el.addEventListener('click', () => {
-            selectedClass = el.getAttribute('data-class');
-            document.querySelectorAll('#gv-classes [data-class]').forEach((e) => e.classList.toggle('active', e === el));
-          });
-        });
-        $('gv-start').onclick = () => {
-          const name = String($('gv-name').value || 'Survivor').trim().slice(0,18) || 'Survivor';
-          write({name, classId:selectedClass, started:true, kills:0, completed:false, rewardClaimed:false, updatedAt:Date.now()});
-          enterGame();
-        };
-        $('gv-menu-btn').onclick = () => { syncProfile(); $('gv-panel').hidden = false; };
-        $('gv-resume').onclick = () => { $('gv-panel').hidden = true; };
-        $('gv-title-btn').onclick = () => { location.reload(); };
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && !document.getElementById('gv-in-game').hidden) $('gv-panel').hidden = !$('gv-panel').hidden;
-        });
-      });
-    })();
-  </script>
-  <script>
-    setTimeout(() => {
-      if (!window.__GV_ENTRY_STARTED__ || window.__GV_CANVAS_READY__) return;
-      const state = window.__GV_ENTRY_STARTED__
-        ? 'RPGJS entry started แต่ยังไม่สร้าง canvas'
-        : 'RPGJS entry ยังไม่เริ่ม';
-      window.__GV_SHOW_ERROR__('BOOT WATCHDOG\n' + state + '\nURL: ' + location.href);
-    }, 20000);
-  </script>
 </body>
 </html>
