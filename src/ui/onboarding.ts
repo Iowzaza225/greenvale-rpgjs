@@ -643,6 +643,8 @@ function onRootClick(event: MouseEvent): void {
   const target = (event.target as HTMLElement | null)?.closest<HTMLElement>("[data-action]");
   if (!target) return;
   const action = target.dataset.action;
+  event.preventDefault();
+  event.stopImmediatePropagation();
 
   if (action === "guest") {
     view = "slots";
@@ -789,6 +791,8 @@ export function initOnboarding(): void {
   loadSave();
   const host = root();
   if (!host) throw new Error("#gv-app is missing");
+  if (host.dataset.gvOnboardingBound === "1") return;
+  host.dataset.gvOnboardingBound = "1";
 
   host.addEventListener("click", onRootClick);
   window.__GV_ON_CANVAS_READY__ = onCanvasReady;
