@@ -123,7 +123,7 @@ function onWolfDefeated(attacker?: any) {
     attacker.gold += 25;
     attacker.addItem(GreenvaleSaber, 1);
     attacker.equip(GreenvaleSaber.id);
-    void attacker.showText("เควสสำเร็จ! รอยเขี้ยวในป่า\\nได้รับ 25 Gold + Greenvale Saber\\nกลับไปคุยกับ Mara ที่ค่าย");
+    void attacker.showText("เควสสำเร็จ! รอยเขี้ยวในป่า\nได้รับ 25 Gold + Greenvale Saber\nกลับไปคุยกับ Mara ที่ค่าย");
   } else if (typeof attacker.showNotification === "function") {
     void attacker.showNotification("ภารกิจแรก: กำจัด Mutant Wolf " + next + "/3");
   }
@@ -206,8 +206,8 @@ const Mara: EventDefinition = {
     const done = player.getVariable("greenvale.quest.main") === "first-hunt-complete";
     await player.showText(
       done
-        ? "Mara: เยี่ยมมาก! ค่ายปลอดภัยขึ้นแล้ว\\nเส้นทางไป Forest Route จะเปิดในอัปเดตถัดไป"
-        : "Mara: ยินดีต้อนรับสู่ Greenvale Camp\\nภารกิจแรก: กำจัด Mutant Wolf 3 ตัว (" + kills + "/3)",
+        ? "Mara: เยี่ยมมาก! ค่ายปลอดภัยขึ้นแล้ว\nเส้นทางไป Forest Route จะเปิดในอัปเดตถัดไป"
+        : "Mara: ยินดีต้อนรับสู่ Greenvale Camp\nภารกิจแรก: กำจัด Mutant Wolf 3 ตัว (" + kills + "/3)",
     );
   },
 };
