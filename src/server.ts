@@ -356,18 +356,38 @@ export default createServer({
       combat: {
         pvp: false,
         hooks: {
+          beforeHit(context: any) {
+            // Preserve the pre-hit HP so a broken engine formula cannot corrupt player state.
+            const target = context.target as any;
+            if (typeof target?.getVariable === "function") {
+              const hp = Number(target.hp);
+              context.metadata = {
+                ...context.metadata,
+                greenvaleHpBefore: Number.isFinite(hp) && hp > 0 ? hp : undefined,
+              };
+            }
+            return context;
+          },
           afterDamage(context: any) {
-            // Some RPGJS event->player basic hits resolve to zero despite a valid collision.
-            // Only correct zero-damage hits from BattleAi enemies; leave player attacks untouched.
             const attacker = context.attacker as any;
             const target = context.target as any;
             if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
-            if ((context.damage?.damage ?? 0) > 0 || typeof target.hp !== "number" || target.hp <= 0) return;
-            const defense = Number(target.param?.[PDEF] ?? 0);
-            const attack = Number(attacker.param?.[ATK] ?? 13);
-            const damage = Math.max(3, Math.round(attack * 0.8 - defense * 0.35));
-            target.hp = Math.max(0, target.hp - damage);
-            context.damage = { ...context.damage, damage, defeated: target.hp <= 0 };
+            const oldHp = Number(context.metadata?.greenvaleHpBefore);
+            if (!Number.isFinite(oldHp) || oldHp <= 0) return;
+            const rawDamage = Number(context.damage?.damage);
+            // RPGJS can produce a non-finite HP even when its displayed damage is 0.
+            // For wolves, use a bounded and predictable damage value per successful hit.
+            const defense = Number(target.param?.[PDEF]);
+            const safeDefense = Number.isFinite(defense) ? defense : 6;
+            const damage = Math.max(4, Math.min(12, Math.round(10 - safeDefense * 0.25)));
+            const nextHp = Math.max(0, oldHp - damage);
+            target.hp = nextHp;
+            context.damage = {
+              ...context.damage,
+              damage,
+              defeated: nextHp === 0,
+              raw: context.damage?.raw,
+            };
             return context;
           },
         },
