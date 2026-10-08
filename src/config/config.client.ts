@@ -30,7 +30,7 @@ export default {
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
       ui: createActionBattleUi({
-        hotbar: { enabled: true, autoOpen: true },
+        hotbar: { enabled: false, autoOpen: false },
         targeting: true,
         attackPreview: true,
       }),
