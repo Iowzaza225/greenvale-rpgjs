@@ -176,8 +176,8 @@ function renderTitle(): string {
         <button class="gv-primary" id="gv-play" data-action="guest">${escapeHtml(t("title.playGuest"))}</button>
         <button class="gv-secondary" id="gv-login" data-action="login">${escapeHtml(t("title.login"))}</button>
         <div class="gv-title-actions">
-          <button class="gv-chip" data-action="language">🌐 ${escapeHtml(t("title.language"))}: ${getLocale().toUpperCase()}</button>
-          <button class="gv-chip" data-action="sound">${soundEnabled() ? "🔊" : "🔇"} ${escapeHtml(t(soundEnabled() ? "title.soundOn" : "title.soundOff"))}</button>
+          <button class="gv-chip" data-action="language" data-locale-target="${getLocale() === "th" ? "en" : "th"}">🌐 ${escapeHtml(t("title.language"))}: ${getLocale().toUpperCase()}</button>
+          <button class="gv-chip" data-action="sound" data-sound-target="${soundEnabled() ? "0" : "1"}">${soundEnabled() ? "🔊" : "🔇"} ${escapeHtml(t(soundEnabled() ? "title.soundOn" : "title.soundOff"))}</button>
         </div>
         <p class="gv-note">${escapeHtml(t("title.guestNote"))}</p>
         <div class="gv-version">${escapeHtml(t("title.version", { version: buildInfo.version }))} · ${escapeHtml(buildInfo.id)}</div>
@@ -223,7 +223,7 @@ function renderSlots(): string {
         <header class="gv-screen-header">
           <button class="gv-back" data-action="title">‹ ${escapeHtml(t("common.back"))}</button>
           <div><div class="gv-eyebrow">GREENVALE · GUEST</div><h2>${escapeHtml(t("slots.title"))}</h2><p>${escapeHtml(t("slots.subtitle"))}</p></div>
-          <button class="gv-chip" data-action="language">🌐 ${getLocale().toUpperCase()}</button>
+          <button class="gv-chip" data-action="language" data-locale-target="${getLocale() === "th" ? "en" : "th"}">🌐 ${getLocale().toUpperCase()}</button>
         </header>
         <div class="gv-slots">${cards}</div>
       </div>
@@ -682,7 +682,8 @@ function onRootClick(event: MouseEvent): void {
     return;
   }
   if (action === "language") {
-    const next: Locale = getLocale() === "th" ? "en" : "th";
+    const requested = target.dataset.localeTarget;
+    const next: Locale = requested === "en" ? "en" : "th";
     setLocale(next);
     render();
     renderInGameShell();
@@ -690,7 +691,7 @@ function onRootClick(event: MouseEvent): void {
     return;
   }
   if (action === "sound") {
-    setSoundEnabled(!soundEnabled());
+    setSoundEnabled(target.dataset.soundTarget === "1");
     render();
     return;
   }
