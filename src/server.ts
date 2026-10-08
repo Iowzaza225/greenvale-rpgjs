@@ -224,11 +224,11 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
     onInit() {
       this.setGraphic("monster");
       this.name = "Mutant Wolf";
-      this.speed = 2.2;
+      this.speed = 1.35;
       this.through = false;
       this.param[MAXHP] = 90;
       this.param[MAXSP] = 20;
-      this.param[ATK] = 10;
+      this.param[ATK] = 13;
       this.param[PDEF] = 3;
       this.hp = 90;
       this.sp = 20;
@@ -244,13 +244,13 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         targets: "players",
         visionRange: 230,
         attackRange: 58,
-        attackCooldown: 850,
+        attackCooldown: 1650,
         dodgeChance: 0.08,
-        attackPatterns: [AttackPattern.Melee, AttackPattern.Combo],
+        attackPatterns: [AttackPattern.Melee],
         simpleBehavior: {
           when: [
             ifHpBelow(0.14, useAttack(AttackPattern.Charged)),
-            ifTargetInRange(useAttack(AttackPattern.Combo), 62),
+            ifTargetInRange(useAttack(AttackPattern.Melee), 58),
           ],
           otherwise: chase(),
         },
@@ -355,11 +355,11 @@ export default createServer({
           aggressive: {
             attackRange: 62,
             visionRange: 250,
-            attackCooldown: 800,
+            attackCooldown: 1650,
             simpleBehavior: {
               when: [
                 ifHpBelow(0.12, useAttack(AttackPattern.Charged)),
-                ifTargetInRange(useAttack(AttackPattern.Combo), 66),
+                ifTargetInRange(useAttack(AttackPattern.Melee), 58),
               ],
               otherwise: chase(),
             },
