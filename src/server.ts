@@ -30,6 +30,51 @@ const TrainingBlade = {
   _type: "weapon" as const,
 };
 
+const HunterKnife = {
+  id: "hunter-knife",
+  name: "Hunter Knife",
+  description: "มีดล่าสัตว์เบาและเร็ว",
+  atk: 16,
+  knockbackForce: 30,
+  _type: "weapon" as const,
+};
+
+const MedicBlade = {
+  id: "medic-blade",
+  name: "Medic Utility Blade",
+  description: "มีดอเนกประสงค์ของทีมแพทย์สนาม",
+  atk: 12,
+  knockbackForce: 27,
+  _type: "weapon" as const,
+};
+
+const GuardianSword = {
+  id: "guardian-sword",
+  name: "Guardian Sword",
+  description: "ดาบหนักของแนวหน้าค่าย Greenvale",
+  atk: 17,
+  knockbackForce: 44,
+  _type: "weapon" as const,
+};
+
+const BeastSpear = {
+  id: "beast-spear",
+  name: "Beast Spear",
+  description: "หอกสั้นสำหรับนักฝึกสัตว์",
+  atk: 15,
+  knockbackForce: 36,
+  _type: "weapon" as const,
+};
+
+const EngineerCutter = {
+  id: "engineer-cutter",
+  name: "Scrap Cutter",
+  description: "เครื่องมือตัดเศษเหล็กดัดแปลงเป็นอาวุธ",
+  atk: 14,
+  knockbackForce: 33,
+  _type: "weapon" as const,
+};
+
 const WolfClaw = {
   id: "wolf-claw",
   name: "Mutant Claw",
@@ -56,6 +101,40 @@ const WolfFang = {
   _type: "item" as const,
 };
 
+const FieldPotion = {
+  id: "field-potion",
+  name: "Field Potion",
+  description: "ยาฉุกเฉิน ฟื้น HP 45",
+  icon: "potion",
+  consumable: true,
+  hpValue: 45,
+  price: 18,
+  _type: "item" as const,
+};
+
+const FocusSlash = {
+  id: "focus-slash",
+  name: "Focus Slash",
+  description: "ฟันเป้าหมายระยะใกล้ ใช้ SP 8",
+  icon: "focus-slash",
+  spCost: 8,
+  hitRate: 1,
+  power: 24,
+  coefficient: { [ATK]: 1.0, [PDEF]: 0.25 },
+  _type: "skill" as const,
+  action: {
+    target: "enemy" as const,
+    range: 105,
+    mode: "instant" as const,
+    visual: {
+      fx: "slashSpark",
+      color: "#f2d176",
+      accentColor: "#8dc8a0",
+      scale: 1.08,
+    },
+  },
+};
+
 // The stable RPGJS standalone client runs the game server in the browser.
 // This lightweight profile keeps class and first-quest progress across reloads.
 // Full inventory/position persistence will be added only after engine-save testing.
@@ -75,6 +154,15 @@ const CLASS_STATS: Record<string, { hp: number; sp: number; atk: number; pdef: n
   guardian:   { hp: 220, sp: 65,  atk: 15, pdef: 12, speed: 2.8 },
   beastmaster:{ hp: 185, sp: 95,  atk: 15, pdef: 7,  speed: 3.35 },
   engineer:   { hp: 165, sp: 110, atk: 15, pdef: 8,  speed: 3.15 },
+};
+
+const STARTER_WEAPONS: Record<string, any> = {
+  scavenger: TrainingBlade,
+  hunter: HunterKnife,
+  medic: MedicBlade,
+  guardian: GuardianSword,
+  beastmaster: BeastSpear,
+  engineer: EngineerCutter,
 };
 
 function getProfile(): Profile {
@@ -230,8 +318,21 @@ const player = {
     player.setVariable("greenvale.quest.kills", profile.kills);
     player.setVariable("greenvale.quest.main", profile.completed ? "first-hunt-complete" : "first-hunt");
     player.setHitbox(30, 38);
-    player.addItem(TrainingBlade);
-    player.equip(TrainingBlade.id);
+
+    const starterWeapon = STARTER_WEAPONS[profile.classId] || TrainingBlade;
+    player.addItem(starterWeapon);
+    player.equip(starterWeapon.id);
+
+    if (!player.getSkill(FocusSlash as any)) player.learnSkill(FocusSlash as any);
+    if ((player.getItem(FieldPotion.id)?.quantity() ?? 0) < 3) player.addItem(FieldPotion, 3);
+
+    player.initializeHotbar([
+      { type: "skill", id: FocusSlash.id },
+      { type: "item", id: FieldPotion.id },
+    ]);
+    player.configureHotbar({ capacity: 4, allowedEntryTypes: ["skill", "item"] });
+    await player.showHotbar();
+
     if (profile.completed) {
       player.addItem(GreenvaleSaber, 1);
       player.equip(GreenvaleSaber.id);
@@ -251,13 +352,45 @@ const player = {
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
   },
+
+  onInput(player: RpgPlayer, { action }: any) {
+    if (action === "escape" || action === "back") {
+      void player.callMainMenu({
+        menus: [
+          { id: "status", label: "rpg.menu.status" },
+          { id: "items", label: "rpg.menu.items" },
+          { id: "skills", label: "rpg.menu.skills" },
+          { id: "equip", label: "rpg.menu.equip" },
+          { id: "options", label: "rpg.menu.options" },
+          { id: "exit", label: "rpg.menu.exit" },
+        ],
+      });
+    }
+  },
+
+  async onDead(player: RpgPlayer) {
+    player.hp = player.param[MAXHP];
+    player.sp = player.param[MAXSP];
+    await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
+    await player.showText("คุณหมดสติและถูกพากลับ Greenvale Camp");
+  },
 };
 
 export default createServer({
   providers: [
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
-      combat: { pvp: false },
+      combat: {
+        pvp: false,
+        player: {
+          combo: { bufferMs: 145, resetMs: 720 },
+          dodge: { durationMs: 190, cooldownMs: 650, invincibilityMs: 225, additionalSpeed: 8 },
+          softTargeting: { range: 118, coneDegrees: 115 },
+        },
+      },
+      ui: {
+        hotbar: { enabled: true, autoOpen: true, capacity: 4, allowedEntryTypes: ["skill", "item"] },
+      },
       ai: {
         presets: {
           aggressive: {
@@ -279,8 +412,15 @@ export default createServer({
       {
         database: async () => ({
           [TrainingBlade.id]: TrainingBlade,
+          [HunterKnife.id]: HunterKnife,
+          [MedicBlade.id]: MedicBlade,
+          [GuardianSword.id]: GuardianSword,
+          [BeastSpear.id]: BeastSpear,
+          [EngineerCutter.id]: EngineerCutter,
           [GreenvaleSaber.id]: GreenvaleSaber,
           [WolfFang.id]: WolfFang,
+          [FieldPotion.id]: FieldPotion,
+          [FocusSlash.id]: FocusSlash,
           [WolfClaw.id]: WolfClaw,
         }),
         player,
