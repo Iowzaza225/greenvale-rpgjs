@@ -134,6 +134,42 @@ const FocusSlash = {
   },
 };
 
+// Three additional skills share the same RPGJS action-battle hotbar pipeline.
+const ShadowDash = {
+  id: "shadow-dash", name: "Shadow Dash", description: "พุ่งหลบและฟื้นแรงเคลื่อนที่",
+  icon: "focus-slash", spCost: 12, _type: "skill" as const,
+  action: { target: "self" as const, mode: "instant" as const, cooldownMs: 4500,
+    onUse(user: any) {
+      // A short burst without teleporting through walls or bypassing collision.
+      const oldSpeed = Number(user.speed) || 3;
+      user.speed = oldSpeed * 1.6;
+      setTimeout(() => { if (Number(user.speed) === oldSpeed * 1.6) user.speed = oldSpeed; }, 550);
+    },
+    visual: { fx: "slashSpark", color: "#68b7f2", accentColor: "#b6dcff", scale: 1.1 },
+  },
+};
+
+const DarkPulse = {
+  id: "dark-pulse", name: "Dark Pulse", description: "ระเบิดพลังมืดใส่เป้าหมายใกล้ตัว",
+  icon: "focus-slash", spCost: 18, hitRate: 1, power: 32,
+  coefficient: { [ATK]: 0.9 }, _type: "skill" as const,
+  action: { target: "enemy" as const, mode: "instant" as const, range: 130, cooldownMs: 6000,
+    visual: { fx: "slashSpark", color: "#a66aff", accentColor: "#542c7c", scale: 1.5 },
+  },
+};
+
+const BattleFocus = {
+  id: "battle-focus", name: "Battle Focus", description: "ฟื้นฟู HP เล็กน้อยเพื่อยืนหยัดในการต่อสู้",
+  icon: "potion", spCost: 15, _type: "skill" as const,
+  action: { target: "self" as const, mode: "instant" as const, cooldownMs: 12000,
+    onUse(user: any) {
+      const maxHp = Number(user.param?.[MAXHP]) || 165;
+      user.hp = Math.min(maxHp, Math.max(0, Number(user.hp) || 0) + 22);
+    },
+    visual: { fx: "slashSpark", color: "#dc696e", accentColor: "#f1c5a0", scale: 1.15 },
+  },
+};
+
 // The stable RPGJS standalone client runs the game server in the browser.
 // This lightweight profile keeps class and first-quest progress across reloads.
 // Full inventory/position persistence will be added only after engine-save testing.
@@ -326,6 +362,9 @@ const player = {
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
     // SkillManager requires the player to be on a map before learning skills.
     player.learnSkill(FocusSlash);
+    player.learnSkill(ShadowDash);
+    player.learnSkill(DarkPulse);
+    player.learnSkill(BattleFocus);
   },
 
   onInput(player: RpgPlayer, { action }: any) {
@@ -435,6 +474,9 @@ export default createServer({
           [WolfFang.id]: WolfFang,
           [FieldPotion.id]: FieldPotion,
           [FocusSlash.id]: FocusSlash,
+          [ShadowDash.id]: ShadowDash,
+          [DarkPulse.id]: DarkPulse,
+          [BattleFocus.id]: BattleFocus,
           [WolfClaw.id]: WolfClaw,
         }),
         player,
