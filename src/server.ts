@@ -134,30 +134,6 @@ const FocusSlash = {
   },
 };
 
-// All four skills use the same proven RPGJS attack action as Focus Slash.
-// No custom onUse callback runs during player initialization.
-const ShadowDash = {
-  ...FocusSlash, id: "shadow-dash", name: "Shadow Dash",
-  description: "โจมตีฉับไวด้วยพลังเงา", icon: "focus-slash", spCost: 12,
-  power: 19,
-  action: { ...FocusSlash.action, range: 130, cooldownMs: 4500,
-    visual: { fx: "slashSpark", color: "#4ba9ff", accentColor: "#c6e7ff", scale: 1.2 } },
-};
-const DarkPulse = {
-  ...FocusSlash, id: "dark-pulse", name: "Dark Pulse",
-  description: "โจมตีด้วยพลังเวทมืด", icon: "focus-slash", spCost: 18,
-  power: 35,
-  action: { ...FocusSlash.action, range: 145, cooldownMs: 6500,
-    visual: { fx: "slashSpark", color: "#a65eff", accentColor: "#e3baff", scale: 1.45 } },
-};
-const BattleFocus = {
-  ...FocusSlash, id: "battle-focus", name: "Battle Focus",
-  description: "โจมตีหนักด้วยสมาธิในการต่อสู้", icon: "focus-slash", spCost: 15,
-  power: 42,
-  action: { ...FocusSlash.action, range: 110, cooldownMs: 9500,
-    visual: { fx: "slashSpark", color: "#e65c65", accentColor: "#ffb3a5", scale: 1.6 } },
-};
-
 // The stable RPGJS standalone client runs the game server in the browser.
 // This lightweight profile keeps class and first-quest progress across reloads.
 // Full inventory/position persistence will be added only after engine-save testing.
@@ -350,18 +326,6 @@ const player = {
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
     // SkillManager requires the player to be on a map before learning skills.
     player.learnSkill(FocusSlash);
-    player.learnSkill(ShadowDash);
-    player.learnSkill(DarkPulse);
-    player.learnSkill(BattleFocus);
-    player.initializeHotbar([
-      { type: "skill", id: FocusSlash.id },
-      { type: "skill", id: ShadowDash.id },
-      { type: "skill", id: DarkPulse.id },
-      { type: "skill", id: BattleFocus.id },
-    ]);
-    for (const [index, skill] of [FocusSlash, ShadowDash, DarkPulse, BattleFocus].entries()) {
-      player.assignHotbarSlot(index, { type: "skill", id: skill.id });
-    }
   },
 
   onInput(player: RpgPlayer, { action }: any) {
@@ -440,7 +404,7 @@ export default createServer({
         },
       },
       ui: {
-        hotbar: { enabled: true, autoOpen: true, capacity: 4 },
+        hotbar: { enabled: true, autoOpen: false },
       },
       ai: {
         presets: {
@@ -471,9 +435,6 @@ export default createServer({
           [WolfFang.id]: WolfFang,
           [FieldPotion.id]: FieldPotion,
           [FocusSlash.id]: FocusSlash,
-          [ShadowDash.id]: ShadowDash,
-          [DarkPulse.id]: DarkPulse,
-          [BattleFocus.id]: BattleFocus,
           [WolfClaw.id]: WolfClaw,
         }),
         player,
