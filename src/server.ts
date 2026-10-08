@@ -19,7 +19,7 @@ import {
   provideActionBattle,
   useAttack,
 } from "@rpgjs/action-battle/server";
-import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared";
+import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts";
 
 const TrainingBlade = {
   id: "training-blade",
