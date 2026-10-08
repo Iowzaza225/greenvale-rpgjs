@@ -15,7 +15,6 @@ import {
   EnemyType,
   chase,
   createActionBattleVisual,
-  ifHpBelow,
   ifTargetInRange,
   provideActionBattle,
   useAttack,
@@ -226,6 +225,7 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
       this.name = "Mutant Wolf";
       this.speed = 1.35;
       this.through = false;
+      this.initializeDefaultStats();
       this.param[MAXHP] = 90;
       this.param[MAXSP] = 20;
       this.param[ATK] = 13;
@@ -234,9 +234,9 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
       this.sp = 20;
       this.addItem(WolfClaw, 1);
       this.equip(WolfClaw.id);
+      this.setHitbox(34, 36);
       this.teleport({ x, y });
-      // Single text nameplate (avoid multi-component HP bar sync).
-      this.setComponentsTop(Components.text("Mutant Wolf"));
+      // BattleAi owns the wolf nameplate and HP bar; avoid duplicate overlays.
 
       (this as any).battleAi = new BattleAi(this, {
         preset: "aggressive",
@@ -250,14 +250,22 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         attackPatterns: [AttackPattern.Melee],
         simpleBehavior: {
           when: [
-            ifHpBelow(0.14, useAttack(AttackPattern.Charged)),
             ifTargetInRange(useAttack(AttackPattern.Melee), 58),
           ],
           otherwise: chase(),
         },
         rewards: { exp: 18, gold: 4 },
-        onDefeated: ({ attacker }: any) => onWolfDefeated(attacker),
-        presentation: { role: "enemy", name: "Mutant Wolf", healthBar: true },
+        onDefeated: ({ attacker, reward }: any) => {
+          if (attacker && typeof attacker.getVariable === "function") {
+            reward.giveTo(attacker);
+            onWolfDefeated(attacker);
+          }
+        },
+        presentation: {
+          role: "enemy",
+          name: "Mutant Wolf",
+          healthBar: { text: "Mutant Wolf", layout: { width: 84, marginBottom: 6 } },
+        },
       });
     },
   };
@@ -360,7 +368,6 @@ export default createServer({
             attackCooldown: 1650,
             simpleBehavior: {
               when: [
-                ifHpBelow(0.12, useAttack(AttackPattern.Charged)),
                 ifTargetInRange(useAttack(AttackPattern.Melee), 58),
               ],
               otherwise: chase(),
