@@ -232,21 +232,9 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
       this.param[PDEF] = 3;
       this.hp = 90;
       this.sp = 20;
-      this.addItem(WolfClaw);
-      this.equip(WolfClaw.id);
+      // Safe boot: no event equipment sync.
       this.teleport({ x, y });
-      this.setComponentsTop([
-        Components.text("Mutant Wolf", {
-          fill: "#fff4d6",
-          fontSize: 11,
-          fontWeight: "700",
-          stroke: "#182018",
-        }),
-        Components.hpBar(
-          { width: 74, height: 6, fillColor: "#d85f54", bgColor: "#251514" },
-          null,
-        ),
-      ], { width: 82, height: 34, marginBottom: 7 });
+      // Safe boot: disable entity UI components while isolating sync errors.
 
       (this as any).battleAi = new BattleAi(this, {
         preset: "aggressive",
@@ -280,14 +268,7 @@ const Mara: EventDefinition = {
     this.name = "Mara";
     this.through = false;
     this.teleport({ x: 690, y: 390 });
-    this.setComponentsTop([
-      Components.text("Mara", {
-        fill: "#f3e2a6",
-        fontSize: 11,
-        fontWeight: "700",
-        stroke: "#203329",
-      }),
-    ], { width: 80, height: 22, marginBottom: 6 });
+    // Safe boot: no NPC overlay sync.
   },
   async onAction(player: RpgPlayer) {
     const kills = Number(player.getVariable("greenvale.quest.kills") || 0);
@@ -320,26 +301,11 @@ const player = {
     player.setHitbox(30, 38);
 
     const starterWeapon = STARTER_WEAPONS[profile.classId] || TrainingBlade;
-    player.addItem(starterWeapon);
-    player.equip(starterWeapon.id);
+    // Safe boot: equipment sync disabled temporarily.
 
 
-    if (profile.completed) {
-      player.addItem(GreenvaleSaber, 1);
-      player.equip(GreenvaleSaber.id);
-    }
-    player.setComponentsTop([
-      Components.text(profile.name + " · " + profile.classId + " • Lv.{level}", {
-        fill: "#fff2c7",
-        fontSize: 11,
-        fontWeight: "700",
-        stroke: "#142018",
-      }),
-      Components.hpBar(
-        { width: 96, height: 7, fillColor: "#55b85a", bgColor: "#17251b" },
-        null,
-      ),
-    ], { width: 110, height: 38, marginBottom: 7 });
+
+    // Safe boot: no player overlay sync.
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
   },
