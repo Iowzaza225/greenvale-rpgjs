@@ -32,7 +32,7 @@ export default {
       // LPC preset provides attack2 (7-frame slash) and attack3 (6-frame heavy swing).
       animations: { attack: { animationName: "attack2", repeat: 1 } },
       ui: createActionBattleUi({
-        hotbar: { enabled: true, autoOpen: true, capacity: 4 },
+        hotbar: { enabled: true, autoOpen: false },
         targeting: true,
         attackPreview: true,
       }),
