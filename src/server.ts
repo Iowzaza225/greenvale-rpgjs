@@ -146,7 +146,7 @@ const player = {
 export default createServer({
   providers: [
     provideActionBattle({
-      visual: { type: "impact" } as any,
+      visual: createActionBattleVisual("impact"),
       combat: { pvp: false },
       ai: {
         presets: {
