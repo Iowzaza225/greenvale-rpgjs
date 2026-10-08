@@ -1,6 +1,23 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import { rpgjs } from "@rpgjs/vite";
 import startServer from "./src/server";
+
+const greenvaleSingleBundle = (): Plugin => ({
+  name: "greenvale-single-bundle",
+  enforce: "post",
+  configResolved(config: any) {
+    const output = config.build?.rolldownOptions?.output;
+    const patch = (value: any) => {
+      if (!value) return;
+      // @rpgjs/vite adds manualChunks. Remove it only for our standalone
+      // mobile build so CanvasEngine/Pixi do not require a secondary module.
+      delete value.manualChunks;
+      value.codeSplitting = false;
+    };
+    if (Array.isArray(output)) output.forEach(patch);
+    else patch(output);
+  },
+});
 
 export default defineConfig({
   base: "./",
@@ -8,8 +25,6 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       output: {
-        // Safari on Netlify deploy previews was failing CanvasEngine's
-        // secondary dynamic Pixi module import. Ship a single JS bundle.
         codeSplitting: false,
       },
     },
@@ -22,5 +37,6 @@ export default defineConfig({
         mmorpg: { client: "./src/client.ts", server: "./src/server.ts" },
       },
     }),
+    greenvaleSingleBundle(),
   ],
 });
