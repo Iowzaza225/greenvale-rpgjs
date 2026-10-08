@@ -14,6 +14,7 @@ import {
   BattleAi,
   EnemyType,
   chase,
+  createActionBattleVisual,
   ifHpBelow,
   ifTargetInRange,
   provideActionBattle,
