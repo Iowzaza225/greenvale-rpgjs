@@ -264,7 +264,11 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         presentation: {
           role: "enemy",
           name: "Mutant Wolf",
-          healthBar: { text: "Mutant Wolf", layout: { width: 84, marginBottom: 6 } },
+          healthBar: {
+            text: "Mutant Wolf",
+            style: { width: 68, height: 6, fontSize: 11 },
+            layout: { width: 76, marginBottom: 10 },
+          },
         },
       });
     },
@@ -278,7 +282,7 @@ const Mara: EventDefinition = {
     this.name = "Mara";
     this.through = false;
     this.teleport({ x: 690, y: 390 });
-    this.setComponentsTop(Components.text("Mara"));
+    this.setComponentsTop(Components.text("Mara", { fontSize: 12, fill: "#fff0bb", stroke: "#1a231a" }), { width: 72, marginBottom: 12 });
   },
   async onAction(player: RpgPlayer) {
     const kills = Number(player.getVariable("greenvale.quest.kills") || 0);
@@ -317,7 +321,7 @@ const player = {
 
 
     // Render a single lightweight label rather than a compound UI layout.
-    player.setComponentsTop(Components.text(profile.name));
+    player.setComponentsTop(Components.text(profile.name, { fontSize: 12, fill: "#f6f6e5", stroke: "#182a1d" }), { width: 110, marginBottom: 12 });
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
   },
