@@ -20,7 +20,13 @@
         "mender",
         "shade",
         "trader"
-      ]
+      ],
+      "recommendedStats": [
+        "STR",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "pulse"
     },
     {
       "id": "vanguard",
@@ -34,7 +40,13 @@
         "shield"
       ],
       "role": "tank",
-      "difficulty": 2
+      "difficulty": 2,
+      "recommendedStats": [
+        "STR",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "shock"
     },
     {
       "id": "arcanist",
@@ -47,7 +59,13 @@
         "staff"
       ],
       "role": "magic-dps",
-      "difficulty": 3
+      "difficulty": 3,
+      "recommendedStats": [
+        "INT",
+        "DEX",
+        "VIT"
+      ],
+      "previewFx": "orb"
     },
     {
       "id": "ranger",
@@ -60,7 +78,13 @@
         "bow"
       ],
       "role": "ranged-dps",
-      "difficulty": 2
+      "difficulty": 2,
+      "recommendedStats": [
+        "DEX",
+        "AGI",
+        "LUK"
+      ],
+      "previewFx": "arrow"
     },
     {
       "id": "mender",
@@ -74,7 +98,13 @@
         "staff"
       ],
       "role": "support",
-      "difficulty": 2
+      "difficulty": 2,
+      "recommendedStats": [
+        "INT",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "heal"
     },
     {
       "id": "shade",
@@ -87,7 +117,13 @@
         "dagger"
       ],
       "role": "burst",
-      "difficulty": 4
+      "difficulty": 4,
+      "recommendedStats": [
+        "AGI",
+        "STR",
+        "LUK"
+      ],
+      "previewFx": "slash"
     },
     {
       "id": "trader",
@@ -101,7 +137,13 @@
         "blade"
       ],
       "role": "utility",
-      "difficulty": 3
+      "difficulty": 3,
+      "recommendedStats": [
+        "DEX",
+        "LUK",
+        "VIT"
+      ],
+      "previewFx": "coin"
     }
   ]
 }
