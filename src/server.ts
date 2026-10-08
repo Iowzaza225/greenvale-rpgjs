@@ -398,7 +398,7 @@ export default createServer({
         player: {
           combo: { bufferMs: 145, resetMs: 720 },
           dodge: { durationMs: 190, cooldownMs: 650, invincibilityMs: 225, additionalSpeed: 8 },
-          softTargeting: { range: 118, coneDegrees: 115 },
+          softTargeting: { range: 155, coneDegrees: 170, directionWeight: 0.28, distanceWeight: 0.57, threatWeight: 0.15 },
         },
       },
       ui: {
