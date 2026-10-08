@@ -50,8 +50,8 @@ export default {
           outerColor: "#29495c",
           innerColor: "#eef6f6",
           scale: 0.86,
-          moveInterval: 40,
-          threshold: 0.08,
+          moveInterval: 25,
+          threshold: 0.06,
         },
         buttons: {
           action: { enabled: true, width: 70, height: 70 },
