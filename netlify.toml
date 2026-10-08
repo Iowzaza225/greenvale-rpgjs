@@ -1,9 +1,10 @@
 [build]
-  command = "npm run build"
+  command = "pnpm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22"
+  PNPM_VERSION = "11.6.0"
   RPG_TYPE = "rpg"
 
 [[headers]]
