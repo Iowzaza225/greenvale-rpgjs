@@ -15,6 +15,7 @@ src/
     config.ts           loads and validates JSON game data
     event-bus.ts        internal decoupled event bus
     i18n.ts             Thai/English locale service
+    save.ts             versioned Guest save, migration, 3 character slots
   data/
     classes.json
     skills.json
@@ -27,11 +28,16 @@ src/
     drops.json
     formulas.json
     effects.json
+    character_creation.json
+    cutscene.json
   i18n/
     th.json
     en.json
   config/
     config.client.ts    RPGJS client/mobile configuration
+  ui/
+    onboarding.ts       title, slots, creator, prologue, tutorial
+    onboarding.css      safe-area mobile UI + original CSS placeholders
   server.ts             current RPGJS authoritative gameplay module
   standalone.ts         browser bootstrap
 tests/
@@ -132,3 +138,14 @@ See `docs/PHASE_0_QA.md` for manual iPhone validation.
 ## Art policy
 
 Reference screenshots are layout/system inspiration only. Greenvale Afterfall must use original names, visual identity, characters, monsters, skills and art. Temporary non-final assets are tracked in `ASSET_TODO.md`.
+
+
+## Phase 1 onboarding
+
+Guest onboarding now uses a versioned local save (`greenvale.save`, schema version 2) with three character slots and migration from the legacy Phase 0 profile. New characters always begin as Novice; career previews are informational until Job Lv 10 is implemented in Phase 2.
+
+Character creation content is configured in `src/data/character_creation.json`: name rules, reserved words, random-name pools, genders, six hair styles, eight hair colors, four skin tones, starter outfits, preview animations and directions. Prologue frames live in `src/data/cutscene.json`.
+
+The current login button is intentionally a backend-ready UI boundary only. It does not fake authentication. Guest saves are local to the browser/device until a real account backend is introduced.
+
+For Phase 1 validation see `docs/PHASE_1_QA.md`.
