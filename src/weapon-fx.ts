@@ -9,7 +9,7 @@ function ensure() {
   if (canvas || !document.body) return;
   canvas = document.createElement("canvas");
   canvas.id = "greenvale-weapon-fx";
-  Object.assign(canvas.style, {position:"fixed",inset:"0",width:"100%",height:"100%",pointerEvents:"none",zIndex:"15"});
+  Object.assign(canvas.style, {position:"fixed",inset:"0",width:"100%",height:"100%",pointerEvents:"none",zIndex:"9990"});
   document.body.appendChild(canvas);
   ctx = canvas.getContext("2d");
 }
@@ -51,9 +51,18 @@ export function installWeaponFx() {
   ensure();
   const swing=()=>{const now=performance.now();if(now-last<135)return;last=now;started=now;if(!raf)raf=requestAnimationFrame(frame);};
   document.addEventListener("keydown",e=>{if(e.repeat)return;if(["KeyA","Space","Enter"].includes(e.code) && !(e.target instanceof HTMLInputElement))swing();},true);
-  document.addEventListener("pointerdown",e=>{
-    const el=e.target instanceof Element ? e.target.closest("button,[role=button],rpg-mobile-button") : null;
-    const label=(el?.getAttribute("aria-label") || el?.textContent || "").trim().toLowerCase();
-    if(label==="a" || label==="atk" || label==="attack" || label==="โจมตี")swing();
-  },true);
+  // RPGJS mobile controls may be rendered as canvas/custom elements, not HTML buttons.
+  // Capture touch coordinates without cancelling the engine's original input.
+  document.addEventListener("pointerdown", e => {
+    const element = e.target instanceof Element ? e.target : null;
+    const button = element?.closest("button,[role=button],rpg-mobile-button");
+    const label = (button?.getAttribute("aria-label") || button?.textContent || "").trim().toLowerCase();
+    const namedAttack = /^(a|atk|attack|โจมตี)$/.test(label);
+    // The RPGJS action button lives in the bottom-right mobile control cluster.
+    // Keep joystick (left), menus (top) and dash (far right/lower) untouched.
+    const w=window.innerWidth, h=window.innerHeight;
+    const rightCluster = e.pointerType === "touch" || e.pointerType === "pen" || e.pointerType === "mouse";
+    const actionZone = e.clientX > w*0.59 && e.clientY > h*0.57 && e.clientY < h*0.91;
+    if (namedAttack || (rightCluster && actionZone && !button)) swing();
+  }, true);
 }
