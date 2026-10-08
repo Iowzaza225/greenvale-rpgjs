@@ -1,6 +1,14 @@
 import { defineConfig, type Plugin } from "vite";
 import { rpgjs } from "@rpgjs/vite";
-import startServer from "./src/server";
+import startServer from "./src/server.ts";
+
+const BUILD_ID =
+  process.env.COMMIT_REF?.slice(0, 8) ||
+  process.env.GITHUB_SHA?.slice(0, 8) ||
+  process.env.DEPLOY_ID?.slice(0, 8) ||
+  "local";
+const BUILD_TIME = new Date().toISOString();
+const APP_VERSION = process.env.npm_package_version || "0.3.0-phase0";
 
 const greenvaleSingleBundle = (): Plugin => ({
   name: "greenvale-single-bundle",
@@ -21,6 +29,11 @@ const greenvaleSingleBundle = (): Plugin => ({
 
 export default defineConfig({
   base: "./",
+  define: {
+    __GV_BUILD_ID__: JSON.stringify(BUILD_ID),
+    __GV_BUILD_TIME__: JSON.stringify(BUILD_TIME),
+    __GV_APP_VERSION__: JSON.stringify(APP_VERSION),
+  },
   optimizeDeps: { include: ["pixi.js > @xmldom/xmldom"] },
   build: {
     rolldownOptions: {

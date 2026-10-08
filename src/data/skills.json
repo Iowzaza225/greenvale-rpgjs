@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "id": "survivor_strike",
+      "nameKey": "skill.survivor_strike.name",
+      "descriptionKey": "skill.survivor_strike.description",
+      "type": "active",
+      "maxLv": 10,
+      "spCost": [
+        3,
+        3,
+        4,
+        4,
+        5,
+        5,
+        6,
+        6,
+        7,
+        8
+      ],
+      "cooldownMs": 800,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 70,
+      "area": {
+        "shape": "single"
+      },
+      "element": "neutral",
+      "weaponTypes": [
+        "blade",
+        "dagger",
+        "mace",
+        "cart"
+      ],
+      "formula": "physical_basic",
+      "effectId": "fx_survivor_strike"
+    },
+    {
+      "id": "field_first_aid",
+      "nameKey": "skill.field_first_aid.name",
+      "descriptionKey": "skill.field_first_aid.description",
+      "type": "active",
+      "maxLv": 10,
+      "spCost": [
+        5,
+        5,
+        6,
+        6,
+        7,
+        7,
+        8,
+        8,
+        9,
+        10
+      ],
+      "cooldownMs": 3000,
+      "castMs": 600,
+      "afterCastMs": 300,
+      "range": 0,
+      "area": {
+        "shape": "self"
+      },
+      "element": "neutral",
+      "formula": "heal_basic",
+      "effectId": "fx_first_aid"
+    },
+    {
+      "id": "camp_rest",
+      "nameKey": "skill.camp_rest.name",
+      "descriptionKey": "skill.camp_rest.description",
+      "type": "toggle",
+      "maxLv": 1,
+      "spCost": [
+        0
+      ],
+      "cooldownMs": 0,
+      "castMs": 0,
+      "afterCastMs": 0,
+      "range": 0,
+      "area": {
+        "shape": "self"
+      },
+      "element": "neutral",
+      "formula": "none",
+      "effectId": "fx_rest"
+    }
+  ]
+}
