@@ -1,11 +1,8 @@
 import {
-  HudComponent,
   Presets,
-  inject,
   provideClientGlobalConfig,
   provideClientModules,
   provideLoadMap,
-  RpgClientEngine,
   withMobile,
 } from "@rpgjs/client";
 import {
@@ -16,7 +13,7 @@ import {
 import CampMap from "../components/camp-map.ce";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_WIDTH } from "../shared";
 
-const RPGJS_ASSET_BASE =
+const ASSET_BASE =
   "https://raw.githubusercontent.com/RSamaium/RPG-JS/v5/playground/games/action-battle/public/";
 
 export default {
@@ -33,7 +30,7 @@ export default {
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
       ui: createActionBattleUi({
-        hotbar: { enabled: true, autoOpen: true },
+        hotbar: false,
         targeting: true,
         attackPreview: true,
       }),
@@ -56,57 +53,31 @@ export default {
         },
         buttons: {
           action: { enabled: true, width: 70, height: 70 },
-          back: { enabled: true, width: 54, height: 54 },
+          back: false,
           dash: { enabled: true, width: 56, height: 56 },
         },
       }),
       {
-        gui: [
-          {
-            id: "hud",
-            component: HudComponent,
-            autoDisplay: true,
-            dependencies: () => {
-              const engine = inject(RpgClientEngine);
-              return [engine.scene.currentPlayer];
-            },
-          },
-        ],
         spritesheetResolver: async (id: string) => {
           if (id === "hero") {
             return Presets.LPCSpritesheetPreset({
               id: "hero",
-              imageSource: RPGJS_ASSET_BASE + "hero.png",
+              imageSource: ASSET_BASE + "hero.png",
               width: 1728,
               height: 5568,
-              ratio: 1.35,
+              ratio: 1.5,
             });
           }
           if (id === "monster") {
             return Presets.LPCSpritesheetPreset({
               id: "monster",
-              imageSource: RPGJS_ASSET_BASE + "monster.png",
-              width: 1248,
-              height: 2016,
-              ratio: 1.28,
-            });
-          }
-          if (id === "potion") {
-            return Presets.IconPreset({
-              id,
-              image: RPGJS_ASSET_BASE + "wood.png",
-              framesWidth: 1,
-              framesHeight: 1,
+              imageSource: ASSET_BASE + "monster.png",
+              width: 1728,
+              height: 5568,
+              ratio: 1.5,
             });
           }
           return undefined;
-        },
-        sceneMap: {
-          onAfterLoading() {
-            const engine = inject(RpgClientEngine);
-            const viewport = (engine as any).findViewportInstance?.();
-            if (viewport) viewport.setZoom?.(1.05, false);
-          },
         },
       },
     ]),
