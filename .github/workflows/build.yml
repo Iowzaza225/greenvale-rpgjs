@@ -2,7 +2,7 @@ name: Greenvale Build Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/greenvale-menu-quests ]
   workflow_dispatch:
 
 jobs:
