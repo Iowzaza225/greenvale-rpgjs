@@ -339,6 +339,7 @@ export default createServer({
   providers: [
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
+      animations: { attack: { animationName: "attack2", repeat: 1 } },
       combat: {
         pvp: false,
         player: {
