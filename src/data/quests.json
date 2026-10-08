@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "quests": [
+    {
+      "id": "main_first_hunt",
+      "type": "main",
+      "nameKey": "quest.main_first_hunt.name",
+      "descriptionKey": "quest.main_first_hunt.description",
+      "minLevel": 1,
+      "objectives": [
+        {
+          "type": "defeat",
+          "targetId": "ashfang_wolf",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "baseExp": 60,
+        "jobExp": 20,
+        "gold": 25,
+        "items": [
+          {
+            "id": "field_patch",
+            "count": 2
+          }
+        ]
+      },
+      "nextQuestId": null
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "formulas": {
+    "atk": "STR + floor(DEX/5) + floor(LUK/5) + weaponATK",
+    "matk": "INT*1.5 + floor((INT*INT)/100)",
+    "hit": "baseLevel + DEX",
+    "flee": "baseLevel + AGI",
+    "maxHp": "(classBaseHp * baseLevel) * (1 + VIT/100)",
+    "physical_basic": "max(1,(ATK * skillMultiplier * elementMultiplier * sizeMultiplier * raceMultiplier) - DEF)",
+    "magical_basic": "max(1,(MATK * skillMultiplier * elementMultiplier * sizeMultiplier * raceMultiplier) - MDEF)",
+    "heal_basic": "max(1,MATK * healMultiplier)"
+  },
+  "elements": [
+    "neutral",
+    "fire",
+    "water",
+    "wind",
+    "earth",
+    "light",
+    "dark"
+  ],
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "races": [
+    "beast",
+    "plant",
+    "undead",
+    "human",
+    "demon"
+  ]
+}
