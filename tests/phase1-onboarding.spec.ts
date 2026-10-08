@@ -4,7 +4,7 @@ test("Phase 1 character onboarding works on iPhone WebKit", async ({ page }) => 
   const runtimeErrors: string[] = [];
   page.on("pageerror", (error) => runtimeErrors.push(error.stack || error.message));
 
-  await page.goto("/?debug=1", { waitUntil: "domcontentloaded" });
+  await page.goto("/?debug=1&lang=th", { waitUntil: "domcontentloaded" });
   await expect(page.locator("#gv-play")).toBeVisible();
 
   // Language toggle must re-render the title without reloading.
