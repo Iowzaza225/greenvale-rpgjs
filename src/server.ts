@@ -324,6 +324,8 @@ const player = {
     player.setComponentsTop(Components.hpBar({ width: 64, height: 5, fontSize: 10, fillColor: "#51c77b", bgColor: "#18251c", borderColor: "#e8edda" }, "{name}  {$current}/{$max}"), { width: 86, marginBottom: 10 });
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
+    // SkillManager requires the player to be on a map before learning skills.
+    player.learnSkill(FocusSlash);
   },
 
   onInput(player: RpgPlayer, { action }: any) {
@@ -402,7 +404,7 @@ export default createServer({
         },
       },
       ui: {
-        hotbar: { enabled: false, autoOpen: false },
+        hotbar: { enabled: true, autoOpen: false },
       },
       ai: {
         presets: {
