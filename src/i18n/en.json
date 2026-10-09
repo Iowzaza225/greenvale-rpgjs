@@ -427,5 +427,6 @@
   "status.haste.name": "Haste",
   "status.revive_guard.name": "Revive Guard",
   "item.field_revive_kit.name": "Field Revive Kit",
-  "item.field_revive_kit.description": "Emergency recovery kit used to revive where you fell."
+  "item.field_revive_kit.description": "Emergency recovery kit used to revive where you fell.",
+  "combat.float.player-hit": "{damage}"
 }
