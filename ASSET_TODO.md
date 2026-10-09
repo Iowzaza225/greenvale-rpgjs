@@ -53,3 +53,15 @@ All final art must remain original to Greenvale Afterfall.
 | Generic cooldown conic overlay | Final icon masks/cooldown ring art |
 
 The placeholder ids are stable so final art/audio can replace them without changing skill logic.
+
+
+## Phase 4 placeholders
+
+| Placeholder | Final original asset |
+| --- | --- |
+| CSS status squares | 12 original buff/debuff status icons |
+| CSS floating combat text | Pixel-font combat number atlas and crit/block/miss treatment |
+| Text loot prompt | Original dropped-item sprite + pickup animation |
+| Death modal | Original downed/revive visual treatment |
+
+Phase 4 UI placeholders are original CSS and contain no reference-game art.
