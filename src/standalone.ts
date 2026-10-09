@@ -7,6 +7,7 @@ import { initI18n } from "./core/i18n";
 import { buildInfo, renderBuildStamp } from "./core/build-info";
 import { initOnboarding } from "./ui/onboarding";
 import { initCharacterSystem } from "./ui/character-system";
+import { initSkillSystem } from "./ui/skill-system";
 import "./styles.css";
 
 declare global {
@@ -64,6 +65,7 @@ function mountOnboarding(): void {
   try {
     initOnboarding();
     initCharacterSystem();
+    initSkillSystem();
     onboardingReady = true;
     gameEvents.emit("onboarding:ready", { build: buildInfo.id });
   } catch (error) {
