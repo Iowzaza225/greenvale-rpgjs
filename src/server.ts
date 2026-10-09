@@ -258,7 +258,17 @@ function applyProfileStats(player: RpgPlayer, fullHeal: boolean) {
   player.param[PDEF] = derived.DEF;
   player.hp = Math.max(1, Math.round(derived.MaxHP * hpRatio));
   player.sp = Math.max(0, Math.round(derived.MaxSP * spRatio));
-  player.speed = 3.05 + Math.min(1.1, (profile.stats.AGI - 1) * 0.012);
+  const classConfig = getClassConfig(profile.classId) as any;
+  player.speed = Number(classConfig.moveSpeed || 3.1) + Math.min(0.9, (profile.stats.AGI - 1) * 0.01);
+
+  const weaponId = profile.equipment.weaponId || getStarterWeaponId(profile.classId);
+  const runtimeWeapon = CONFIGURED_WEAPONS[weaponId];
+  if (runtimeWeapon) {
+    const owned = typeof (player as any).getItem === "function" ? (player as any).getItem(runtimeWeapon.id) : null;
+    if (!owned) player.addItem(runtimeWeapon, 1);
+    player.equip(runtimeWeapon.id);
+  }
+
   player.setVariable("greenvale.class.id", profile.classId);
   player.setVariable("greenvale.base.level", profile.baseLevel);
   player.setVariable("greenvale.job.level", profile.jobLevel);
