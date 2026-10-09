@@ -186,6 +186,17 @@ export function applySkillPassives(
   return result as DerivedStats;
 }
 
+export function getCastInterruptProtection(learned: LearnedSkills): number {
+  const normalized = normalizeLearnedSkills(learned);
+  let chance = 0;
+  for (const skill of skillsData.skills as any[]) {
+    const perLevel = Number(skill.interruptProtection?.chancePerLevel) || 0;
+    if (perLevel <= 0) continue;
+    chance += perLevel * getSkillLevel(normalized, skill.id);
+  }
+  return Math.min(0.75, Math.max(0, chance));
+}
+
 export function getSpentSkillPoints(learned: LearnedSkills): number {
   const normalized = normalizeLearnedSkills(learned);
   return skillsData.skills.reduce((sum, skill) => {
