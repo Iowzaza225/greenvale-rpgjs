@@ -392,8 +392,35 @@ function executeGreenvaleSkill(detail: any) {
   } else if (kind === "buff" || kind === "toggle") {
     applySelfModifier(skill, level);
   } else {
-    const targets = enemyEvents(activePlayer, Math.max(40, Number(skill.range) || 80));
-    if (targets.length === 0) return fail("no-target");
+    const targetRange = Math.max(40, Number(skill.range) || 80);
+    const targets = enemyEvents(activePlayer, targetRange);
+    if (targets.length === 0) {
+      const diagnostics = Array.from(activeEnemies).slice(0, 8).map((event: any) => {
+        const px = entityCoord(activePlayer, "x");
+        const py = entityCoord(activePlayer, "y");
+        const ex = entityCoord(event, "x");
+        const ey = entityCoord(event, "y");
+        return {
+          id: String(event?.id || event?.name || "enemy"),
+          hp: Number(event?.hp) || 0,
+          x: ex,
+          y: ey,
+          distance: Math.round(Math.hypot(ex - px, ey - py) * 10) / 10,
+          hasBattleAi: !!event?.battleAi,
+        };
+      });
+      dispatchSkillState("greenvale:skill-result", {
+        ok: false,
+        reason: "no-target",
+        skillId,
+        source,
+        targetRange,
+        activeEnemyCount: activeEnemies.size,
+        playerPosition: { x: entityCoord(activePlayer, "x"), y: entityCoord(activePlayer, "y") },
+        enemyDiagnostics: diagnostics,
+      });
+      return;
+    }
     const shape = String(skill.area?.shape || "single");
     const limit = shape === "single" ? 1 : shape === "chain" ? 3 : 6;
     const selected = targets.slice(0, limit);
