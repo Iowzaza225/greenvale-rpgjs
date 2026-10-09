@@ -81,6 +81,20 @@ export function validateGameConfig(): void {
   if (!Array.isArray(formulas.expTables?.job) || formulas.expTables.job.length !== 50) {
     throw new Error('Config "formulas.expTables.job" must contain 50 entries');
   }
+  if ((formulas as any).combat?.pvp !== false) {
+    throw new Error('Config "formulas.combat.pvp" must remain false for Phase 4');
+  }
+  for (const element of formulas.elements) {
+    if (!(formulas as any).elementMultipliers?.[element]) {
+      throw new Error(`Missing element multiplier row "${element}"`);
+    }
+  }
+  const requiredStatuses = ["poison","bleed","stun","slow","freeze","sleep","silence","blind","confusion"];
+  for (const statusId of requiredStatuses) {
+    if (!(statusEffects.statuses as any[]).some((entry) => entry.id === statusId)) {
+      throw new Error(`Missing required status "${statusId}"`);
+    }
+  }
 
   assertUniqueIds("classes", classes.classes);
   assertUniqueIds("skills", skills.skills);
