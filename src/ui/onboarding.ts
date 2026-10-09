@@ -21,6 +21,7 @@ import {
   type PreviewAnimation,
   type PreviewDirection,
 } from "../core/save";
+import { initCharacterSystem, renderCharacterSystem } from "./character-system";
 import "./onboarding.css";
 
 type View = "title" | "slots" | "creator" | "career" | "cutscene" | "loading";
@@ -204,7 +205,7 @@ function renderSlots(): string {
           <div class="gv-slot-avatar">${avatar(character, "small")}</div>
           <div class="gv-slot-info">
             <h3>${escapeHtml(character.name)}</h3>
-            <p>${escapeHtml(t("class.novice.name"))}</p>
+            <p>${escapeHtml(t(`class.${character.classId}.name`))}</p>
             <div class="gv-meta-row"><span>${escapeHtml(t("slots.level", { level: character.baseLevel }))}</span><span>${escapeHtml(t("slots.job", { level: character.jobLevel }))}</span></div>
             <div class="gv-muted">${escapeHtml(t("slots.freeRename", { count: character.renameCredits }))}</div>
           </div>
@@ -532,7 +533,8 @@ function renderInGameShell(): void {
   const resume = document.getElementById("gv-resume");
   const returnTitle = document.getElementById("gv-title-btn");
   if (menuTitle) menuTitle.textContent = t("menu.title");
-  if (menuProfile) menuProfile.textContent = selected ? `${selected.name} · ${t("class.novice.name")}` : "";
+  if (menuProfile) menuProfile.textContent = selected ? `${selected.name} · ${t(`class.${selected.classId}.name`)}` : "";
+  renderCharacterSystem();
   if (resume) resume.textContent = t("menu.resume");
   if (returnTitle) returnTitle.textContent = t("menu.returnTitle");
 }
@@ -819,6 +821,7 @@ export function initOnboarding(): void {
   document.getElementById("gv-title-btn")?.addEventListener("click", () => location.reload());
   document.getElementById("gv-quest")?.addEventListener("click", () => advanceTutorial(3));
 
+  initCharacterSystem();
   bindGameTutorialGestureTracking();
   gameEvents.on("i18n:changed", () => {
     localizeErrorOverlay();
