@@ -59,7 +59,7 @@ test("Phase 1 character onboarding works on iPhone WebKit", async ({ page }) => 
   await expect(page.locator("#gv-tutorial")).toBeHidden({ timeout: 5_000 });
 
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("greenvale.save") || "null"));
-  expect(saved.version).toBe(2);
+  expect(saved.version).toBe(3);
   expect(saved.characters.filter(Boolean)).toHaveLength(1);
   expect(saved.characters[0].name).toBe("Phase1QA");
   expect(saved.characters[0].classId).toBe("novice");
