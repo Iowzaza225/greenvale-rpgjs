@@ -149,3 +149,26 @@ Character creation content is configured in `src/data/character_creation.json`: 
 The current login button is intentionally a backend-ready UI boundary only. It does not fake authentication. Guest saves are local to the browser/device until a real account backend is introduced.
 
 For Phase 1 validation see `docs/PHASE_1_QA.md`.
+
+
+## Phase 2 character progression
+
+Character saves now use schema version 3. Each character stores:
+
+- Base Lv / Base EXP (1–99)
+- Job Lv / Job EXP (1–50)
+- STR, AGI, VIT, INT, DEX, LUK
+- unspent stat and skill points
+- selected job
+- cosmetic costume selection
+
+`src/core/character.ts` is the shared rules engine for EXP leveling, stat costs, job changes and derived stats. Balance data stays in JSON:
+
+- `classes.json`: jobs, weapon permissions, HP/SP growth, ASPD, passives, animation ids, 8 emotes, costumes and second-job/Rebirth scaffolding
+- `formulas.json`: derived-stat formulas, stat-point cost tiers, Base 1–99 EXP table and Job 1–50 EXP table
+
+Novice changes job at Job Lv 10 into Vanguard, Arcanist, Ranger, Mender, Shade or Trader. Skill points are earned now but are intentionally spent in Phase 3.
+
+The in-game **Stats / Job** window is mobile safe-area aware and allows stat allocation, job selection, costume switching and emotes. Standalone RPGJS receives updated MaxHP/MaxSP/ATK/DEF immediately through the local runtime bridge.
+
+See `docs/PHASE_2_QA.md`.
