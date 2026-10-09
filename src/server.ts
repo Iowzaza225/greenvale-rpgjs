@@ -257,6 +257,17 @@ function entityCoord(entity: any, key: "x" | "y"): number {
   }
 }
 
+function entityNumber(entity: any, key: string): number {
+  try {
+    const value = entity?.[key];
+    const resolved = typeof value === "function" ? value.call(entity) : value;
+    const numeric = Number(resolved);
+    return Number.isFinite(numeric) ? numeric : 0;
+  } catch {
+    return 0;
+  }
+}
+
 function enemyEvents(player: RpgPlayer, range: number): any[] {
   // Do not walk through getCurrentMap().getEvents() from a browser-dispatched
   // standalone event. On WebKit that bridge can expose the synchronized map
@@ -265,7 +276,7 @@ function enemyEvents(player: RpgPlayer, range: number): any[] {
   const px = entityCoord(player, "x");
   const py = entityCoord(player, "y");
   return Array.from(activeEnemies)
-    .filter((event: any) => event?.battleAi && Number(event.hp) > 0)
+    .filter((event: any) => event?.battleAi && entityNumber(event, "hp") > 0)
     .map((event: any) => {
       const dx = entityCoord(event, "x") - px;
       const dy = entityCoord(event, "y") - py;
@@ -350,9 +361,9 @@ function applyStatus(target: any, skill: any, level: number) {
     const ticks = Math.max(1, Math.floor(duration / 1000));
     for (let tick = 1; tick <= ticks; tick++) {
       window.setTimeout(() => {
-        if (!target || Number(target.hp) <= 0) return;
+        if (!target || entityNumber(target, "hp") <= 0) return;
         const damage = Math.max(1, level * 2);
-        target.hp = Math.max(0, Number(target.hp) - damage);
+        target.hp = Math.max(0, entityNumber(target, "hp") - damage);
       }, tick * 1000);
     }
   }
@@ -402,7 +413,7 @@ function executeGreenvaleSkill(detail: any) {
         const ey = entityCoord(event, "y");
         return {
           id: String(event?.id || event?.name || "enemy"),
-          hp: Number(event?.hp) || 0,
+          hp: entityNumber(event, "hp"),
           x: ex,
           y: ey,
           distance: Math.round(Math.hypot(ex - px, ey - py) * 10) / 10,
@@ -434,14 +445,14 @@ function executeGreenvaleSkill(detail: any) {
     for (const target of selected) {
       targetName ||= String(target.name || "Target");
       if (percent > 0) {
-        const before = Number(target.hp) || 0;
+        const before = entityNumber(target, "hp");
         activePlayer.param[ATK] = scaledAtk;
         if (target.battleAi?.takeDamage) {
           target.battleAi.takeDamage(activePlayer);
         } else {
           target.hp = Math.max(0, before - Math.max(1, scaledAtk));
         }
-        damageTotal += Math.max(0, before - Number(target.hp || 0));
+        damageTotal += Math.max(0, before - entityNumber(target, "hp"));
       }
       applyStatus(target, skill, level);
     }
