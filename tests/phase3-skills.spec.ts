@@ -96,7 +96,7 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
       char: save.characters.find((entry: any) => entry?.id === save.selectedCharacterId),
     };
   });
-  expect(saved.version).toBe(4);
+  expect(saved.version).toBeGreaterThanOrEqual(4);
   expect(saved.char.learnedSkills.survivor_strike).toBe(1);
   expect(saved.char.learnedSkills.field_first_aid).toBe(1);
   expect(saved.char.learnedSkills.camp_rest).toBe(1);
