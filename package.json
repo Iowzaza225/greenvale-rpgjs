@@ -1,6 +1,6 @@
 {
   "name": "greenvale-afterfall",
-  "version": "0.4.0-phase1",
+  "version": "0.5.0-phase2",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test:phase0": "playwright test tests/phase0-boot.spec.ts",
     "test:phase1": "playwright test tests/phase1-onboarding.spec.ts",
-    "test:qa": "playwright test tests/phase0-boot.spec.ts tests/phase1-onboarding.spec.ts"
+    "test:qa": "playwright test tests/phase0-boot.spec.ts tests/phase1-onboarding.spec.ts tests/phase2-character-system.spec.ts",
+    "test:phase2": "playwright test tests/phase2-character-system.spec.ts"
   },
   "dependencies": {
     "@canvasengine/presets": "2.4.0",
