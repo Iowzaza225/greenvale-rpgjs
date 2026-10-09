@@ -24,7 +24,19 @@
       "dropTableId": "ashfang_wolf",
       "sprite": "placeholder_wolf",
       "sound": "placeholder_wolf",
-      "respawnMs": 8000
+      "respawnMs": 8000,
+      "blockChance": 0,
+      "perfectDodge": 2,
+      "crit": 4,
+      "critResistance": 1,
+      "threatMultiplier": 1,
+      "leashRange": 360,
+      "returnHealPercent": 100,
+      "onHitStatus": {
+        "id": "poison",
+        "chance": 0.12,
+        "durationMs": 4000
+      }
     }
   ]
 }
