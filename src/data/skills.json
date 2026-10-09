@@ -1270,7 +1270,7 @@
       "cooldownMs": 900,
       "castMs": 0,
       "afterCastMs": 250,
-      "range": 240,
+      "range": 300,
       "area": {
         "shape": "single",
         "radius": 0
