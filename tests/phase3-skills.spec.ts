@@ -73,6 +73,7 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
   await page.locator("[data-hotbar-slot='3']").click();
   await expect.poll(async () => page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult?.skillId || "")).toBe("piercing_shot");
   const castResult = await page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult);
+  console.log("PHASE3_CAST_RESULT", JSON.stringify(castResult));
   expect(castResult.ok).toBe(true);
   expect(castResult.damage).toBeGreaterThan(0);
 
