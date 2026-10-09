@@ -383,5 +383,9 @@
   "skill.debt_marker.name": "ตราหนี้",
   "skill.debt_marker.description": "ทำเครื่องหมายศัตรูให้เคลื่อนที่ช้าลง",
   "skill.surplus_instinct.name": "สัญชาตญาณของเหลือ",
-  "skill.surplus_instinct.description": "พาสซีฟเพิ่มน้ำหนักสูงสุดและ MaxHP"
+  "skill.surplus_instinct.description": "พาสซีฟเพิ่มน้ำหนักสูงสุดและ MaxHP",
+  "skill.ui.changeJob": "เปลี่ยนอาชีพ",
+  "skill.ui.kicker": "GREENVALE · สกิล",
+  "skill.ui.levelShort": "Lv",
+  "skill.ui.spShort": "SP"
 }
