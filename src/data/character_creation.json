@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "nameRules": {
+    "minLength": 3,
+    "maxLength": 12,
+    "pattern": "^[A-Za-z0-9\\u0E00-\\u0E7F]+$",
+    "bannedWords": [
+      "admin",
+      "administrator",
+      "moderator",
+      "system",
+      "greenvale",
+      "gm",
+      "game master",
+      "ผู้ดูแล",
+      "แอดมิน",
+      "ระบบ"
+    ]
+  },
+  "randomNames": {
+    "th": [
+      "อรุณ",
+      "นที",
+      "พฤกษ์",
+      "เมฆา",
+      "วาริน",
+      "ไอริน",
+      "ธารา",
+      "พิมพ์ดาว",
+      "ลลิน",
+      "ฟ้าคราม",
+      "คีรี",
+      "เรน"
+    ],
+    "en": [
+      "Aster",
+      "Rowan",
+      "Vale",
+      "Mira",
+      "Orin",
+      "Nova",
+      "Iris",
+      "Kael",
+      "Rin",
+      "Sable",
+      "Ember",
+      "Luma"
+    ]
+  },
+  "genders": [
+    {
+      "id": "female",
+      "nameKey": "creator.gender.female"
+    },
+    {
+      "id": "male",
+      "nameKey": "creator.gender.male"
+    }
+  ],
+  "hairStyles": [
+    {
+      "id": "crop",
+      "nameKey": "creator.hair.crop"
+    },
+    {
+      "id": "sweep",
+      "nameKey": "creator.hair.sweep"
+    },
+    {
+      "id": "bob",
+      "nameKey": "creator.hair.bob"
+    },
+    {
+      "id": "spike",
+      "nameKey": "creator.hair.spike"
+    },
+    {
+      "id": "long",
+      "nameKey": "creator.hair.long"
+    },
+    {
+      "id": "undercut",
+      "nameKey": "creator.hair.undercut"
+    }
+  ],
+  "hairColors": [
+    {
+      "id": "coal",
+      "hex": "#24272b",
+      "nameKey": "creator.color.coal"
+    },
+    {
+      "id": "brown",
+      "hex": "#654637",
+      "nameKey": "creator.color.brown"
+    },
+    {
+      "id": "sand",
+      "hex": "#c6a36c",
+      "nameKey": "creator.color.sand"
+    },
+    {
+      "id": "ash",
+      "hex": "#9a9892",
+      "nameKey": "creator.color.ash"
+    },
+    {
+      "id": "copper",
+      "hex": "#a65734",
+      "nameKey": "creator.color.copper"
+    },
+    {
+      "id": "moss",
+      "hex": "#516b4c",
+      "nameKey": "creator.color.moss"
+    },
+    {
+      "id": "blue",
+      "hex": "#46667d",
+      "nameKey": "creator.color.blue"
+    },
+    {
+      "id": "wine",
+      "hex": "#713f51",
+      "nameKey": "creator.color.wine"
+    }
+  ],
+  "skinColors": [
+    {
+      "id": "light",
+      "hex": "#f2c9a5",
+      "nameKey": "creator.skin.light"
+    },
+    {
+      "id": "warm",
+      "hex": "#d8a078",
+      "nameKey": "creator.skin.warm"
+    },
+    {
+      "id": "tan",
+      "hex": "#aa7358",
+      "nameKey": "creator.skin.tan"
+    },
+    {
+      "id": "deep",
+      "hex": "#704a3c",
+      "nameKey": "creator.skin.deep"
+    }
+  ],
+  "outfits": [
+    {
+      "id": "field",
+      "color": "#5b765f",
+      "accent": "#d1c188",
+      "nameKey": "creator.outfit.field"
+    },
+    {
+      "id": "scout",
+      "color": "#405c69",
+      "accent": "#c4d0c9",
+      "nameKey": "creator.outfit.scout"
+    },
+    {
+      "id": "salvage",
+      "color": "#755c47",
+      "accent": "#d8a85d",
+      "nameKey": "creator.outfit.salvage"
+    },
+    {
+      "id": "medic",
+      "color": "#6f716b",
+      "accent": "#bad6c4",
+      "nameKey": "creator.outfit.medic"
+    }
+  ],
+  "previewAnimations": [
+    "idle",
+    "walk",
+    "attack"
+  ],
+  "directions": [
+    "south",
+    "west",
+    "north",
+    "east"
+  ],
+  "slots": 3,
+  "freeRenames": 1
+}

@@ -1,13 +1,18 @@
 {
-  "name": "greenvale-rpgjs-v2-2",
-  "version": "0.2.2",
+  "name": "greenvale-afterfall",
+  "version": "0.6.0-phase3",
   "private": true,
   "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:phase0": "playwright test tests/phase0-boot.spec.ts",
+    "test:phase1": "playwright test tests/phase1-onboarding.spec.ts",
+    "test:qa": "playwright test tests/phase0-boot.spec.ts tests/phase1-onboarding.spec.ts tests/phase2-character.spec.ts tests/phase3-skills.spec.ts",
+    "test:phase2": "playwright test tests/phase2-character.spec.ts",
+    "test:phase3": "playwright test tests/phase3-skills.spec.ts"
   },
   "dependencies": {
     "@canvasengine/presets": "2.4.0",
@@ -19,12 +24,14 @@
     "@rpgjs/vite": "5.0.0",
     "@signe/di": "3.1.0",
     "canvasengine": "2.4.0",
-    "pixi.js": "^8.19.0"
+    "pixi.js": "8.19.0",
+    "@signe/sync": "3.1.1"
   },
   "devDependencies": {
     "@canvasengine/compiler": "2.4.0",
-    "vite": "^8.0.16",
-    "typescript": "^6.0.3"
+    "vite": "8.3.3",
+    "typescript": "6.0.3",
+    "@playwright/test": "1.55.0"
   },
   "engines": {
     "node": ">=22.0.0"

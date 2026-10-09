@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "camp_blade",
+      "nameKey": "item.camp_blade.name",
+      "descriptionKey": "item.camp_blade.description",
+      "type": "weapon",
+      "weaponType": "blade",
+      "rarity": "common",
+      "atk": 14,
+      "weight": 40,
+      "price": 20,
+      "icon": "placeholder_blade"
+    },
+    {
+      "id": "field_patch",
+      "nameKey": "item.field_patch.name",
+      "descriptionKey": "item.field_patch.description",
+      "type": "consumable",
+      "rarity": "common",
+      "healHp": 45,
+      "weight": 2,
+      "price": 18,
+      "icon": "placeholder_field_patch"
+    },
+    {
+      "id": "ashfang_fang",
+      "nameKey": "item.ashfang_fang.name",
+      "descriptionKey": "item.ashfang_fang.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 7,
+      "icon": "placeholder_fang"
+    },
+    {
+      "id": "memory_respec_chip",
+      "nameKey": "item.memory_respec_chip.name",
+      "descriptionKey": "item.memory_respec_chip.description",
+      "type": "consumable",
+      "rarity": "uncommon",
+      "skillReset": true,
+      "weight": 1,
+      "price": 0,
+      "icon": "placeholder_respec_chip"
+    }
+  ]
+}

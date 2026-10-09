@@ -1,8 +1,14 @@
 name: Greenvale Build Check
 
+concurrency:
+  group: greenvale-build-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills ]
+  pull_request:
+    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs ]
   workflow_dispatch:
 
 jobs:
@@ -32,9 +38,32 @@ jobs:
         run: |
           test -f dist/index.html
           echo "=== DIST INDEX ==="
-          cat dist/index.html
+          grep -E "Greenvale|assets/" dist/index.html | head -80
           echo "=== DIST FILES ==="
           find dist -maxdepth 2 -type f -printf "%p %s bytes\n" | sort
+
+      - name: Install WebKit for iPhone smoke test
+        run: pnpm exec playwright install --with-deps webkit
+
+      - name: Phase 0 boot regression
+        run: pnpm run test:phase0
+
+      - name: Phase 1 iPhone WebKit onboarding
+        run: pnpm run test:phase1
+
+      - name: Phase 2 iPhone WebKit character progression
+        run: pnpm run test:phase2
+
+      - name: Phase 3 iPhone WebKit skills
+        run: pnpm run test:phase3
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: greenvale-playwright-results
+          path: test-results
+          if-no-files-found: ignore
 
       - name: Upload dist
         uses: actions/upload-artifact@v4

@@ -9,5 +9,6 @@ export const CAMP_HITBOXES = [
   { id:"lake", x:70, y:85, width:390, height:255 },
   { id:"mara-house", x:510, y:190, width:280, height:170 },
   { id:"workshop", x:240, y:210, width:180, height:105 },
-  { id:"safehouse", x:1070, y:620, width:230, height:135 }
+  { id:"safehouse", x:1070, y:620, width:230, height:135 },
+  { id:"supply-hut", x:810, y:680, width:220, height:155 }
 ];
