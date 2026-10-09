@@ -150,5 +150,23 @@
     "undead",
     "human",
     "demon"
-  ]
+  ],
+  "expressions": {
+    "ATK": "STR + floor(DEX/5) + floor(LUK/5) + weaponATK",
+    "MATK": "INT*1.5 + floor(INT^2/100)",
+    "DEF": "VIT*0.8 + floor(STR/10) + armorDEF",
+    "MDEF": "INT*0.6 + VIT*0.4 + gearMDEF",
+    "HIT": "BaseLv + DEX",
+    "FLEE": "BaseLv + AGI",
+    "perfectDodge": "floor(LUK/10)",
+    "CRIT": "1 + floor(LUK/3)",
+    "critResist": "floor(LUK/5) + floor(VIT/10)",
+    "ASPD": "clamp(classBaseASPD + AGI*0.003 + DEX*0.001, 0.6, 2.5)",
+    "MaxHP": "(classBaseHP + classHPPerLevel*(BaseLv-1)) * (1 + VIT/100)",
+    "MaxSP": "(classBaseSP + classSPPerLevel*(BaseLv-1) + INT*3) * (1 + INT/200)",
+    "hpRegen": "1 + floor(VIT/5) + floor(MaxHP/200)",
+    "spRegen": "1 + floor(INT/6) + floor(MaxSP/120)",
+    "maxWeight": "2000 + STR*30 + VIT*10 + classWeightBonus + passiveWeightBonus",
+    "attackRange": "max(48, classAttackRange)"
+  }
 }
