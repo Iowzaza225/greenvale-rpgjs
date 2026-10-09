@@ -21,6 +21,9 @@ import {
 } from "@rpgjs/action-battle/server";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts";
 import skillsData from "./data/skills.json" with { type: "json" };
+import monstersData from "./data/monsters.json" with { type: "json" };
+import statusData from "./data/status_effects.json" with { type: "json" };
+import { combatConfig, resolveCombatHit, threatAfterDamage } from "./core/combat.ts";
 
 const TrainingBlade = {
   id: "training-blade",
@@ -153,8 +156,14 @@ type Profile = {
     MDEF?: number;
     MaxHP?: number;
     MaxSP?: number;
+    HIT?: number;
+    FLEE?: number;
+    perfectDodge?: number;
+    CRIT?: number;
+    critResistance?: number;
   };
   learnedSkills?: Record<string, number>;
+  combatSettings?: { autoAttack?: boolean; autoLoot?: boolean; respawnMode?: "save-point" | "item" };
   updatedAt?: number;
 };
 
@@ -192,6 +201,17 @@ const STARTER_WEAPONS: Record<string, any> = {
 
 let activePlayer: RpgPlayer | null = null;
 const activeEnemies = new Set<any>();
+const threatByEnemy = new WeakMap<any, Map<string, number>>();
+const playerStatusTokens = new Map<string, number>();
+let pendingWolfFangs = 0;
+let pendingCombatContext: null | {
+  skillId?: string;
+  source: "manual" | "auto" | "skill";
+  multiplier: number;
+  element: string;
+  magical: boolean;
+  profile: "melee" | "ranged" | "magic";
+} = null;
 
 function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
   const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
@@ -242,6 +262,116 @@ if (typeof window !== "undefined") {
 const skillCooldowns = new Map<string, number>();
 const activeSkillModifiers = new Map<string, { stat: string; amount: number; expiresAt: number; previous?: number }>();
 const activeToggles = new Set<string>();
+
+const wolfConfig: any = (monstersData.monsters as any[]).find((entry) => entry.id === "ashfang_wolf") || {};
+
+function dispatchCombatResult(detail: Record<string, any>) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("greenvale:combat-result", { detail }));
+}
+
+function playerCombatStats(profile = getProfile()) {
+  const d = profile.derived || {};
+  return {
+    ATK: Number(d.ATK) || Number(activePlayer?.param?.[ATK]) || 12,
+    MATK: Number(d.MATK) || Math.max(1, Math.round((Number(d.ATK) || 12) * .7)),
+    DEF: Number(d.DEF) || Number(activePlayer?.param?.[PDEF]) || 5,
+    MDEF: Number(d.MDEF) || 3,
+    HIT: Number(d.HIT) || 12,
+    FLEE: Number(d.FLEE) || 8,
+    perfectDodge: Number(d.perfectDodge) || 0,
+    CRIT: Number(d.CRIT) || 1,
+    critResistance: Number(d.critResistance) || 0,
+    blockChance: profile.classId === "vanguard" ? 10 : 0,
+  };
+}
+
+function wolfCombatStats() {
+  return {
+    ATK: Number(wolfConfig.atk) || 13,
+    MATK: Math.max(1, Math.round((Number(wolfConfig.atk) || 13) * .6)),
+    DEF: Number(wolfConfig.def) || 3,
+    MDEF: Number(wolfConfig.mdef) || 1,
+    HIT: Number(wolfConfig.hit) || 12,
+    FLEE: Number(wolfConfig.flee) || 8,
+    perfectDodge: Number(wolfConfig.perfectDodge) || 0,
+    CRIT: Number(wolfConfig.crit) || 3,
+    critResistance: Number(wolfConfig.critResistance) || 0,
+    blockChance: Number(wolfConfig.blockChance) || 0,
+  };
+}
+
+function applyPlayerStatus(statusId: string, durationOverride?: number) {
+  if (!activePlayer || typeof window === "undefined") return;
+  const definition: any = (statusData.statuses as any[]).find((entry) => entry.id === statusId);
+  if (!definition) return;
+  const duration = Math.max(100, Number(durationOverride ?? definition.durationMs) || 1000);
+  const token = (playerStatusTokens.get(statusId) || 0) + 1;
+  playerStatusTokens.set(statusId, token);
+  window.dispatchEvent(new CustomEvent("greenvale:status-add", { detail: { id: statusId, durationMs: duration } }));
+
+  const effect = definition.effect || {};
+  const tickMs = Math.max(250, Number(definition.tickMs) || 0);
+  if (tickMs > 0 && (effect.type === "dot-percent-maxhp" || effect.type === "dot-flat")) {
+    const ticks = Math.max(1, Math.floor(duration / tickMs));
+    for (let i = 1; i <= ticks; i++) {
+      window.setTimeout(() => {
+        if (!activePlayer || playerStatusTokens.get(statusId) !== token || Number(activePlayer.hp) <= 0) return;
+        const maxHp = Number(activePlayer.param[MAXHP]) || 1;
+        const damage = effect.type === "dot-percent-maxhp"
+          ? Math.max(1, Math.round(maxHp * Number(effect.value || 1) / 100))
+          : Math.max(1, Number(effect.value) || 1);
+        activePlayer.hp = Math.max(0, Number(activePlayer.hp) - damage);
+        dispatchCombatResult({ type: "player-hit", damage, statusId });
+      }, i * tickMs);
+    }
+  }
+  window.setTimeout(() => {
+    if (playerStatusTokens.get(statusId) !== token) return;
+    playerStatusTokens.delete(statusId);
+    window.dispatchEvent(new CustomEvent("greenvale:status-remove", { detail: { id: statusId } }));
+  }, duration);
+}
+
+function addThreat(target: any, damage: number) {
+  if (!activePlayer || !target) return 0;
+  const key = String((activePlayer as any).id || getProfile().name || "local-player");
+  let table = threatByEnemy.get(target);
+  if (!table) { table = new Map(); threatByEnemy.set(target, table); }
+  const next = threatAfterDamage(table.get(key) || 0, damage, Number(wolfConfig.threatMultiplier) || 1);
+  table.set(key, next);
+  if (typeof target.setVariable === "function") target.setVariable("greenvale.threat.top", next);
+  return next;
+}
+
+function runPlayerAttack(target: any, context: NonNullable<typeof pendingCombatContext>) {
+  if (!activePlayer || !target?.battleAi?.takeDamage) return false;
+  pendingCombatContext = context;
+  try {
+    target.battleAi.takeDamage(activePlayer);
+    return true;
+  } finally {
+    pendingCombatContext = null;
+  }
+}
+
+function respawnPlayer(mode: "save-point" | "item") {
+  if (!activePlayer) return;
+  const player = activePlayer;
+  const maxHp = Math.max(1, Number(player.param[MAXHP]) || 120);
+  const maxSp = Math.max(1, Number(player.param[MAXSP]) || 50);
+  player.hp = mode === "item" ? Math.max(1, Math.ceil(maxHp * .5)) : maxHp;
+  player.sp = mode === "item" ? Math.ceil(maxSp * .5) : maxSp;
+  if (mode === "save-point") player.teleport({ x: 760, y: 720 });
+  player.setVariable("greenvale.dead", false);
+  player.setVariable("greenvale.respawning", false);
+  player.setVariable("greenvale.invulnerableUntil", Date.now() + Number(combatConfig().respawnInvulnerabilityMs || 3000));
+  applyPlayerStatus("revive_guard", Number(combatConfig().respawnInvulnerabilityMs || 3000));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("greenvale:respawned", { detail: { mode } }));
+    dispatchSkillState();
+  }
+}
 
 function skillArrayValue(values: readonly number[] | undefined, level: number): number {
   if (!Array.isArray(values) || values.length === 0) return 0;
@@ -341,6 +471,7 @@ function applySelfModifier(skill: any, level: number): boolean {
 
   activeSkillModifiers.set(skill.id, { stat, amount, expiresAt: duration ? Date.now() + duration : Number.MAX_SAFE_INTEGER, previous });
   if (skill.type === "toggle") activeToggles.add(skill.id);
+  if (stat === "PDEF") applyPlayerStatus("guard", duration || 60000);
   if (duration > 0) window.setTimeout(() => restoreModifier(skill.id), duration);
   return true;
 }
@@ -435,28 +566,24 @@ function executeGreenvaleSkill(detail: any) {
     const shape = String(skill.area?.shape || "single");
     const limit = shape === "single" ? 1 : shape === "chain" ? 3 : 6;
     const selected = targets.slice(0, limit);
-    const profilePower = skill.formula === "magical_basic"
-      ? Number(profile.derived?.MATK) || Number(profile.derived?.ATK) || Number(activePlayer.param[ATK]) || 10
-      : Number(activePlayer.param[ATK]) || Number(profile.derived?.ATK) || 10;
     const percent = skillArrayValue(skill.powerPercent, level);
-    const originalAtk = Number(activePlayer.param[ATK]) || 1;
-    const scaledAtk = Math.max(1, Math.round(profilePower * Math.max(0, percent) / 100));
 
     for (const target of selected) {
       targetName ||= String(target.name || "Target");
       if (percent > 0) {
         const before = entityNumber(target, "hp");
-        activePlayer.param[ATK] = scaledAtk;
-        if (target.battleAi?.takeDamage) {
-          target.battleAi.takeDamage(activePlayer);
-        } else {
-          target.hp = Math.max(0, before - Math.max(1, scaledAtk));
-        }
+        runPlayerAttack(target, {
+          skillId,
+          source: "skill",
+          multiplier: Math.max(0, percent) / 100,
+          element: String(skill.element || "neutral"),
+          magical: skill.formula === "magical_basic",
+          profile: skill.formula === "magical_basic" ? "magic" : (Number(skill.range) >= 140 ? "ranged" : "melee"),
+        });
         damageTotal += Math.max(0, before - entityNumber(target, "hp"));
       }
       applyStatus(target, skill, level);
     }
-    activePlayer.param[ATK] = originalAtk;
   }
 
   activePlayer.sp = Math.max(0, Number(activePlayer.sp) - spCost);
@@ -479,6 +606,21 @@ if (typeof window !== "undefined") {
     executeGreenvaleSkill((event as CustomEvent).detail || {});
   });
   window.addEventListener("greenvale:skill-state-request", () => dispatchSkillState());
+  window.addEventListener("greenvale:auto-attack", () => {
+    if (!activePlayer || activePlayer.getVariable("greenvale.dead")) return;
+    const target = enemyEvents(activePlayer, Number(combatConfig().autoAttackRange || 82))[0];
+    if (!target) return;
+    runPlayerAttack(target, { source: "auto", multiplier: 1, element: "neutral", magical: false, profile: "melee" });
+  });
+  window.addEventListener("greenvale:loot-pickup", () => {
+    if (!activePlayer || pendingWolfFangs <= 0) return;
+    activePlayer.addItem(WolfFang, pendingWolfFangs);
+    pendingWolfFangs = 0;
+  });
+  window.addEventListener("greenvale:respawn", (event) => {
+    const mode = (event as CustomEvent).detail?.mode === "item" ? "item" : "save-point";
+    respawnPlayer(mode);
+  });
 }
 
 function getProfile(): Profile {
@@ -497,6 +639,11 @@ function getProfile(): Profile {
       jobLevel: Math.max(1, Number(data.jobLevel) || 1),
       derived: data.derived && typeof data.derived === "object" ? data.derived : undefined,
       learnedSkills: data.learnedSkills && typeof data.learnedSkills === "object" ? data.learnedSkills : {},
+      combatSettings: {
+        autoAttack: data.combatSettings?.autoAttack === true,
+        autoLoot: data.combatSettings?.autoLoot !== false,
+        respawnMode: data.combatSettings?.respawnMode === "item" ? "item" : "save-point",
+      },
     };
   } catch {
     return fallback;
@@ -534,7 +681,13 @@ function onWolfDefeated(attacker?: any) {
   if (attacker.getVariable("greenvale.quest.main") !== "first-hunt") return;
   const next = Math.min(3, Number(attacker.getVariable("greenvale.quest.kills") || 0) + 1);
   attacker.setVariable("greenvale.quest.kills", next);
-  attacker.addItem(WolfFang, 1);
+  const profile = getProfile();
+  const autoLoot = profile.combatSettings?.autoLoot !== false;
+  if (autoLoot) attacker.addItem(WolfFang, 1);
+  else pendingWolfFangs += 1;
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("greenvale:loot-drop", { detail: { id: "wolf-fang", count: 1, auto: autoLoot } }));
+  }
   const done = next >= 3;
   if (done) {
     attacker.setVariable("greenvale.quest.main", "first-hunt-complete");
@@ -669,22 +822,17 @@ const player = {
   },
 
   onDead(player: RpgPlayer) {
-    // RPGJS v5 HP setter calls onDead BEFORE writing hpSignal=0.
-    // Healing synchronously here is overwritten by that final zero write.
-    if (player.getVariable("greenvale.respawning")) return;
+    if (player.getVariable("greenvale.dead")) return;
+    player.setVariable("greenvale.dead", true);
     player.setVariable("greenvale.respawning", true);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("greenvale:death", { detail: { source: "combat" } }));
+    }
+    // Safety fallback: never leave a mobile session permanently stuck if the UI
+    // is interrupted by Safari. Manual choice remains available for 30 seconds.
     setTimeout(() => {
-      try {
-        const maxHp = Number(player.param[MAXHP]);
-        const maxSp = Number(player.param[MAXSP]);
-        player.hp = Number.isFinite(maxHp) && maxHp > 0 ? maxHp : 165;
-        player.sp = Number.isFinite(maxSp) && maxSp > 0 ? maxSp : 85;
-        player.teleport({ x: 760, y: 720 });
-        void player.showText("คุณหมดสติและถูกพากลับ Greenvale Camp");
-      } finally {
-        player.setVariable("greenvale.respawning", false);
-      }
-    }, 0);
+      if (player.getVariable("greenvale.dead")) respawnPlayer("save-point");
+    }, 30000);
   },
 };
 
