@@ -29,6 +29,10 @@ export default {
     provideClientGlobalConfig(),
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
+      // Greenvale renders one authoritative floating number from combat-system.ts.
+      // Disable Action Battle's built-in damage number component to avoid duplicate
+      // sprite-attached "-0" / "-damage" labels on iPhone.
+      feedback: { damageNumbers: false },
       // LPC preset provides attack2 (7-frame slash) and attack3 (6-frame heavy swing).
       animations: { attack: { animationName: "attack2", repeat: 1 } },
       ui: createActionBattleUi({
