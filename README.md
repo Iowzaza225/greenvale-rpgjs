@@ -235,3 +235,26 @@ No TypeScript edit is required for a normal damage/heal/buff/debuff/toggle/passi
 Save schema version 4 stores learned levels, 10 hotbar slots, auto-battle settings and the reset-item count. Old Phase 1/2/3 saves migrate automatically. The mobile hotbar is separate from RPGJS synchronized built-in skill state so iPhone Safari does not reintroduce the earlier async hydration failure.
 
 See `docs/PHASE_3_QA.md`.
+
+
+## Phase 4 combat
+
+Combat rules are centralized in `src/core/combat.ts` and balanced from `src/data/formulas.json`.
+
+Supported combat outcomes:
+
+- physical and magical formula paths
+- Neutral, Fire, Water, Wind, Earth, Light, Dark
+- Small / Medium / Large size multipliers
+- Beast / Plant / Undead / Human / Demon race modifiers
+- Miss, Perfect Dodge, Critical, Block
+- PvP configuration locked off
+- threat accumulation per enemy
+- death EXP penalty, save-point/item revive, 3-second revive invulnerability
+- Auto Attack and Auto Loot preferences
+
+`status_effects.json` contains Poison, Bleed, Stun, Slow, Freeze, Sleep, Silence, Blind and Confusion plus combat buffs. New status content should be added there, translated in both i18n files, and referenced by skill/monster config instead of hard-coded UI strings.
+
+The current standalone server bridges RPGJS hits through the shared combat resolver, so Phase 3 skills and normal attacks use the same damage outcome path.
+
+See `docs/PHASE_4_QA.md`.
