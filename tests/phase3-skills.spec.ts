@@ -53,9 +53,11 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
 
   // Auto-battle controls persist.
   await page.locator("[data-skill-tab='auto']").click();
-  await page.locator("[data-auto-enabled]").check();
-  await page.locator("[data-auto-hp]").fill("45");
-  await page.locator("[data-auto-hp]").dispatchEvent("change");
+  await page.locator(".gv3-switch").click();
+  await page.locator("[data-auto-hp]").evaluate((element: HTMLInputElement) => {
+    element.value = "45";
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+  });
   await expect.poll(async () => page.evaluate(() => {
     const save = JSON.parse(localStorage.getItem("greenvale.save") || "null");
     const char = save.characters.find((entry: any) => entry?.id === save.selectedCharacterId);
@@ -63,7 +65,7 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
   })).toEqual({ enabled: true, hp: 45 });
 
   // Turn auto back off so it cannot race the manual combat assertion.
-  await page.locator("[data-auto-enabled]").uncheck();
+  await page.locator(".gv3-switch").click();
   await page.locator("[data-skill-close]").click();
   await page.locator("#gv-resume").click();
 
