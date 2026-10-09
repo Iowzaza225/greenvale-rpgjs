@@ -20,6 +20,10 @@ import {
   useAttack,
 } from "@rpgjs/action-battle/server";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts";
+import classesData from "./data/classes.json";
+import itemsData from "./data/items.json";
+import monstersData from "./data/monsters.json";
+import { calculateDerivedStats, defaultStats, getClassConfig, getStarterWeaponId } from "./core/progression.ts";
 
 const TrainingBlade = {
   id: "training-blade",
@@ -143,45 +147,128 @@ type Profile = {
   started: boolean;
   kills: number;
   completed: boolean;
+  baseLevel: number;
+  baseExp: number;
+  jobLevel: number;
+  jobExp: number;
+  stats: Record<"STR"|"AGI"|"VIT"|"INT"|"DEX"|"LUK", number>;
+  statPoints: number;
+  skillPoints: number;
+  equipment: { weaponId: string; armorDef: number; gearMdef: number };
+  costumeId: string;
   updatedAt?: number;
 };
 
-const CLASS_STATS: Record<string, { hp: number; sp: number; atk: number; pdef: number; speed: number }> = {
-  novice:     { hp: 120, sp: 50,  atk: 12, pdef: 5,  speed: 3.1 },
-  scavenger:  { hp: 165, sp: 85,  atk: 14, pdef: 6,  speed: 3.1 },
-  hunter:     { hp: 150, sp: 80,  atk: 18, pdef: 5,  speed: 3.7 },
-  medic:      { hp: 145, sp: 125, atk: 12, pdef: 6,  speed: 3.0 },
-  guardian:   { hp: 220, sp: 65,  atk: 15, pdef: 12, speed: 2.8 },
-  beastmaster:{ hp: 185, sp: 95,  atk: 15, pdef: 7,  speed: 3.35 },
-  engineer:   { hp: 165, sp: 110, atk: 15, pdef: 8,  speed: 3.15 },
-};
+const KNOWN_CLASSES = new Set((classesData.classes as any[]).map((entry) => String(entry.id)));
+const CONFIGURED_WEAPONS: Record<string, any> = {};
+for (const item of itemsData.items as any[]) {
+  if (item.type !== "weapon") continue;
+  CONFIGURED_WEAPONS[item.id] = {
+    id: item.id,
+    name: item.nameKey || item.id,
+    description: item.descriptionKey || "",
+    atk: Number(item.atk) || 1,
+    knockbackForce: 34,
+    _type: "weapon" as const,
+  };
+}
 
-const STARTER_WEAPONS: Record<string, any> = {
-  novice: TrainingBlade,
-  scavenger: TrainingBlade,
-  hunter: HunterKnife,
-  medic: MedicBlade,
-  guardian: GuardianSword,
-  beastmaster: BeastSpear,
-  engineer: EngineerCutter,
-};
+const ASHFANG = ((monstersData.monsters as any[]).find((entry) => entry.id === "ashfang_wolf") || {
+  baseExp: 18,
+  jobExp: 8,
+});
+
+function normalizedClassId(value: unknown): string {
+  const id = String(value || "novice");
+  return KNOWN_CLASSES.has(id) ? id : "novice";
+}
+
+function fallbackProfile(): Profile {
+  return {
+    name: "Survivor",
+    classId: "novice",
+    started: true,
+    kills: 0,
+    completed: false,
+    baseLevel: 1,
+    baseExp: 0,
+    jobLevel: 1,
+    jobExp: 0,
+    stats: defaultStats(),
+    statPoints: 0,
+    skillPoints: 0,
+    equipment: { weaponId: getStarterWeaponId("novice"), armorDef: 0, gearMdef: 0 },
+    costumeId: "none",
+  };
+}
 
 function getProfile(): Profile {
-  const fallback: Profile = { name: "Survivor", classId: "novice", started: true, kills: 0, completed: false };
+  const fallback = fallbackProfile();
   try {
     if (typeof localStorage === "undefined") return fallback;
     const data = JSON.parse(localStorage.getItem("greenvale.profile.v1") || "null");
     if (!data || typeof data !== "object") return fallback;
+    const classId = normalizedClassId(data.classId);
+    const rawStats = data.stats && typeof data.stats === "object" ? data.stats : {};
+    const stats = {
+      STR: Math.min(99, Math.max(1, Math.floor(Number(rawStats.STR) || 1))),
+      AGI: Math.min(99, Math.max(1, Math.floor(Number(rawStats.AGI) || 1))),
+      VIT: Math.min(99, Math.max(1, Math.floor(Number(rawStats.VIT) || 1))),
+      INT: Math.min(99, Math.max(1, Math.floor(Number(rawStats.INT) || 1))),
+      DEX: Math.min(99, Math.max(1, Math.floor(Number(rawStats.DEX) || 1))),
+      LUK: Math.min(99, Math.max(1, Math.floor(Number(rawStats.LUK) || 1))),
+    };
     return {
       ...fallback,
       name: String(data.name || fallback.name).slice(0, 18),
-      classId: CLASS_STATS[data.classId] ? data.classId : "novice",
+      classId,
       kills: Math.min(3, Math.max(0, Number(data.kills) || 0)),
       completed: data.completed === true,
+      baseLevel: Math.min(99, Math.max(1, Math.floor(Number(data.baseLevel) || 1))),
+      baseExp: Math.max(0, Math.floor(Number(data.baseExp) || 0)),
+      jobLevel: Math.max(1, Math.floor(Number(data.jobLevel) || 1)),
+      jobExp: Math.max(0, Math.floor(Number(data.jobExp) || 0)),
+      stats,
+      statPoints: Math.max(0, Math.floor(Number(data.statPoints) || 0)),
+      skillPoints: Math.max(0, Math.floor(Number(data.skillPoints) || 0)),
+      equipment: {
+        weaponId: String(data.equipment?.weaponId || getStarterWeaponId(classId)),
+        armorDef: Math.max(0, Number(data.equipment?.armorDef) || 0),
+        gearMdef: Math.max(0, Number(data.equipment?.gearMdef) || 0),
+      },
+      costumeId: String(data.costumeId || "none"),
     };
   } catch {
     return fallback;
   }
+}
+
+function applyProfileStats(player: RpgPlayer, fullHeal: boolean) {
+  const profile = getProfile();
+  const derived = calculateDerivedStats(profile);
+  const oldMaxHp = Math.max(1, Number(player.param?.[MAXHP]) || derived.MaxHP);
+  const oldMaxSp = Math.max(1, Number(player.param?.[MAXSP]) || derived.MaxSP);
+  const hpRatio = fullHeal ? 1 : Math.max(0, Math.min(1, Number(player.hp || 0) / oldMaxHp));
+  const spRatio = fullHeal ? 1 : Math.max(0, Math.min(1, Number(player.sp || 0) / oldMaxSp));
+
+  player.name = profile.name;
+  player.param[MAXHP] = derived.MaxHP;
+  player.param[MAXSP] = derived.MaxSP;
+  player.param[ATK] = derived.ATK;
+  player.param[PDEF] = derived.DEF;
+  player.hp = Math.max(1, Math.round(derived.MaxHP * hpRatio));
+  player.sp = Math.max(0, Math.round(derived.MaxSP * spRatio));
+  player.speed = 3.05 + Math.min(1.1, (profile.stats.AGI - 1) * 0.012);
+  player.setVariable("greenvale.class.id", profile.classId);
+  player.setVariable("greenvale.base.level", profile.baseLevel);
+  player.setVariable("greenvale.job.level", profile.jobLevel);
+  player.setVariable("greenvale.stat.STR", profile.stats.STR);
+  player.setVariable("greenvale.stat.AGI", profile.stats.AGI);
+  player.setVariable("greenvale.stat.VIT", profile.stats.VIT);
+  player.setVariable("greenvale.stat.INT", profile.stats.INT);
+  player.setVariable("greenvale.stat.DEX", profile.stats.DEX);
+  player.setVariable("greenvale.stat.LUK", profile.stats.LUK);
+  return { profile, derived };
 }
 
 function saveQuestProgress(kills: number, completed: boolean) {
@@ -260,6 +347,11 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         onDefeated: ({ attacker, reward }: any) => {
           if (attacker && typeof attacker.getVariable === "function") {
             reward.giveTo(attacker);
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("greenvale:experience", {
+                detail: { baseExp: Number(ASHFANG.baseExp) || 18, jobExp: Number(ASHFANG.jobExp) || 8 },
+              }));
+            }
             onWolfDefeated(attacker);
           }
         },
@@ -300,23 +392,15 @@ const Mara: EventDefinition = {
 const player = {
   async onConnected(player: RpgPlayer) {
     const profile = getProfile();
-    const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
-    player.name = profile.name;
     player.setGraphic("hero");
     player.initializeDefaultStats();
-    player.param[MAXHP] = stats.hp;
-    player.param[MAXSP] = stats.sp;
-    player.param[ATK] = stats.atk;
-    player.param[PDEF] = stats.pdef;
-    player.hp = stats.hp;
-    player.sp = stats.sp;
-    player.speed = stats.speed;
-    player.setVariable("greenvale.class.id", profile.classId);
+    applyProfileStats(player, true);
     player.setVariable("greenvale.quest.kills", profile.kills);
     player.setVariable("greenvale.quest.main", profile.completed ? "first-hunt-complete" : "first-hunt");
     player.setHitbox(30, 38);
 
-    const starterWeapon = STARTER_WEAPONS[profile.classId] || TrainingBlade;
+    const starterWeaponId = profile.equipment.weaponId || getStarterWeaponId(profile.classId);
+    const starterWeapon = CONFIGURED_WEAPONS[starterWeaponId] || CONFIGURED_WEAPONS[getStarterWeaponId("novice")] || TrainingBlade;
     player.addItem(starterWeapon, 1);
     player.equip(starterWeapon.id);
 
@@ -326,6 +410,18 @@ const player = {
     player.setComponentsTop(Components.hpBar({ width: 64, height: 5, fontSize: 10, fillColor: "#51c77b", bgColor: "#18251c", borderColor: "#e8edda" }, "{name}  {$current}/{$max}"), { width: 86, marginBottom: 10 });
 
     await player.changeMap(CAMP_MAP_ID, { x: 760, y: 720 });
+
+    if (typeof window !== "undefined") {
+      const livePlayer = player;
+      window.addEventListener("greenvale:profile-updated", () => {
+        try {
+          applyProfileStats(livePlayer, false);
+        } catch (error) {
+          console.warn("[Greenvale] Could not apply live profile update", error);
+        }
+      });
+    }
+
     // Phase 0 stability gate: skill/hotbar definitions remain registered, but we
     // do not mutate the synchronized skill state while Safari is hydrating the
     // initial player/map snapshot. Skill assignment returns in Phase 3.
@@ -428,6 +524,7 @@ export default createServer({
     provideServerModules([
       {
         database: async () => ({
+          ...CONFIGURED_WEAPONS,
           [TrainingBlade.id]: TrainingBlade,
           [HunterKnife.id]: HunterKnife,
           [MedicBlade.id]: MedicBlade,
