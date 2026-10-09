@@ -11,6 +11,7 @@ import {
   STAT_KEYS,
   type StatKey,
 } from "../core/character";
+import { applySkillPassives } from "../core/skills";
 import { isDebugMode } from "../core/build-info";
 import { gameEvents } from "../core/event-bus";
 import { t } from "../core/i18n";
@@ -81,7 +82,10 @@ function expBar(label: string, current: number, required: number, percent: numbe
 function renderStats(): string {
   const character = getSelectedCharacter();
   if (!character) return "";
-  const derived = calculateDerivedStats(character.classId, character);
+  const derived = applySkillPassives(
+    calculateDerivedStats(character.classId, character),
+    character.learnedSkills,
+  );
   const maxStat = Number(classesData.maxStat) || 99;
 
   const primary = STAT_KEYS.map((key) => {
