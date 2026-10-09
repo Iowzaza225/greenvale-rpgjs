@@ -409,13 +409,6 @@ const player = {
     player.setVariable("greenvale.quest.main", profile.completed ? "first-hunt-complete" : "first-hunt");
     player.setHitbox(30, 38);
 
-    const starterWeaponId = profile.equipment.weaponId || getStarterWeaponId(profile.classId);
-    const starterWeapon = CONFIGURED_WEAPONS[starterWeaponId] || CONFIGURED_WEAPONS[getStarterWeaponId("novice")] || TrainingBlade;
-    player.addItem(starterWeapon, 1);
-    player.equip(starterWeapon.id);
-
-
-
     // Render a single lightweight label rather than a compound UI layout.
     player.setComponentsTop(Components.hpBar({ width: 64, height: 5, fontSize: 10, fillColor: "#51c77b", bgColor: "#18251c", borderColor: "#e8edda" }, "{name}  {$current}/{$max}"), { width: 86, marginBottom: 10 });
 
@@ -460,8 +453,9 @@ const player = {
       try {
         const maxHp = Number(player.param[MAXHP]);
         const maxSp = Number(player.param[MAXSP]);
-        player.hp = Number.isFinite(maxHp) && maxHp > 0 ? maxHp : 165;
-        player.sp = Number.isFinite(maxSp) && maxSp > 0 ? maxSp : 85;
+        const fallback = calculateDerivedStats(getProfile());
+        player.hp = Number.isFinite(maxHp) && maxHp > 0 ? maxHp : fallback.MaxHP;
+        player.sp = Number.isFinite(maxSp) && maxSp > 0 ? maxSp : fallback.MaxSP;
         player.teleport({ x: 760, y: 720 });
         void player.showText("คุณหมดสติและถูกพากลับ Greenvale Camp");
       } finally {
