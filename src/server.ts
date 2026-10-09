@@ -229,7 +229,9 @@ if (typeof window !== "undefined") {
       if ((activePlayer.getItem(starterWeapon.id)?.quantity() ?? 0) < 1) {
         activePlayer.addItem(starterWeapon, 1);
       }
-      activePlayer.equip(starterWeapon.id);
+      const equipped = (activePlayer as any).getEquippedWeapon?.();
+      const equippedId = typeof equipped?.id === "function" ? equipped.id() : equipped?.id;
+      if (equippedId !== starterWeapon.id) activePlayer.equip(starterWeapon.id);
     } catch (error) {
       console.warn("[Greenvale] Runtime character refresh failed", error);
     }
