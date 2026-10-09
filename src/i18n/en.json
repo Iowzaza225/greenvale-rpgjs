@@ -229,5 +229,15 @@
   "costume.none": "Default job outfit",
   "costume.greenvale_scout": "Greenvale Scout",
   "costume.ash_wanderer": "Ash Wanderer",
-  "costume.signal_runner": "Signal Runner"
+  "costume.signal_runner": "Signal Runner",
+  "character.animationDemo": "Character animation preview",
+  "anim.idle": "Idle",
+  "anim.walk": "Walk",
+  "anim.run": "Run",
+  "anim.attack": "Attack",
+  "anim.skill": "Skill",
+  "anim.hit": "Hit",
+  "anim.death": "Death",
+  "anim.rest": "Rest",
+  "anim.emote": "Cheer"
 }
