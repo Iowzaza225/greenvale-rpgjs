@@ -69,10 +69,16 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
   await page.locator("[data-skill-close]").click();
   await page.locator("#gv-resume").click();
 
-  // Ranger starts close enough to the training wolf for Piercing Shot (range 300).
-  await page.locator("[data-hotbar-slot='3']").click();
-  await expect.poll(async () => page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult?.skillId || "")).toBe("piercing_shot");
-  const castResult = await page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult);
+  // Phase 4 introduces real MISS / Perfect Dodge. Retry a few casts so this
+  // regression validates skill execution without becoming probabilistically flaky.
+  let castResult: any = null;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    await page.locator("[data-hotbar-slot='3']").click();
+    await expect.poll(async () => page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult?.skillId || "")).toBe("piercing_shot");
+    castResult = await page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult);
+    if (castResult?.ok && Number(castResult.damage) > 0) break;
+    await page.waitForTimeout(950);
+  }
   console.log("PHASE3_CAST_RESULT", JSON.stringify(castResult));
   expect(castResult.ok).toBe(true);
   expect(castResult.damage).toBeGreaterThan(0);
