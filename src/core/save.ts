@@ -1,8 +1,20 @@
 import creation from "../data/character_creation.json";
+import classesData from "../data/classes.json";
 import { gameEvents } from "./event-bus";
+import {
+  applyExperience,
+  calculateDerivedStats,
+  changeJob,
+  createInitialProgression,
+  normalizeProgression,
+  spendStatPoint,
+  type BaseStats,
+  type CharacterProgression,
+  type StatKey,
+} from "./character";
 
 export const SAVE_KEY = "greenvale.save";
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 const LEGACY_PROFILE_KEY = "greenvale.profile.v1";
 
 export type GenderId = "female" | "male";
@@ -27,10 +39,16 @@ export type CharacterSave = {
   id: string;
   slot: number;
   name: string;
-  classId: "novice";
+  classId: string;
   baseLevel: number;
+  baseExp: number;
   jobLevel: number;
+  jobExp: number;
+  statPoints: number;
+  skillPoints: number;
+  stats: BaseStats;
   appearance: CharacterAppearance;
+  costumeId: string;
   renameCredits: number;
   cutsceneSeen: boolean;
   tutorial: TutorialState;
@@ -55,6 +73,8 @@ export type GreenvaleSave = {
 };
 
 const slotCount = Number(creation.slots) || 3;
+const validClassIds = new Set(classesData.classes.map((entry) => entry.id));
+const validCostumeIds = new Set(classesData.costumes.map((entry) => entry.id));
 
 function now(): number {
   return Date.now();
@@ -91,22 +111,52 @@ function safeParse(value: string | null): any {
   }
 }
 
+function progressionFromRaw(raw: any): CharacterProgression {
+  const normalized = normalizeProgression({
+    baseLevel: raw?.baseLevel,
+    baseExp: raw?.baseExp,
+    jobLevel: raw?.jobLevel,
+    jobExp: raw?.jobExp,
+    statPoints: raw?.statPoints,
+    skillPoints: raw?.skillPoints,
+    stats: raw?.stats,
+  });
+
+  // Version 2 had levels but no spendable progression pools. Give migrated
+  // characters the points they would have earned so old saves are not penalized.
+  if (raw && raw.stats == null && raw.statPoints == null && raw.skillPoints == null) {
+    normalized.statPoints = Math.max(0, normalized.baseLevel - 1) * 3;
+    normalized.skillPoints = Math.max(0, normalized.jobLevel - 1);
+  }
+  return normalized;
+}
+
 function normalizeCharacter(raw: any, slot: number): CharacterSave | null {
   if (!raw || typeof raw !== "object") return null;
   const name = String(raw.name || "").trim();
   if (!name) return null;
   const time = now();
+  const progression = progressionFromRaw(raw);
+  const classId = validClassIds.has(String(raw.classId)) ? String(raw.classId) : "novice";
+  const costumeId = validCostumeIds.has(String(raw.costumeId)) ? String(raw.costumeId) : "none";
+
   return {
     id: String(raw.id || `local-${slot}-${raw.createdAt || time}`),
     slot,
     name: name.slice(0, Number(creation.nameRules.maxLength) || 12),
-    classId: "novice",
-    baseLevel: Math.max(1, Number(raw.baseLevel) || 1),
-    jobLevel: Math.max(1, Number(raw.jobLevel) || 1),
+    classId,
+    baseLevel: progression.baseLevel,
+    baseExp: progression.baseExp,
+    jobLevel: progression.jobLevel,
+    jobExp: progression.jobExp,
+    statPoints: progression.statPoints,
+    skillPoints: progression.skillPoints,
+    stats: progression.stats,
     appearance: {
       ...defaultAppearance(),
       ...(raw.appearance && typeof raw.appearance === "object" ? raw.appearance : {}),
     },
+    costumeId,
     renameCredits: Math.max(0, Number(raw.renameCredits ?? creation.freeRenames) || 0),
     cutsceneSeen: raw.cutsceneSeen === true,
     tutorial: {
@@ -129,14 +179,21 @@ function migrateLegacy(): GreenvaleSave {
   if (!legacy?.name || legacy.started !== true) return save;
 
   const time = now();
+  const progression = createInitialProgression();
   const character: CharacterSave = {
     id: `legacy-${time}`,
     slot: 0,
     name: String(legacy.name).trim().slice(0, Number(creation.nameRules.maxLength) || 12) || "Survivor",
-    classId: "novice",
-    baseLevel: 1,
-    jobLevel: 1,
+    classId: validClassIds.has(String(legacy.classId)) ? String(legacy.classId) : "novice",
+    baseLevel: progression.baseLevel,
+    baseExp: progression.baseExp,
+    jobLevel: progression.jobLevel,
+    jobExp: progression.jobExp,
+    statPoints: progression.statPoints,
+    skillPoints: progression.skillPoints,
+    stats: progression.stats,
     appearance: defaultAppearance(),
+    costumeId: "none",
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: true,
     tutorial: { step: 4, completed: true, trainingPotionUsed: true },
@@ -175,6 +232,20 @@ function normalizeSave(raw: any): GreenvaleSave {
   };
 }
 
+function progressionOf(character: CharacterSave): CharacterProgression {
+  return normalizeProgression(character);
+}
+
+function applyProgression(character: CharacterSave, next: CharacterProgression): void {
+  character.baseLevel = next.baseLevel;
+  character.baseExp = next.baseExp;
+  character.jobLevel = next.jobLevel;
+  character.jobExp = next.jobExp;
+  character.statPoints = next.statPoints;
+  character.skillPoints = next.skillPoints;
+  character.stats = next.stats;
+}
+
 export function loadSave(): GreenvaleSave {
   const parsed = safeParse(localStorage.getItem(SAVE_KEY));
   const save = normalizeSave(parsed);
@@ -198,10 +269,7 @@ export function listCharacters(): Array<CharacterSave | null> {
 
 export function getSelectedCharacter(): CharacterSave | null {
   const save = loadSave();
-  return (
-    save.characters.find((char) => char?.id === save.selectedCharacterId) ??
-    null
-  );
+  return save.characters.find((char) => char?.id === save.selectedCharacterId) ?? null;
 }
 
 export function findCharacter(id: string): CharacterSave | null {
@@ -227,14 +295,21 @@ export function createCharacter(
   if (slot < 0 || slot >= slotCount) throw new Error("Invalid character slot");
   if (save.characters[slot]) throw new Error("Character slot is already occupied");
   const time = now();
+  const progression = createInitialProgression();
   const character: CharacterSave = {
     id: `guest-${time.toString(36)}-${slot}`,
     slot,
     name: name.trim(),
     classId: "novice",
-    baseLevel: 1,
-    jobLevel: 1,
+    baseLevel: progression.baseLevel,
+    baseExp: progression.baseExp,
+    jobLevel: progression.jobLevel,
+    jobExp: progression.jobExp,
+    statPoints: progression.statPoints,
+    skillPoints: progression.skillPoints,
+    stats: progression.stats,
     appearance: { ...appearance },
+    costumeId: "none",
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: false,
     tutorial: { step: 0, completed: false, trainingPotionUsed: false },
@@ -294,16 +369,94 @@ export function deleteCharacter(id: string): void {
   writeSave(save);
 }
 
+export function gainSelectedExperience(baseExp: number, jobExp: number, source = "unknown"): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  let summary = { baseLevelsGained: 0, jobLevelsGained: 0 };
+  const updated = updateCharacter(selected.id, (character) => {
+    const result = applyExperience(progressionOf(character), baseExp, jobExp);
+    applyProgression(character, result.progression);
+    summary = {
+      baseLevelsGained: result.baseLevelsGained,
+      jobLevelsGained: result.jobLevelsGained,
+    };
+    return character;
+  });
+  gameEvents.emit("character:exp", {
+    characterId: updated.id,
+    source,
+    baseExp,
+    jobExp,
+    ...summary,
+    baseLevel: updated.baseLevel,
+    jobLevel: updated.jobLevel,
+  });
+  return updated;
+}
+
+export function spendSelectedStat(key: StatKey): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const updated = updateCharacter(selected.id, (character) => {
+    const next = spendStatPoint(progressionOf(character), key);
+    applyProgression(character, next);
+    return character;
+  });
+  gameEvents.emit("character:stat-spent", { characterId: updated.id, key, value: updated.stats[key] });
+  return updated;
+}
+
+export function changeSelectedJob(targetClassId: string): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const from = selected.classId;
+  const updated = updateCharacter(selected.id, (character) => {
+    const next = changeJob(character.classId, targetClassId, progressionOf(character));
+    applyProgression(character, next);
+    character.classId = targetClassId;
+    return character;
+  });
+  gameEvents.emit("character:job-changed", { characterId: updated.id, from, to: targetClassId });
+  return updated;
+}
+
+export function equipSelectedCostume(costumeId: string): CharacterSave | null {
+  if (!validCostumeIds.has(costumeId)) throw new Error("Invalid costume");
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const updated = updateCharacter(selected.id, (character) => {
+    character.costumeId = costumeId;
+    return character;
+  });
+  gameEvents.emit("character:costume", { characterId: updated.id, costumeId });
+  return updated;
+}
+
+export function triggerSelectedEmote(emoteId: string): void {
+  const valid = classesData.emotes.some((entry) => entry.id === emoteId);
+  if (!valid) throw new Error("Invalid emote");
+  const selected = getSelectedCharacter();
+  if (!selected) return;
+  gameEvents.emit("character:emote", { characterId: selected.id, emoteId, at: now() });
+  window.dispatchEvent(new CustomEvent("greenvale:emote", { detail: { emoteId } }));
+}
+
 export function writeLegacyBridge(character: CharacterSave): void {
+  const derived = calculateDerivedStats(character.classId, progressionOf(character));
   const legacy = {
     name: character.name,
-    classId: "novice",
+    classId: character.classId,
     started: true,
     kills: character.quest.kills,
     completed: character.quest.completed,
     rewardClaimed: character.quest.completed,
     characterId: character.id,
     saveVersion: SAVE_VERSION,
+    baseLevel: character.baseLevel,
+    jobLevel: character.jobLevel,
+    stats: character.stats,
+    derived,
+    costumeId: character.costumeId,
     updatedAt: now(),
   };
   localStorage.setItem(LEGACY_PROFILE_KEY, JSON.stringify(legacy));
