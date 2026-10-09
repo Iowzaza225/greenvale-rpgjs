@@ -44,6 +44,17 @@
       "weight": 1,
       "price": 0,
       "icon": "placeholder_respec_chip"
+    },
+    {
+      "id": "field_revive_kit",
+      "nameKey": "item.field_revive_kit.name",
+      "descriptionKey": "item.field_revive_kit.description",
+      "type": "consumable",
+      "rarity": "uncommon",
+      "revive": true,
+      "weight": 2,
+      "price": 120,
+      "icon": "placeholder_revive_kit"
     }
   ]
 }
