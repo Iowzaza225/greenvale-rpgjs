@@ -223,11 +223,11 @@ function renderWindow(): void {
   const character = getSelectedCharacter();
   if (!host || !character) return;
   host.innerHTML = `<section class="gv3-window">
-    <header><div><span>GREENVALE · SKILLS</span><h2>${escapeHtml(t("skill.ui.title"))}</h2></div><button data-skill-close>×</button></header>
+    <header><div><span>${escapeHtml(t("skill.ui.kicker"))}</span><h2>${escapeHtml(t("skill.ui.title"))}</h2></div><button data-skill-close>×</button></header>
     <div class="gv3-points"><b>${escapeHtml(t("skill.ui.points",{count:character.skillPoints}))}</b><span>${escapeHtml(t("skill.ui.resetItems",{count:character.skillResetItems}))}</span></div>
     <nav>${(["tree","hotbar","auto"] as Tab[]).map(tab=>`<button class="${activeTab===tab?"active":""}" data-skill-tab="${tab}">${escapeHtml(t(`skill.ui.${tab}`))}</button>`).join("")}</nav>
     <main>${activeTab==="tree" ? renderTree() : activeTab==="hotbar" ? renderHotbarEditor() : renderAuto()}</main>
-    <footer><button data-skill-reset ${character.skillResetItems>0?"":"disabled"}>${escapeHtml(t("skill.ui.reset"))}</button></footer>
+    <footer><button data-skill-job>${escapeHtml(t("skill.ui.changeJob"))}</button><button data-skill-reset ${character.skillResetItems>0?"":"disabled"}>${escapeHtml(t("skill.ui.reset"))}</button></footer>
   </section>`;
 
   bindWindowActions(host);
@@ -249,6 +249,7 @@ function bindWindowActions(host: HTMLElement): void {
       if(updated){
         toast(t("skill.ui.learned",{skill:skillName(id),level:getSkillLevel(updated.learnedSkills,id)}));
         renderWindow(); renderHotbar();
+        window.dispatchEvent(new Event("greenvale:character-runtime"));
         window.dispatchEvent(new Event("greenvale:character-updated"));
       }
     } catch { toast(t("skill.ui.locked")); }
@@ -268,8 +269,16 @@ function bindWindowActions(host: HTMLElement): void {
     if(!character) return;
     if(character.skillResetItems<=0){toast(t("skill.ui.noReset"));return;}
     if(!window.confirm(t("skill.ui.resetConfirm"))) return;
-    try { resetSelectedSkills(); toast(t("skill.ui.resetDone")); renderWindow(); renderHotbar(); }
-    catch { toast(t("skill.ui.noReset")); }
+    try {
+      resetSelectedSkills();
+      window.dispatchEvent(new Event("greenvale:character-runtime"));
+      window.dispatchEvent(new Event("greenvale:character-updated"));
+      toast(t("skill.ui.resetDone")); renderWindow(); renderHotbar();
+    } catch { toast(t("skill.ui.noReset")); }
+  });
+  host.querySelector<HTMLElement>("[data-skill-job]")?.addEventListener("click",()=>{
+    host.hidden=true;
+    window.dispatchEvent(new CustomEvent("greenvale:open-character",{detail:{tab:"job"}}));
   });
   const enabled=host.querySelector<HTMLInputElement>("[data-auto-enabled]");
   enabled?.addEventListener("change",()=>{updateSelectedAutoBattle({enabled:enabled.checked}); renderWindow(); renderHotbar();});
