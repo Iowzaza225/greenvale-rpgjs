@@ -103,7 +103,7 @@
     },
     "maxSp": {
       "intFlatMultiplier": 3,
-      "baseLevelFlatMultiplier": 2,
+      "baseLevelFlatMultiplier": 0,
       "intScaleDivisor": 200
     },
     "hpRegen": {
