@@ -2,6 +2,7 @@ import creation from "../data/character_creation.json";
 import cutscene from "../data/cutscene.json";
 import classesConfig from "../data/classes.json";
 import { buildInfo } from "../core/build-info";
+import { getClassConfig } from "../core/character";
 import { gameEvents } from "../core/event-bus";
 import { getLocale, setLocale, t, type Locale } from "../core/i18n";
 import {
@@ -204,7 +205,7 @@ function renderSlots(): string {
           <div class="gv-slot-avatar">${avatar(character, "small")}</div>
           <div class="gv-slot-info">
             <h3>${escapeHtml(character.name)}</h3>
-            <p>${escapeHtml(t("class.novice.name"))}</p>
+            <p>${escapeHtml(t((getClassConfig(character.classId) as any).nameKey))}</p>
             <div class="gv-meta-row"><span>${escapeHtml(t("slots.level", { level: character.baseLevel }))}</span><span>${escapeHtml(t("slots.job", { level: character.jobLevel }))}</span></div>
             <div class="gv-muted">${escapeHtml(t("slots.freeRename", { count: character.renameCredits }))}</div>
           </div>
@@ -529,10 +530,15 @@ function renderInGameShell(): void {
 
   const menuTitle = document.getElementById("gv-panel-title");
   const menuProfile = document.getElementById("gv-panel-profile");
+  const characterButton = document.getElementById("gv-character-btn");
   const resume = document.getElementById("gv-resume");
   const returnTitle = document.getElementById("gv-title-btn");
   if (menuTitle) menuTitle.textContent = t("menu.title");
-  if (menuProfile) menuProfile.textContent = selected ? `${selected.name} · ${t("class.novice.name")}` : "";
+  if (menuProfile) {
+    const className = selected ? t((getClassConfig(selected.classId) as any).nameKey) : "";
+    menuProfile.textContent = selected ? `${selected.name} · ${className} · Base ${selected.baseLevel} / Job ${selected.jobLevel}` : "";
+  }
+  if (characterButton) characterButton.textContent = t("menu.character");
   if (resume) resume.textContent = t("menu.resume");
   if (returnTitle) returnTitle.textContent = t("menu.returnTitle");
 }
@@ -806,6 +812,7 @@ export function initOnboarding(): void {
     syncSelectedFromLegacy();
     updateQuestTracker();
   });
+  window.addEventListener("greenvale:character-updated", renderInGameShell);
 
   document.getElementById("gv-menu-btn")?.addEventListener("click", () => {
     renderInGameShell();
