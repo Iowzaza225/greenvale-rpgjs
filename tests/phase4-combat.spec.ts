@@ -69,6 +69,10 @@ test("Phase 4 combat rules and mobile UI stay stable on iPhone WebKit", async ({
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:combat-result", { detail: { type: "critical", damage: 77 } })));
   await expect(page.locator(".gv4-float--critical")).toContainText("77");
 
+  // Regression: damage labels must never show negative/zero hit values.
+  await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:combat-result", { detail: { type: "hit", damage: -0 } })));
+  await expect(page.locator(".gv4-float--hit")).toHaveCount(0);
+
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:death", { detail: { source: "qa" } })));
   await expect(page.locator(".gv4-death")).toBeVisible();
   await expect(page.locator("[data-respawn='save-point']")).toBeVisible();
