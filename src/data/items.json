@@ -33,6 +33,68 @@
       "weight": 1,
       "price": 7,
       "icon": "placeholder_fang"
+    },
+    {
+      "id": "training_staff",
+      "nameKey": "item.training_staff.name",
+      "descriptionKey": "item.training_staff.description",
+      "type": "weapon",
+      "weaponType": "staff",
+      "rarity": "common",
+      "atk": 10,
+      "matk": 8,
+      "weight": 36,
+      "price": 22,
+      "icon": "placeholder_staff"
+    },
+    {
+      "id": "training_bow",
+      "nameKey": "item.training_bow.name",
+      "descriptionKey": "item.training_bow.description",
+      "type": "weapon",
+      "weaponType": "bow",
+      "rarity": "common",
+      "atk": 13,
+      "weight": 32,
+      "price": 22,
+      "icon": "placeholder_bow"
+    },
+    {
+      "id": "field_mace",
+      "nameKey": "item.field_mace.name",
+      "descriptionKey": "item.field_mace.description",
+      "type": "weapon",
+      "weaponType": "mace",
+      "rarity": "common",
+      "atk": 12,
+      "matk": 4,
+      "weight": 44,
+      "price": 22,
+      "icon": "placeholder_mace"
+    },
+    {
+      "id": "scrap_dagger",
+      "nameKey": "item.scrap_dagger.name",
+      "descriptionKey": "item.scrap_dagger.description",
+      "type": "weapon",
+      "weaponType": "dagger",
+      "rarity": "common",
+      "atk": 12,
+      "weight": 24,
+      "price": 22,
+      "icon": "placeholder_dagger"
+    },
+    {
+      "id": "trader_cart_tool",
+      "nameKey": "item.trader_cart_tool.name",
+      "descriptionKey": "item.trader_cart_tool.description",
+      "type": "weapon",
+      "weaponType": "cart",
+      "rarity": "common",
+      "atk": 11,
+      "weight": 60,
+      "price": 22,
+      "icon": "placeholder_cart"
     }
   ]
 }
