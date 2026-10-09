@@ -229,5 +229,15 @@
   "costume.none": "ชุดอาชีพปกติ",
   "costume.greenvale_scout": "Greenvale Scout",
   "costume.ash_wanderer": "Ash Wanderer",
-  "costume.signal_runner": "Signal Runner"
+  "costume.signal_runner": "Signal Runner",
+  "character.animationDemo": "ทดสอบอนิเมชันตัวละคร",
+  "anim.idle": "ยืน",
+  "anim.walk": "เดิน",
+  "anim.run": "วิ่ง",
+  "anim.attack": "โจมตี",
+  "anim.skill": "ใช้สกิล",
+  "anim.hit": "โดนตี",
+  "anim.death": "ตาย",
+  "anim.rest": "นั่งพัก",
+  "anim.emote": "ดีใจ"
 }
