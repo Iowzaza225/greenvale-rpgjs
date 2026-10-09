@@ -73,6 +73,14 @@ export function validateGameConfig(): void {
   assertArray("character_creation.skinColors", characterCreation.skinColors);
   assertArray("character_creation.outfits", characterCreation.outfits);
   assertArray("cutscene.frames", cutscene.frames);
+  assertArray("classes.emotes", classes.emotes);
+  assertArray("classes.costumes", classes.costumes);
+  if (!Array.isArray(formulas.expTables?.base) || formulas.expTables.base.length !== 99) {
+    throw new Error('Config "formulas.expTables.base" must contain 99 entries');
+  }
+  if (!Array.isArray(formulas.expTables?.job) || formulas.expTables.job.length !== 50) {
+    throw new Error('Config "formulas.expTables.job" must contain 50 entries');
+  }
 
   assertUniqueIds("classes", classes.classes);
   assertUniqueIds("skills", skills.skills);
@@ -90,6 +98,8 @@ export function validateGameConfig(): void {
   assertUniqueIds("skinColors", characterCreation.skinColors);
   assertUniqueIds("outfits", characterCreation.outfits);
   assertUniqueIds("cutsceneFrames", cutscene.frames);
+  assertUniqueIds("emotes", classes.emotes);
+  assertUniqueIds("costumes", classes.costumes);
 }
 
 export const gameConfig = Object.freeze({
