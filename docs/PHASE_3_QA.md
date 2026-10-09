@@ -1,4 +1,4 @@
-# Phase 3 QA — Skill Trees, Hotbar, Casting and Auto Battle
+# Phase 3 QA — Skills, Tree, Hotbar, Cast, Cooldown and Auto
 
 ## Automated gate
 
@@ -11,62 +11,46 @@ pnpm run test:phase2
 pnpm run test:phase3
 ```
 
-Phase 3 WebKit QA verifies:
+The Phase 3 iPhone-sized WebKit test verifies:
 
-- the Phase 0 boot path still has no fatal `applySyncPacket` or module-script error
-- Phase 1 onboarding still works
-- Phase 2 stats/job change still works
+- Phase 0 boot regression still passes
+- Phase 1 onboarding and save migration still pass
+- Phase 2 stat/job progression still passes
 - save schema migrates to version 4
-- Novice exposes 3 skills
-- every first job exposes 8 skills in JSON
-- a learned skill consumes a skill point
-- prerequisites and MaxLv gates are enforced by the shared rules engine
-- a learned Ranger skill can be assigned to hotbar slot 0–9
-- the custom hotbar can execute a real standalone RPGJS combat hit
-- cooldown state is returned to the mobile UI
-- an interruptible cast is cancelled by a player-hit event
-- auto-battle settings persist
-- a Memory Respec Chip resets learned levels and refunds spent points
+- 3 Novice skills and 8 skills for the active class render from JSON
+- skill points can raise a learned skill level
+- prerequisite/MaxLv/available-point gates are enforced
+- learned skills can be assigned to the 0–9 custom mobile hotbar
+- a combat skill can execute against a live RPGJS enemy
+- SP cost and cooldown runtime state are returned to the hotbar
+- cooldown overlay appears
+- interruptible cast is cancelled when the player is hit
+- auto-battle settings and HP threshold persist
+- Memory Respec Chip refunds spent skill points once
+- reset removes invalid hotbar assignments
+- no fatal `applySyncPacket`, module-script or RPGJS boot error appears
 
 ## Manual iPhone Safari
 
 1. Open the Phase 3 Netlify Deploy Preview with `?debug=1&lang=th`.
 2. Create/select a survivor and enter the world.
-3. Open **MENU → สกิล / แถบลัด**.
-4. Check the Novice tree: Survivor Strike, Field First Aid, Camp Rest.
-5. Gain Job EXP and change to one of the six jobs at Job Lv 10.
-6. Confirm the selected class tree contains at least 8 skills and prerequisite connector lines.
-7. Spend skill points. Tap a skill and compare current/next-level SP, cooldown, cast time, range and power/heal.
-8. On mobile, hold a learned skill for ~0.45 s and drag it to a hotbar slot 0–9.
-9. Close the window and use the hotbar in combat. Verify:
-   - cooldown overlay counts down
-   - SP is consumed
-   - damage/heal happens
-   - out-of-range skills report no target
-10. Cast Field First Aid while taking a hit; the cast bar should be interrupted.
-11. Open the Auto tab:
-   - enable Auto
-   - set an HP threshold
-   - choose/reorder learned skills
-   - verify Auto uses only the configured learned skills
-12. Use **Memory Respec Chip** and confirm spent skill points are refunded while the three base Novice skills remain Lv 1.
-13. Reload and confirm learned skills, hotbar and Auto settings persist.
-
-Debug helpers:
-- `window.__GV_PHASE2__.gainExp(9000, 9000)` — accelerate level/job QA.
-- `window.__GV_SKILL_STATE__` — inspect current HP/SP and the last custom skill result.
-
-## Skill runtime architecture
-
-The built-in RPGJS synchronized hotbar remains disabled because it previously triggered the Safari `applySyncPacket` boot race. Phase 3 uses a Greenvale-owned DOM hotbar and a narrow standalone event bridge:
-
-`skill UI → greenvale:skill-cast → authoritative standalone server handler → greenvale:skill-result`
-
-This preserves the stable Phase 0 boot path and avoids mutating RPGJS skill/hotbar synchronized collections during initial hydration.
+3. Reach Novice Job Lv 10 and change to any of the six jobs.
+4. Open **MENU → สกิล / แถบลัด**.
+5. Verify the Novice tree plus 8 skills for the chosen job.
+6. Tap a skill and compare current/next level SP, power/heal, cooldown, cast time and range.
+7. Spend skill points and verify prerequisite locks.
+8. Hold a learned skill for about 0.45s and drag it onto hotbar slot 0–9.
+9. Use an instant attack skill near a wolf and verify SP decreases and cooldown overlay appears.
+10. Use Field First Aid, then take a hit during its cast and verify the cast is interrupted.
+11. Test buff, debuff, toggle, passive and heal skills.
+12. Open Auto and enable it. Adjust the HP threshold and skill order.
+13. Use **Memory Respec Chip** once and verify spent skill points return and learned class skills reset.
+14. Reload Safari and confirm learned skills, hotbar, auto settings and remaining reset chip persist.
 
 ## Known Phase 3 limitations
 
-- Final skill icons, VFX and SFX are placeholders referenced by stable ids.
-- The current standalone skill bridge targets the local RPGJS server. A true remote multiplayer transport is deferred until the multiplayer backend phase.
-- Phase 3 statuses only use the existing Slow/Stun/Bleed foundations. Full status resistance, stacking and UI timers are Phase 4.
-- Auto battle currently chooses from configured learned skills and an HP threshold. Full item-inventory potion consumption belongs to the item/economy phase.
+- The project deliberately uses its own JSON-driven skill runtime instead of mutating RPGJS synchronized built-in skill/hotbar state during initial Safari hydration. This preserves the Phase 0 async-boot fix.
+- Final original skill icons, VFX sprite sheets and SFX are still placeholders. Their ids are already present in `skills.json` / `effects.json`.
+- Complex projectile travel, ground-target cursor and polished multi-target geometry will be expanded with the Phase 4 combat/status layer and Phase 6 VFX layer.
+- The reset chip is represented by the Phase 3 save inventory counter and item config. The full unified item/inventory UI arrives in Phase 8.
+- Auto-battle is local standalone logic for the current Netlify build; authoritative multiplayer validation belongs to the server-backed release path.
