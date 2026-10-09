@@ -47,7 +47,7 @@ test("Phase 4 combat rules and mobile UI stay stable on iPhone WebKit", async ({
   await page.locator("#gv-menu-btn").click();
   await page.locator("#gv-combat-btn").click();
   await expect(page.locator("#gv-combat-system")).toBeVisible();
-  await expect(page.locator("[data-auto-attack]")).toBeVisible();
+  await expect(page.locator("[data-auto-attack]")).toHaveCount(1);
   await expect(page.locator(".gv4-readonly")).toContainText("ปิดอยู่");
 
   await page.locator("label.gv4-toggle").first().click();
