@@ -111,7 +111,7 @@ function renderCostumes(character: CharacterSave): string {
 function renderEmotes(): string {
   return emotesData.emotes.map((emote) =>
     `<button type="button" data-cs-action="emote" data-emote="${emote.id}" title="${esc(t(emote.nameKey))}">
-      <span>${esc(emote.glyph)}</span><small>${esc(t(emote.nameKey))}</small>
+      <span class="gv-emote-pixel gv-emote-pixel--${esc(emote.id)}" aria-hidden="true"></span><small>${esc(t(emote.nameKey))}</small>
     </button>`
   ).join("");
 }
@@ -195,7 +195,7 @@ function showEmote(id: string): void {
   const data = emotesData.emotes.find((entry) => entry.id === id);
   const el = document.getElementById("gv-emote-pop");
   if (!data || !el) return;
-  el.textContent = data.glyph;
+  el.innerHTML = `<span class="gv-emote-pixel gv-emote-pixel--${esc(data.id)}" aria-hidden="true"></span>`;
   el.hidden = false;
   el.dataset.emote = id;
   setTimeout(() => { el.hidden = true; }, 1700);
