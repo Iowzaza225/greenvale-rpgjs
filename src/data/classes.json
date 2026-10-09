@@ -42,7 +42,11 @@
       "spriteProfile": "novice-placeholder",
       "starterCostume": "none",
       "starterWeaponId": "camp_blade",
-      "moveSpeed": 3.1
+      "moveSpeed": 3.1,
+      "icon": "placeholder://class/novice",
+      "outfitColor": "#5b765f",
+      "hpPerLevel": 100,
+      "spPerLevel": 3
     },
     {
       "id": "vanguard",
@@ -78,7 +82,11 @@
       "spriteProfile": "vanguard-placeholder",
       "starterCostume": "none",
       "starterWeaponId": "camp_blade",
-      "moveSpeed": 2.9
+      "moveSpeed": 2.9,
+      "icon": "placeholder://class/vanguard",
+      "outfitColor": "#665f52",
+      "hpPerLevel": 150,
+      "spPerLevel": 2
     },
     {
       "id": "arcanist",
@@ -113,7 +121,11 @@
       "spriteProfile": "arcanist-placeholder",
       "starterCostume": "none",
       "starterWeaponId": "training_staff",
-      "moveSpeed": 3
+      "moveSpeed": 3,
+      "icon": "placeholder://class/arcanist",
+      "outfitColor": "#4f5f86",
+      "hpPerLevel": 90,
+      "spPerLevel": 6
     },
     {
       "id": "ranger",
@@ -148,7 +160,11 @@
       "spriteProfile": "ranger-placeholder",
       "starterCostume": "none",
       "starterWeaponId": "training_bow",
-      "moveSpeed": 3.35
+      "moveSpeed": 3.35,
+      "icon": "placeholder://class/ranger",
+      "outfitColor": "#4d7458",
+      "hpPerLevel": 105,
+      "spPerLevel": 3
     },
     {
       "id": "mender",
@@ -184,7 +200,11 @@
       "spriteProfile": "mender-placeholder",
       "starterCostume": "none",
       "starterWeaponId": "field_mace",
-      "moveSpeed": 3
+      "moveSpeed": 3,
+      "icon": "placeholder://class/mender",
+      "outfitColor": "#6f7a72",
+      "hpPerLevel": 100,
+      "spPerLevel": 5
     },
     {
       "id": "shade",
@@ -219,7 +239,11 @@
       "spriteProfile": "shade-placeholder",
       "starterCostume": "none",
       "starterWeaponId": "scrap_dagger",
-      "moveSpeed": 3.6
+      "moveSpeed": 3.6,
+      "icon": "placeholder://class/shade",
+      "outfitColor": "#514d62",
+      "hpPerLevel": 100,
+      "spPerLevel": 3
     },
     {
       "id": "trader",
@@ -254,7 +278,11 @@
       "spriteProfile": "trader-placeholder",
       "starterCostume": "none",
       "starterWeaponId": "trader_cart_tool",
-      "moveSpeed": 3.05
+      "moveSpeed": 3.05,
+      "icon": "placeholder://class/trader",
+      "outfitColor": "#7d6848",
+      "hpPerLevel": 115,
+      "spPerLevel": 3
     }
   ],
   "jobChange": {
