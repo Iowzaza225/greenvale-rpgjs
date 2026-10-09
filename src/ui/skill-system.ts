@@ -60,6 +60,11 @@ function escapeHtml(value: unknown): string {
     .replaceAll("'", "&#039;");
 }
 
+function refreshCharacterRuntime(): void {
+  window.dispatchEvent(new Event("greenvale:character-runtime"));
+  window.dispatchEvent(new Event("greenvale:character-updated"));
+}
+
 function toast(message: string): void {
   const el = document.getElementById("gv-toast");
   if (!el) return;
@@ -315,6 +320,7 @@ function bindLongPressDrag(node: HTMLElement): void {
   const skillId=String(node.dataset.dragSkill||"");
   if(!skillId) return;
   node.addEventListener("pointerdown",(event)=>{
+    try { node.setPointerCapture(event.pointerId); } catch {}
     window.clearTimeout(dragTimer);
     dragTimer=window.setTimeout(()=>{
       draggingSkillId=skillId;
