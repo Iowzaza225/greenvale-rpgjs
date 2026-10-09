@@ -20,6 +20,7 @@ import {
   useAttack,
 } from "@rpgjs/action-battle/server";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts";
+import skillsData from "./data/skills.json";
 
 const TrainingBlade = {
   id: "training-blade",
@@ -147,10 +148,13 @@ type Profile = {
   jobLevel?: number;
   derived?: {
     ATK?: number;
+    MATK?: number;
     DEF?: number;
+    MDEF?: number;
     MaxHP?: number;
     MaxSP?: number;
   };
+  learnedSkills?: Record<string, number>;
   updatedAt?: number;
 };
 
@@ -232,6 +236,208 @@ if (typeof window !== "undefined") {
   });
 }
 
+const skillCooldowns = new Map<string, number>();
+const activeSkillModifiers = new Map<string, { stat: string; amount: number; expiresAt: number; previous?: number }>();
+const activeToggles = new Set<string>();
+
+function skillArrayValue(values: readonly number[] | undefined, level: number): number {
+  if (!Array.isArray(values) || values.length === 0) return 0;
+  return Number(values[Math.max(0, Math.min(values.length - 1, level - 1))]) || 0;
+}
+
+function entityCoord(entity: any, key: "x" | "y"): number {
+  try {
+    const value = entity?.[key];
+    return Number(typeof value === "function" ? value.call(entity) : value) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function enemyEvents(player: RpgPlayer, range: number): any[] {
+  const map = player.getCurrentMap();
+  if (!map) return [];
+  const px = entityCoord(player, "x");
+  const py = entityCoord(player, "y");
+  return map.getEvents()
+    .filter((event: any) => event?.battleAi && Number(event.hp) > 0)
+    .map((event: any) => {
+      const dx = entityCoord(event, "x") - px;
+      const dy = entityCoord(event, "y") - py;
+      return { event, distance: Math.hypot(dx, dy) };
+    })
+    .filter(({ distance }: any) => distance <= range)
+    .sort((a: any, b: any) => a.distance - b.distance)
+    .map(({ event }: any) => event);
+}
+
+function dispatchSkillState(type = "greenvale:skill-state", extra: Record<string, any> = {}) {
+  if (typeof window === "undefined" || !activePlayer) return;
+  window.dispatchEvent(new CustomEvent(type, {
+    detail: {
+      hp: Number(activePlayer.hp) || 0,
+      maxHp: Number(activePlayer.param[MAXHP]) || 0,
+      sp: Number(activePlayer.sp) || 0,
+      maxSp: Number(activePlayer.param[MAXSP]) || 0,
+      ...extra,
+    },
+  }));
+}
+
+function restoreModifier(skillId: string) {
+  if (!activePlayer) return;
+  const current = activeSkillModifiers.get(skillId);
+  if (!current) return;
+  if (current.stat === "ATK" && current.previous !== undefined) activePlayer.param[ATK] = current.previous;
+  if (current.stat === "PDEF" && current.previous !== undefined) activePlayer.param[PDEF] = current.previous;
+  if (current.stat === "MaxHP" && current.previous !== undefined) {
+    activePlayer.param[MAXHP] = current.previous;
+    activePlayer.hp = Math.min(activePlayer.hp, current.previous);
+  }
+  activeSkillModifiers.delete(skillId);
+  activeToggles.delete(skillId);
+}
+
+function applySelfModifier(skill: any, level: number): boolean {
+  if (!activePlayer) return false;
+  const stat = String(skill.runtime?.stat || "");
+  const amount = Math.max(0, Number(skill.runtime?.amountPerLevel) || 0) * Math.max(1, level);
+  const duration = Math.max(0, Number(skill.runtime?.durationMs) || 0);
+
+  if (skill.type === "toggle" && activeToggles.has(skill.id)) {
+    restoreModifier(skill.id);
+    return true;
+  }
+
+  restoreModifier(skill.id);
+  let previous: number | undefined;
+  if (stat === "ATK") {
+    previous = Number(activePlayer.param[ATK]) || 0;
+    activePlayer.param[ATK] = previous + amount;
+  } else if (stat === "PDEF") {
+    previous = Number(activePlayer.param[PDEF]) || 0;
+    activePlayer.param[PDEF] = previous + amount;
+  } else if (stat === "MaxHP") {
+    previous = Number(activePlayer.param[MAXHP]) || 1;
+    activePlayer.param[MAXHP] = previous + amount;
+    activePlayer.hp = Math.min(activePlayer.param[MAXHP], activePlayer.hp + amount);
+  }
+
+  activeSkillModifiers.set(skill.id, { stat, amount, expiresAt: duration ? Date.now() + duration : Number.MAX_SAFE_INTEGER, previous });
+  if (skill.type === "toggle") activeToggles.add(skill.id);
+  if (duration > 0) window.setTimeout(() => restoreModifier(skill.id), duration);
+  return true;
+}
+
+function applyStatus(target: any, skill: any, level: number) {
+  const status = skill.statusEffect;
+  if (!status || Math.random() > Number(status.chance ?? 1)) return;
+  const duration = Math.max(100, Number(status.durationMs) || 1000);
+  if (status.id === "slow") {
+    const speed = Number(target.speed) || 1;
+    target.speed = Math.max(.35, speed * .55);
+    window.setTimeout(() => { if (target) target.speed = speed; }, duration);
+  } else if (status.id === "stun") {
+    const speed = Number(target.speed) || 1;
+    target.speed = 0;
+    window.setTimeout(() => { if (target) target.speed = speed; }, duration);
+  } else if (status.id === "bleed") {
+    const ticks = Math.max(1, Math.floor(duration / 1000));
+    for (let tick = 1; tick <= ticks; tick++) {
+      window.setTimeout(() => {
+        if (!target || Number(target.hp) <= 0) return;
+        const damage = Math.max(1, level * 2);
+        target.hp = Math.max(0, Number(target.hp) - damage);
+      }, tick * 1000);
+    }
+  }
+}
+
+function executeGreenvaleSkill(detail: any) {
+  if (!activePlayer) return;
+  const skillId = String(detail?.skillId || "");
+  const source = detail?.source === "auto" ? "auto" : "manual";
+  const skill = (skillsData.skills as any[]).find((entry) => entry.id === skillId);
+  const profile = getProfile();
+  const learnedLevel = Math.max(0, Math.floor(Number(profile.learnedSkills?.[skillId]) || 0));
+  const requestedLevel = Math.max(1, Math.floor(Number(detail?.level) || learnedLevel));
+  const level = Math.min(Number(skill?.maxLv) || 1, learnedLevel, requestedLevel);
+  const fail = (reason: string) => dispatchSkillState("greenvale:skill-result", { ok: false, reason, skillId, source });
+
+  if (!skill || level <= 0 || skill.type === "passive") return fail("locked");
+  if (skill.classId !== "novice" && skill.classId !== profile.classId) return fail("locked");
+
+  const now = Date.now();
+  const readyAt = skillCooldowns.get(skillId) || 0;
+  if (readyAt > now) return fail("cooldown");
+
+  const spCost = skillArrayValue(skill.spCost, level);
+  if (Number(activePlayer.sp) < spCost) return fail("no-sp");
+
+  const kind = String(skill.runtime?.kind || "damage");
+  let damageTotal = 0;
+  let heal = 0;
+  let targetName = "";
+
+  if (kind === "heal") {
+    const profilePower = Number(profile.derived?.MATK) || Number(profile.derived?.ATK) || 10;
+    const percent = skillArrayValue(skill.healPercent, level);
+    heal = Math.max(1, Math.round(profilePower * percent / 100));
+    activePlayer.hp = Math.min(Number(activePlayer.param[MAXHP]) || 1, Number(activePlayer.hp) + heal);
+  } else if (kind === "buff" || kind === "toggle") {
+    applySelfModifier(skill, level);
+  } else {
+    const targets = enemyEvents(activePlayer, Math.max(40, Number(skill.range) || 80));
+    if (targets.length === 0) return fail("no-target");
+    const shape = String(skill.area?.shape || "single");
+    const limit = shape === "single" ? 1 : shape === "chain" ? 3 : 6;
+    const selected = targets.slice(0, limit);
+    const profilePower = skill.formula === "magical_basic"
+      ? Number(profile.derived?.MATK) || Number(profile.derived?.ATK) || Number(activePlayer.param[ATK]) || 10
+      : Number(activePlayer.param[ATK]) || Number(profile.derived?.ATK) || 10;
+    const percent = skillArrayValue(skill.powerPercent, level);
+    const originalAtk = Number(activePlayer.param[ATK]) || 1;
+    const scaledAtk = Math.max(1, Math.round(profilePower * Math.max(0, percent) / 100));
+
+    for (const target of selected) {
+      targetName ||= String(target.name || "Target");
+      if (percent > 0) {
+        const before = Number(target.hp) || 0;
+        activePlayer.param[ATK] = scaledAtk;
+        if (target.battleAi?.takeDamage) {
+          target.battleAi.takeDamage(activePlayer);
+        } else {
+          target.hp = Math.max(0, before - Math.max(1, scaledAtk));
+        }
+        damageTotal += Math.max(0, before - Number(target.hp || 0));
+      }
+      applyStatus(target, skill, level);
+    }
+    activePlayer.param[ATK] = originalAtk;
+  }
+
+  activePlayer.sp = Math.max(0, Number(activePlayer.sp) - spCost);
+  const nextReady = now + Math.max(0, Number(skill.cooldownMs) || 0);
+  skillCooldowns.set(skillId, nextReady);
+  dispatchSkillState("greenvale:skill-result", {
+    ok: true,
+    skillId,
+    source,
+    readyAt: nextReady,
+    damage: damageTotal,
+    heal,
+    targetName,
+    toggleActive: activeToggles.has(skillId),
+  });
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("greenvale:skill-cast", (event) => {
+    executeGreenvaleSkill((event as CustomEvent).detail || {});
+  });
+  window.addEventListener("greenvale:skill-state-request", () => dispatchSkillState());
+}
+
 function getProfile(): Profile {
   const fallback: Profile = { name: "Survivor", classId: "novice", started: true, kills: 0, completed: false };
   try {
@@ -247,6 +453,7 @@ function getProfile(): Profile {
       baseLevel: Math.max(1, Number(data.baseLevel) || 1),
       jobLevel: Math.max(1, Number(data.jobLevel) || 1),
       derived: data.derived && typeof data.derived === "object" ? data.derived : undefined,
+      learnedSkills: data.learnedSkills && typeof data.learnedSkills === "object" ? data.learnedSkills : {},
     };
   } catch {
     return fallback;
@@ -468,6 +675,15 @@ export default createServer({
             if (!Number.isFinite(hp) || hp <= 0 || !Number.isFinite(damage)) return;
             // Apply exactly one bounded hit, using the same number as the popup.
             target.hp = Math.max(0, hp - damage);
+            if (typeof window !== "undefined" && target === activePlayer) {
+              window.dispatchEvent(new CustomEvent("greenvale:player-hit", {
+                detail: {
+                  damage,
+                  hp: Number(target.hp) || 0,
+                  maxHp: Number(target.param?.[MAXHP]) || 0,
+                },
+              }));
+            }
             return context;
           },
         },
