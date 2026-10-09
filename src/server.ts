@@ -847,35 +847,122 @@ export default createServer({
           beforeHit(context: any) {
             const attacker = context.attacker as any;
             const target = context.target as any;
-            if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
-            const hp = Number(target.hp);
+            const playerAttack = attacker === activePlayer && !!target?.battleAi;
+            const enemyAttack = !!attacker?.battleAi && target === activePlayer;
+            if (!playerAttack && !enemyAttack) return;
+
+            if (
+              enemyAttack &&
+              typeof target?.getVariable === "function" &&
+              Number(target.getVariable("greenvale.invulnerableUntil") || 0) > Date.now()
+            ) {
+              dispatchCombatResult({ type: "perfect-dodge", damage: 0, incoming: true, invulnerable: true });
+              return false;
+            }
+
+            const hp = entityNumber(target, "hp");
             if (!Number.isFinite(hp) || hp <= 0) return false;
-            const defense = Number(target.param?.[PDEF]);
-            const safeDefense = Number.isFinite(defense) ? defense : 6;
-            const damage = Math.max(4, Math.min(12, Math.round(10 - safeDefense * 0.25)));
-            // Provide the damage object before RPGJS resolves damage; the engine's
-            // default resolveDamage must not write invalid/zero HP first.
-            context.damage = { damage, raw: damage, defeated: hp <= damage };
-            context.metadata = { ...context.metadata, greenvaleHpBefore: hp };
+            const profile = getProfile();
+            const attackContext = pendingCombatContext || {
+              source: "manual" as const,
+              multiplier: 1,
+              element: "neutral",
+              magical: false,
+              profile: "melee" as const,
+            };
+
+            const result = playerAttack
+              ? resolveCombatHit({
+                  attacker: playerCombatStats(profile),
+                  defender: wolfCombatStats(),
+                  skillMultiplier: attackContext.multiplier,
+                  element: attackContext.element as any,
+                  targetElement: String(wolfConfig.element || "neutral") as any,
+                  targetSize: String(wolfConfig.size || "medium") as any,
+                  targetRace: String(wolfConfig.race || "beast") as any,
+                  profile: attackContext.profile,
+                  magical: attackContext.magical,
+                })
+              : resolveCombatHit({
+                  attacker: wolfCombatStats(),
+                  defender: playerCombatStats(profile),
+                  skillMultiplier: 1,
+                  element: String(wolfConfig.element || "neutral") as any,
+                  targetElement: "neutral",
+                  targetSize: "medium",
+                  targetRace: "human",
+                  profile: "melee",
+                  magical: false,
+                });
+
+            if (result.type === "miss" || result.type === "perfect-dodge") {
+              dispatchCombatResult({
+                type: result.type,
+                damage: 0,
+                incoming: enemyAttack,
+                source: playerAttack ? attackContext.source : "enemy",
+                skillId: playerAttack ? attackContext.skillId : undefined,
+              });
+              return false;
+            }
+
+            context.damage = {
+              damage: result.damage,
+              raw: result.rawDamage,
+              defeated: hp <= result.damage,
+            };
+            context.metadata = {
+              ...context.metadata,
+              greenvaleHpBefore: hp,
+              greenvaleCombatResult: result,
+              greenvalePlayerAttack: playerAttack,
+              greenvaleEnemyAttack: enemyAttack,
+              greenvaleSource: playerAttack ? attackContext.source : "enemy",
+              greenvaleSkillId: playerAttack ? attackContext.skillId : undefined,
+            };
             return context;
           },
           afterDamage(context: any) {
             const attacker = context.attacker as any;
             const target = context.target as any;
-            if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
+            const playerAttack = context.metadata?.greenvalePlayerAttack === true;
+            const enemyAttack = context.metadata?.greenvaleEnemyAttack === true;
+            if (!playerAttack && !enemyAttack) return;
+
             const hp = Number(context.metadata?.greenvaleHpBefore);
             const damage = Number(context.damage?.damage);
-            if (!Number.isFinite(hp) || hp <= 0 || !Number.isFinite(damage)) return;
-            // Apply exactly one bounded hit, using the same number as the popup.
+            const result = context.metadata?.greenvaleCombatResult;
+            if (!Number.isFinite(hp) || hp <= 0 || !Number.isFinite(damage) || !result) return;
+
             target.hp = Math.max(0, hp - damage);
-            if (typeof window !== "undefined" && target === activePlayer) {
+            const visualType =
+              enemyAttack && result.type === "hit" ? "player-hit" : String(result.type || "hit");
+            const threat = playerAttack ? addThreat(target, damage) : 0;
+            dispatchCombatResult({
+              type: visualType,
+              damage,
+              incoming: enemyAttack,
+              source: context.metadata?.greenvaleSource,
+              skillId: context.metadata?.greenvaleSkillId,
+              elementMultiplier: result.elementMultiplier,
+              sizeMultiplier: result.sizeMultiplier,
+              raceMultiplier: result.raceMultiplier,
+              threat,
+            });
+
+            if (enemyAttack && typeof window !== "undefined") {
               window.dispatchEvent(new CustomEvent("greenvale:player-hit", {
                 detail: {
                   damage,
                   hp: Number(target.hp) || 0,
                   maxHp: Number(target.param?.[MAXHP]) || 0,
+                  resultType: result.type,
                 },
               }));
+              const status = wolfConfig.onHitStatus;
+              if (status?.id && Math.random() < Number(status.chance ?? 0)) {
+                applyPlayerStatus(String(status.id), Number(status.durationMs) || undefined);
+              }
             }
             return context;
           },
