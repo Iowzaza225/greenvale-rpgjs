@@ -143,11 +143,25 @@ type Profile = {
   started: boolean;
   kills: number;
   completed: boolean;
+  baseLevel?: number;
+  jobLevel?: number;
+  derived?: {
+    ATK?: number;
+    DEF?: number;
+    MaxHP?: number;
+    MaxSP?: number;
+  };
   updatedAt?: number;
 };
 
 const CLASS_STATS: Record<string, { hp: number; sp: number; atk: number; pdef: number; speed: number }> = {
   novice:     { hp: 120, sp: 50,  atk: 12, pdef: 5,  speed: 3.1 },
+  vanguard:   { hp: 180, sp: 48,  atk: 18, pdef: 11, speed: 2.95 },
+  arcanist:   { hp: 118, sp: 135, atk: 10, pdef: 4,  speed: 3.0 },
+  ranger:     { hp: 138, sp: 72,  atk: 17, pdef: 6,  speed: 3.45 },
+  mender:     { hp: 142, sp: 118, atk: 12, pdef: 7,  speed: 3.05 },
+  shade:      { hp: 130, sp: 76,  atk: 17, pdef: 5,  speed: 3.65 },
+  trader:     { hp: 155, sp: 80,  atk: 14, pdef: 8,  speed: 3.15 },
   scavenger:  { hp: 165, sp: 85,  atk: 14, pdef: 6,  speed: 3.1 },
   hunter:     { hp: 150, sp: 80,  atk: 18, pdef: 5,  speed: 3.7 },
   medic:      { hp: 145, sp: 125, atk: 12, pdef: 6,  speed: 3.0 },
@@ -158,6 +172,12 @@ const CLASS_STATS: Record<string, { hp: number; sp: number; atk: number; pdef: n
 
 const STARTER_WEAPONS: Record<string, any> = {
   novice: TrainingBlade,
+  vanguard: GuardianSword,
+  arcanist: MedicBlade,
+  ranger: HunterKnife,
+  mender: MedicBlade,
+  shade: HunterKnife,
+  trader: EngineerCutter,
   scavenger: TrainingBlade,
   hunter: HunterKnife,
   medic: MedicBlade,
@@ -178,6 +198,9 @@ function getProfile(): Profile {
       classId: CLASS_STATS[data.classId] ? data.classId : "novice",
       kills: Math.min(3, Math.max(0, Number(data.kills) || 0)),
       completed: data.completed === true,
+      baseLevel: Math.max(1, Number(data.baseLevel) || 1),
+      jobLevel: Math.max(1, Number(data.jobLevel) || 1),
+      derived: data.derived && typeof data.derived === "object" ? data.derived : undefined,
     };
   } catch {
     return fallback;
@@ -202,6 +225,16 @@ function saveQuestProgress(kills: number, completed: boolean) {
 
 function onWolfDefeated(attacker?: any) {
   if (!attacker || typeof attacker.getVariable !== "function") return;
+
+  // EXP progression is independent from the first quest. In standalone mode the
+  // server and client share the browser, so the authoritative defeat hook emits
+  // a narrow event that the versioned character save consumes.
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("greenvale:experience", {
+      detail: { baseExp: 18, jobExp: 8, source: "ashfang_wolf" },
+    }));
+  }
+
   if (attacker.getVariable("greenvale.quest.main") !== "first-hunt") return;
   const next = Math.min(3, Number(attacker.getVariable("greenvale.quest.kills") || 0) + 1);
   attacker.setVariable("greenvale.quest.kills", next);
@@ -301,17 +334,24 @@ const player = {
   async onConnected(player: RpgPlayer) {
     const profile = getProfile();
     const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
+    const derived = profile.derived || {};
+    const maxHp = Math.max(1, Number(derived.MaxHP) || stats.hp);
+    const maxSp = Math.max(1, Number(derived.MaxSP) || stats.sp);
+    const attack = Math.max(1, Number(derived.ATK) || stats.atk);
+    const defense = Math.max(0, Number(derived.DEF) || stats.pdef);
     player.name = profile.name;
     player.setGraphic("hero");
     player.initializeDefaultStats();
-    player.param[MAXHP] = stats.hp;
-    player.param[MAXSP] = stats.sp;
-    player.param[ATK] = stats.atk;
-    player.param[PDEF] = stats.pdef;
-    player.hp = stats.hp;
-    player.sp = stats.sp;
+    player.param[MAXHP] = maxHp;
+    player.param[MAXSP] = maxSp;
+    player.param[ATK] = attack;
+    player.param[PDEF] = defense;
+    player.hp = maxHp;
+    player.sp = maxSp;
     player.speed = stats.speed;
     player.setVariable("greenvale.class.id", profile.classId);
+    player.setVariable("greenvale.base.level", profile.baseLevel || 1);
+    player.setVariable("greenvale.job.level", profile.jobLevel || 1);
     player.setVariable("greenvale.quest.kills", profile.kills);
     player.setVariable("greenvale.quest.main", profile.completed ? "first-hunt-complete" : "first-hunt");
     player.setHitbox(30, 38);
