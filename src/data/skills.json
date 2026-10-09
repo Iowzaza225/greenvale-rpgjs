@@ -993,7 +993,10 @@
         "target": "enemy"
       },
       "formula": "none",
-      "iconId": "icon_skill_mana_lattice"
+      "iconId": "icon_skill_mana_lattice",
+      "interruptProtection": {
+        "chancePerLevel": 0.08
+      }
     },
     {
       "id": "ash_meteor",
@@ -2030,7 +2033,10 @@
         "target": "enemy"
       },
       "formula": "none",
-      "iconId": "icon_skill_steady_hands"
+      "iconId": "icon_skill_steady_hands",
+      "interruptProtection": {
+        "chancePerLevel": 0.06
+      }
     },
     {
       "id": "renewal_ring",
