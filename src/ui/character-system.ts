@@ -293,6 +293,10 @@ export function initCharacterSystem(): void {
   initialized = true;
 
   document.getElementById("gv-character-btn")?.addEventListener("click", () => openCharacterSystem("stats"));
+  window.addEventListener("greenvale:open-character", (event) => {
+    const tab = (event as CustomEvent).detail?.tab === "job" ? "job" : "stats";
+    openCharacterSystem(tab);
+  });
 
   window.addEventListener("greenvale:experience", (event) => {
     const detail = (event as CustomEvent).detail || {};
