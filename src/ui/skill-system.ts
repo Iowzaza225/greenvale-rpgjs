@@ -1,5 +1,5 @@
 import skillsData from "../data/skills.json";
-import { getLocale, t } from "../core/i18n";
+import { t } from "../core/i18n";
 import {
   assignSelectedHotbar,
   getSelectedCharacter,
@@ -33,7 +33,7 @@ let initialized = false;
 let activeTab: Tab = "tree";
 let selectedSkillId = "survivor_strike";
 let runtimeState: RuntimeState = { hp: 0, maxHp: 0, sp: 0, maxSp: 0 };
-let casting: { skillId: string; startedAt: number; endsAt: number; timer: number } | null = null;
+let casting: { skillId: string; source: "hotbar" | "auto" | "ui"; startedAt: number; endsAt: number; timer: number } | null = null;
 const cooldowns = new Map<string, number>();
 let autoTimer = 0;
 let dragTimer = 0;
@@ -102,6 +102,7 @@ function renderHotbar(): void {
       if (id) void useSkill(id, "hotbar");
     });
   });
+  window.__GV_SKILL_STATE__ = { ...runtimeState, lastResult: detail };
   updateCooldownVisuals();
 }
 
@@ -177,7 +178,7 @@ function renderTree(): string {
   return `<div class="gv3-tree-layout">
     <div class="gv3-tree-scroll">
       ${renderTreeGroup(t("class.novice.name"), novice, "novice")}
-      ${current.length ? renderTreeGroup(t((getSkill(current[0].id) as any)?.classId ? `class.${character.classId}.name` : "character.job"), current, "job") : ""}
+      ${current.length ? renderTreeGroup(t(`class.${character.classId}.name`), current, "job") : ""}
     </div>
     ${renderDetail()}
   </div>`;
@@ -389,13 +390,13 @@ async function useSkill(skillId:string,source:"hotbar"|"auto"|"ui"):Promise<void
   if(data.castMs>0){
     const started=Date.now();
     showCast(skillId,data.castMs);
-    const timer=window.setTimeout(()=>{casting=null;hideCast();dispatchSkill(skillId,level);},data.castMs);
-    casting={skillId,startedAt:started,endsAt:started+data.castMs,timer};
-  }else dispatchSkill(skillId,level);
+    const timer=window.setTimeout(()=>{casting=null;hideCast();dispatchSkill(skillId,level,source);},data.castMs);
+    casting={skillId,source,startedAt:started,endsAt:started+data.castMs,timer};
+  }else dispatchSkill(skillId,level,source);
 }
 
-function dispatchSkill(skillId:string,level:number):void{
-  window.dispatchEvent(new CustomEvent("greenvale:skill-cast",{detail:{skillId,level}}));
+function dispatchSkill(skillId:string,level:number,source:"hotbar"|"auto"|"ui"):void{
+  window.dispatchEvent(new CustomEvent("greenvale:skill-cast",{detail:{skillId,level,source}}));
 }
 
 function updateCooldownVisuals():void{
@@ -452,6 +453,7 @@ export function initSkillSystem():void{
 
   gameEvents.on("game:canvas-ready",()=>{
     const hotbar=hotbarRoot();if(hotbar)hotbar.hidden=false;
+    window.__GV_SKILL_STATE__ = { ...runtimeState };
     renderHotbar();
     window.dispatchEvent(new Event("greenvale:skill-state-request"));
   });
