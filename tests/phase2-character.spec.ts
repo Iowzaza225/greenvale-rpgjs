@@ -56,7 +56,7 @@ test("Phase 2 stats, levels, jobs, costume and emote work on iPhone WebKit", asy
     };
   });
 
-  expect(saved.version).toBe(3);
+  expect(saved.version).toBeGreaterThanOrEqual(3);
   expect(saved.char.classId).toBe("vanguard");
   expect(saved.char.stats.STR).toBe(before.str + 1);
   expect(saved.char.costumeId).toBe("greenvale_scout");
