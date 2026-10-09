@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "monsters": [
+    {
+      "id": "ashfang_wolf",
+      "nameKey": "monster.ashfang_wolf.name",
+      "level": 3,
+      "hp": 90,
+      "atk": 13,
+      "def": 3,
+      "mdef": 1,
+      "hit": 12,
+      "flee": 8,
+      "moveSpeed": 1.35,
+      "element": "neutral",
+      "size": "medium",
+      "race": "beast",
+      "baseExp": 18,
+      "jobExp": 8,
+      "visionRange": 230,
+      "attackRange": 58,
+      "ai": "aggressive",
+      "skills": [],
+      "dropTableId": "ashfang_wolf",
+      "sprite": "placeholder_wolf",
+      "sound": "placeholder_wolf",
+      "respawnMs": 8000
+    }
+  ]
+}

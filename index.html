@@ -3,53 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-  <meta name="theme-color" content="#13251a" />
-  <title>Greenvale: After the Fall — RPGJS V2.4 Stable Boot</title>
+  <meta name="theme-color" content="#0d1716" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Greenvale Afterfall</title>
   <script>
     window.__GV_BOOT_ERRORS__ = [];
     window.__GV_ENTRY_STARTED__ = false;
     window.__GV_CANVAS_READY__ = false;
+
+    window.__GV_GET_ERROR_REPORT__ = function() {
+      const build = window.__GV_BUILD_INFO__ || {};
+      return [
+        'GREENVALE AFTERFALL ERROR REPORT',
+        'URL: ' + location.href,
+        'Build: ' + (build.id || 'not-loaded'),
+        'Version: ' + (build.version || 'not-loaded'),
+        'Time: ' + new Date().toISOString(),
+        'User-Agent: ' + navigator.userAgent,
+        '',
+        window.__GV_BOOT_ERRORS__.join('\n\n---\n\n')
+      ].join('\n');
+    };
+
+    window.__GV_COPY_ERROR__ = async function() {
+      const report = window.__GV_GET_ERROR_REPORT__();
+      const status = document.getElementById('runtime-error-copy-status');
+      try {
+        await navigator.clipboard.writeText(report);
+        if (status) status.textContent = 'Copied';
+      } catch (_) {
+        const area = document.createElement('textarea');
+        area.value = report;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+        if (status) status.textContent = 'Copied';
+      }
+    };
+
     window.__GV_SHOW_ERROR__ = function(message) {
       const text = String(message || 'Unknown runtime error');
-      window.__GV_BOOT_ERRORS__.push(text);
+      if (window.__GV_BOOT_ERRORS__[window.__GV_BOOT_ERRORS__.length - 1] !== text) {
+        window.__GV_BOOT_ERRORS__.push(text);
+      }
       const render = () => {
         const el = document.getElementById('runtime-error');
         if (!el) return;
         el.style.display = 'block';
         const out = document.getElementById('runtime-error-text');
-        if (out) out.textContent = window.__GV_BOOT_ERRORS__.slice(-3).join('\n\n');
+        if (out) out.textContent = window.__GV_GET_ERROR_REPORT__();
       };
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', render, { once:true });
-      } else render();
+      } else {
+        render();
+      }
     };
+
     window.addEventListener('error', (event) => {
-      const e = event.error;
-      window.__GV_SHOW_ERROR__('JS ERROR\n' + (e?.stack || event.message || 'unknown'));
+      const error = event.error;
+      window.__GV_SHOW_ERROR__('JS ERROR\n' + (error?.stack || event.message || 'unknown'));
     });
     window.addEventListener('unhandledrejection', (event) => {
-      const r = event.reason;
-      window.__GV_SHOW_ERROR__('PROMISE ERROR\n' + (r?.stack || r?.message || String(r)));
+      const reason = event.reason;
+      window.__GV_SHOW_ERROR__('PROMISE ERROR\n' + (reason?.stack || reason?.message || String(reason)));
     });
   </script>
-  <link rel="stylesheet" href="./node_modules/@rpgjs/ui-css/index.css">
-  <link rel="stylesheet" href="./node_modules/@rpgjs/ui-css/theme-default.css">
 </head>
 <body class="rpg-ui-app">
-  <div id="build-stamp">RPGJS V2.4 STABLE BOOT</div>
+  <div id="build-stamp" hidden>Greenvale build</div>
   <div id="rpg"></div>
-  <div id="runtime-error" style="display:none;position:fixed;left:16px;right:16px;top:18%;z-index:999999;background:#221211;color:#ffe8c4;border:2px solid #e7ad4d;border-radius:16px;padding:16px;font:600 13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;overflow:auto;max-height:58vh;box-shadow:0 12px 40px #000a">
-    <b style="display:block;color:#ffd66b;font:800 17px system-ui;margin-bottom:10px">GREENVALE RUNTIME ERROR</b>
-    <div id="runtime-error-text"></div>
+
+  <main id="gv-app" aria-live="polite"></main>
+
+  <div id="gv-in-game" hidden>
+    <button id="gv-quest" type="button"></button>
+    <button id="gv-menu-btn" type="button">☰</button>
   </div>
-  <script>
-    setTimeout(() => {
-      if (window.__GV_CANVAS_READY__) return;
-      const state = window.__GV_ENTRY_STARTED__
-        ? 'RPGJS entry started แต่ยังไม่สร้าง canvas'
-        : 'RPGJS entry ยังไม่เริ่ม';
-      window.__GV_SHOW_ERROR__('BOOT WATCHDOG\n' + state + '\nURL: ' + location.href);
-    }, 8000);
-  </script>
+
+  <section id="gv-panel" hidden aria-label="Survivor menu">
+    <div class="gv-modal">
+      <h2 id="gv-panel-title"></h2>
+      <p id="gv-panel-profile"></p>
+      <button id="gv-character-btn" class="gv-primary" type="button"></button>
+      <button id="gv-resume" class="gv-primary" type="button"></button>
+      <button id="gv-title-btn" class="gv-secondary" type="button"></button>
+    </div>
+  </section>
+
+  <div id="gv-tutorial" hidden></div>
+  <div id="gv-character-system" hidden></div>
+  <div id="gv-emote-bubble" hidden></div>
+  <div id="gv-toast" hidden></div>
+
+  <div id="runtime-error" role="alert" aria-live="assertive" style="display:none;position:fixed;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));bottom:max(10px,env(safe-area-inset-bottom));z-index:999999;background:#211211;color:#ffe8c4;border:2px solid #e7ad4d;border-radius:16px;padding:16px;font:600 12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto;box-shadow:0 12px 40px #000c">
+    <b id="runtime-error-title" style="display:block;color:#ffd66b;font:800 18px system-ui;margin-bottom:10px">GREENVALE RUNTIME ERROR</b>
+    <pre id="runtime-error-text" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font:inherit"></pre>
+    <div style="position:sticky;bottom:0;display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:12px;background:linear-gradient(transparent,#211211 28%)">
+      <button id="runtime-error-copy" type="button" onclick="window.__GV_COPY_ERROR__()" style="min-height:46px;flex:1;border:1px solid #f2c66c;border-radius:10px;background:#f2c66c;color:#201711;font:800 14px system-ui">Copy error</button>
+      <button id="runtime-error-close" type="button" onclick="document.getElementById('runtime-error').style.display='none'" style="min-height:46px;border:1px solid #8b7658;border-radius:10px;background:#30231e;color:#ffe8c4;font:800 14px system-ui;padding:0 18px">Close</button>
+      <div id="runtime-error-copy-status" style="width:100%;min-height:18px;color:#d7c49e;font:700 11px system-ui"></div>
+    </div>
+  </div>
 </body>
 </html>
