@@ -547,6 +547,9 @@ export function writeLegacyBridge(character: CharacterSave): void {
     updatedAt: now(),
   };
   localStorage.setItem(LEGACY_PROFILE_KEY, JSON.stringify(legacy));
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("greenvale:profile-updated", { detail: legacy }));
+  }
 }
 
 export function syncSelectedFromLegacy(): void {
