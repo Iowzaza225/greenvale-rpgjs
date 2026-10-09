@@ -26,7 +26,21 @@
         "VIT",
         "DEX"
       ],
-      "previewFx": "pulse"
+      "previewFx": "pulse",
+      "jobStage": "novice",
+      "jobMaxLevel": 10,
+      "baseAspd": 1,
+      "attackRange": 58,
+      "weightBonus": 0,
+      "passive": {
+        "id": "adaptable",
+        "effects": {
+          "maxHpPct": 0,
+          "maxSpPct": 0
+        }
+      },
+      "spriteProfile": "novice-placeholder",
+      "starterCostume": "none"
     },
     {
       "id": "vanguard",
@@ -46,7 +60,21 @@
         "VIT",
         "DEX"
       ],
-      "previewFx": "shock"
+      "previewFx": "shock",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 0.95,
+      "attackRange": 62,
+      "weightBonus": 180,
+      "passive": {
+        "id": "frontline_resolve",
+        "effects": {
+          "maxHpPct": 8,
+          "blockPct": 5
+        }
+      },
+      "spriteProfile": "vanguard-placeholder",
+      "starterCostume": "none"
     },
     {
       "id": "arcanist",
@@ -65,7 +93,21 @@
         "DEX",
         "VIT"
       ],
-      "previewFx": "orb"
+      "previewFx": "orb",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 0.9,
+      "attackRange": 72,
+      "weightBonus": 0,
+      "passive": {
+        "id": "arcane_reservoir",
+        "effects": {
+          "maxSpPct": 10,
+          "matkPct": 5
+        }
+      },
+      "spriteProfile": "arcanist-placeholder",
+      "starterCostume": "none"
     },
     {
       "id": "ranger",
@@ -84,7 +126,21 @@
         "AGI",
         "LUK"
       ],
-      "previewFx": "arrow"
+      "previewFx": "arrow",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 1.1,
+      "attackRange": 180,
+      "weightBonus": 40,
+      "passive": {
+        "id": "keen_eye",
+        "effects": {
+          "hitFlat": 5,
+          "critFlat": 3
+        }
+      },
+      "spriteProfile": "ranger-placeholder",
+      "starterCostume": "none"
     },
     {
       "id": "mender",
@@ -104,7 +160,21 @@
         "VIT",
         "DEX"
       ],
-      "previewFx": "heal"
+      "previewFx": "heal",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 0.95,
+      "attackRange": 90,
+      "weightBonus": 20,
+      "passive": {
+        "id": "calm_pulse",
+        "effects": {
+          "maxSpPct": 5,
+          "mdefPct": 5
+        }
+      },
+      "spriteProfile": "mender-placeholder",
+      "starterCostume": "none"
     },
     {
       "id": "shade",
@@ -123,7 +193,21 @@
         "STR",
         "LUK"
       ],
-      "previewFx": "slash"
+      "previewFx": "slash",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 1.2,
+      "attackRange": 54,
+      "weightBonus": 20,
+      "passive": {
+        "id": "ghost_step",
+        "effects": {
+          "fleeFlat": 5,
+          "perfectDodgeFlat": 2
+        }
+      },
+      "spriteProfile": "shade-placeholder",
+      "starterCostume": "none"
     },
     {
       "id": "trader",
@@ -143,7 +227,63 @@
         "LUK",
         "VIT"
       ],
-      "previewFx": "coin"
+      "previewFx": "coin",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 1,
+      "attackRange": 60,
+      "weightBonus": 420,
+      "passive": {
+        "id": "pack_rat",
+        "effects": {
+          "maxWeightFlat": 400
+        }
+      },
+      "spriteProfile": "trader-placeholder",
+      "starterCostume": "none"
     }
-  ]
+  ],
+  "jobChange": {
+    "noviceRequiredJobLevel": 10,
+    "resetJobLevelTo": 1,
+    "resetJobExp": true
+  },
+  "rebirth": {
+    "enabled": false,
+    "requiredBaseLevel": 99,
+    "requiredJobLevel": 50,
+    "preserveCosmetics": true,
+    "secondJobs": [
+      {
+        "id": "bastion",
+        "from": "vanguard",
+        "enabled": false
+      },
+      {
+        "id": "stormweaver",
+        "from": "arcanist",
+        "enabled": false
+      },
+      {
+        "id": "deadeye",
+        "from": "ranger",
+        "enabled": false
+      },
+      {
+        "id": "lifewarden",
+        "from": "mender",
+        "enabled": false
+      },
+      {
+        "id": "nightveil",
+        "from": "shade",
+        "enabled": false
+      },
+      {
+        "id": "convoy_master",
+        "from": "trader",
+        "enabled": false
+      }
+    ]
+  }
 }
