@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "costumes": [
+    {
+      "id": "none",
+      "nameKey": "costume.none",
+      "statEffect": false,
+      "overlay": "none"
+    },
+    {
+      "id": "valley-cloak",
+      "nameKey": "costume.valley_cloak",
+      "statEffect": false,
+      "overlay": "cloak-green"
+    },
+    {
+      "id": "ash-scarf",
+      "nameKey": "costume.ash_scarf",
+      "statEffect": false,
+      "overlay": "scarf-ash"
+    },
+    {
+      "id": "signal-coat",
+      "nameKey": "costume.signal_coat",
+      "statEffect": false,
+      "overlay": "coat-signal"
+    }
+  ]
+}
