@@ -11,6 +11,10 @@ import formulas from "../data/formulas.json";
 import effects from "../data/effects.json";
 import characterCreation from "../data/character_creation.json";
 import cutscene from "../data/cutscene.json";
+import expCurves from "../data/exp_curves.json";
+import animations from "../data/animations.json";
+import emotes from "../data/emotes.json";
+import costumes from "../data/costumes.json";
 
 type Dataset = { schemaVersion?: number; [key: string]: unknown };
 
@@ -28,6 +32,10 @@ const datasets: Record<string, Dataset> = {
   effects,
   characterCreation,
   cutscene,
+  expCurves,
+  animations,
+  emotes,
+  costumes,
 };
 
 function assertArray(name: string, value: unknown): asserts value is unknown[] {
@@ -73,6 +81,11 @@ export function validateGameConfig(): void {
   assertArray("character_creation.skinColors", characterCreation.skinColors);
   assertArray("character_creation.outfits", characterCreation.outfits);
   assertArray("cutscene.frames", cutscene.frames);
+  assertArray("exp_curves.base", expCurves.base);
+  assertArray("exp_curves.job", expCurves.job);
+  assertArray("animations.animations", animations.animations);
+  assertArray("emotes.emotes", emotes.emotes);
+  assertArray("costumes.costumes", costumes.costumes);
 
   assertUniqueIds("classes", classes.classes);
   assertUniqueIds("skills", skills.skills);
@@ -90,6 +103,16 @@ export function validateGameConfig(): void {
   assertUniqueIds("skinColors", characterCreation.skinColors);
   assertUniqueIds("outfits", characterCreation.outfits);
   assertUniqueIds("cutsceneFrames", cutscene.frames);
+  assertUniqueIds("animations", animations.animations);
+  assertUniqueIds("emotes", emotes.emotes);
+  assertUniqueIds("costumes", costumes.costumes);
+
+  if (expCurves.base.length !== 99 || expCurves.base[0]?.level !== 1 || expCurves.base[98]?.level !== 99) {
+    throw new Error("Config \"exp_curves.base\" must contain levels 1-99");
+  }
+  if (expCurves.job.length !== 50 || expCurves.job[0]?.level !== 1 || expCurves.job[49]?.level !== 50) {
+    throw new Error("Config \"exp_curves.job\" must contain levels 1-50");
+  }
 }
 
 export const gameConfig = Object.freeze({
@@ -106,6 +129,10 @@ export const gameConfig = Object.freeze({
   effects,
   characterCreation,
   cutscene,
+  expCurves,
+  animations,
+  emotes,
+  costumes,
 });
 
 export type GameConfig = typeof gameConfig;
