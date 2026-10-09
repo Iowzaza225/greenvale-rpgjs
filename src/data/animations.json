@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "nameKey": "animation.idle",
+      "runtime": "idle",
+      "placeholder": "css"
+    },
+    {
+      "id": "walk",
+      "nameKey": "animation.walk",
+      "runtime": "walk",
+      "placeholder": "rpgjs"
+    },
+    {
+      "id": "run",
+      "nameKey": "animation.run",
+      "runtime": "walk",
+      "speedMultiplier": 1.25,
+      "placeholder": "rpgjs"
+    },
+    {
+      "id": "attack",
+      "nameKey": "animation.attack",
+      "runtime": "attack2",
+      "placeholder": "rpgjs"
+    },
+    {
+      "id": "skill",
+      "nameKey": "animation.skill",
+      "runtime": "attack2",
+      "placeholder": "rpgjs"
+    },
+    {
+      "id": "hit",
+      "nameKey": "animation.hit",
+      "runtime": "idle",
+      "placeholder": "css-flash"
+    },
+    {
+      "id": "death",
+      "nameKey": "animation.death",
+      "runtime": "idle",
+      "placeholder": "css"
+    },
+    {
+      "id": "rest",
+      "nameKey": "animation.rest",
+      "runtime": "idle",
+      "placeholder": "css"
+    },
+    {
+      "id": "cheer",
+      "nameKey": "animation.cheer",
+      "runtime": "idle",
+      "placeholder": "css"
+    }
+  ]
+}
