@@ -383,5 +383,9 @@
   "skill.debt_marker.name": "Debt Marker",
   "skill.debt_marker.description": "Mark an enemy and slow its movement.",
   "skill.surplus_instinct.name": "Surplus Instinct",
-  "skill.surplus_instinct.description": "Passive max-weight and MaxHP bonus."
+  "skill.surplus_instinct.description": "Passive max-weight and MaxHP bonus.",
+  "skill.ui.changeJob": "Change job",
+  "skill.ui.kicker": "GREENVALE · SKILLS",
+  "skill.ui.levelShort": "Lv",
+  "skill.ui.spShort": "SP"
 }
