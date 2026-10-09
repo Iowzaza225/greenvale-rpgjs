@@ -36,6 +36,7 @@ declare global {
 
 type Tab = "stats" | "job" | "costume" | "emote";
 let activeTab: Tab = "stats";
+let animationDemo = "idle";
 let initialized = false;
 
 function host(): HTMLElement | null {
@@ -116,6 +117,23 @@ function classIcon(classId: string): string {
   return `<span class="gv2-class-icon gv2-class-icon--${escapeHtml(classId)}">${letters[classId] || "GV"}</span>`;
 }
 
+function renderAnimationDemo(classId: string): string {
+  const cls = getClassConfig(classId) as any;
+  const outfit = cls.outfit || { body: "#5b765f", accent: "#d1c188" };
+  const states = ["idle","walk","run","attack","skill","hit","death","rest","emote"];
+  return `<section class="gv2-animation-demo">
+    <h3>${escapeHtml(t("character.animationDemo"))}</h3>
+    <div class="gv2-animation-stage">
+      <div class="gv2-dummy" data-state="${animationDemo}" style="--body:${outfit.body};--accent:${outfit.accent}">
+        <i class="head"></i><i class="torso"></i><i class="arm a"></i><i class="arm b"></i><i class="leg a"></i><i class="leg b"></i><i class="weapon"></i>
+      </div>
+    </div>
+    <div class="gv2-animation-buttons">
+      ${states.map(state => `<button class="${animationDemo===state?"active":""}" data-phase2="animation" data-animation="${state}">${escapeHtml(t(`anim.${state}`))}</button>`).join("")}
+    </div>
+  </section>`;
+}
+
 function renderJob(): string {
   const character = getSelectedCharacter();
   if (!character) return "";
@@ -131,6 +149,7 @@ function renderJob(): string {
         <div><dt>${escapeHtml(t("character.aspd"))}</dt><dd>${Number(current.aspd).toFixed(2)}</dd></div>
         <div><dt>${escapeHtml(t("character.animationSet"))}</dt><dd>✓</dd></div>
       </dl>
+      ${renderAnimationDemo(character.classId)}
       <div class="gv2-rebirth"><b>${escapeHtml(t("character.rebirth"))}</b><span>${escapeHtml(t("character.rebirthPlanned"))}</span></div>
     </div>`;
   }
@@ -141,6 +160,7 @@ function renderJob(): string {
       <b>${escapeHtml(t(ready ? "character.jobReady" : "character.jobLocked"))}</b>
       <span>Job Lv ${character.jobLevel} / 10</span>
     </div>
+    ${renderAnimationDemo("novice")}
     <div class="gv2-job-cards">
       ${jobs.map((job:any) => `<article>
         ${classIcon(job.id)}
@@ -219,6 +239,11 @@ function handleAction(node: HTMLElement): void {
   }
   if (action === "tab") {
     activeTab = (node.dataset.tab as Tab) || "stats"; render(); return;
+  }
+  if (action === "animation") {
+    animationDemo = String(node.dataset.animation || "idle");
+    render();
+    return;
   }
   if (action === "stat") {
     try {
