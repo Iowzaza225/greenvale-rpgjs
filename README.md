@@ -172,3 +172,35 @@ Novice changes job at Job Lv 10 into Vanguard, Arcanist, Ranger, Mender, Shade o
 The in-game **Stats / Job** window is mobile safe-area aware and allows stat allocation, job selection, costume switching and emotes. Standalone RPGJS receives updated MaxHP/MaxSP/ATK/DEF immediately through the local runtime bridge.
 
 See `docs/PHASE_2_QA.md`.
+
+
+## Phase 3 skills
+
+`src/data/skills.json` is now the source of truth for the complete first-job skill layer:
+
+- 3 Novice skills
+- 8 Vanguard skills
+- 8 Arcanist skills
+- 8 Ranger skills
+- 8 Mender skills
+- 8 Shade skills
+- 8 Trader skills
+
+Every skill defines stable ids, translation keys, type, MaxLv, prerequisites, per-level SP, cooldown, cast time, after-cast delay, range, area shape, per-level damage/heal values, formula id, element, allowed weapon types, consumed-item field, VFX id, SFX id, status effect and tree coordinates.
+
+The shared rules engine is `src/core/skills.ts`. It handles learning, prerequisite validation, skill-point spending, hotbar assignments, reset/refund, passive derived-stat bonuses and Auto settings.
+
+### Add a skill by JSON
+
+1. Add the skill record to `src/data/skills.json`.
+2. Add `skill.<id>.name` and `skill.<id>.description` to both i18n files.
+3. Add the referenced effect id to `src/data/effects.json`.
+4. Use an existing formula id from `formulas.json` and an existing status id from `status_effects.json`.
+5. Put its `tree.x/tree.y` coordinates and prerequisite ids in JSON.
+6. No skill-tree UI code change is needed: the Phase 3 UI renders the tree and connectors from config.
+
+### Mobile hotbar
+
+Greenvale uses its own 10-slot hotbar rather than the RPGJS synchronized hotbar. On portrait iPhone it displays as two rows of five above the movement/action controls and respects the bottom safe area. Learned skills can be quick-assigned or held and dragged to slots 0–9.
+
+See `docs/PHASE_3_QA.md`.
