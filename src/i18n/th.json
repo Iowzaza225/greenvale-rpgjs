@@ -427,5 +427,6 @@
   "status.haste.name": "เร่งความเร็ว",
   "status.revive_guard.name": "อมตะหลังฟื้น",
   "item.field_revive_kit.name": "Field Revive Kit",
-  "item.field_revive_kit.description": "ชุดกู้ชีพฉุกเฉิน ใช้ฟื้นตรงจุดที่ล้ม"
+  "item.field_revive_kit.description": "ชุดกู้ชีพฉุกเฉิน ใช้ฟื้นตรงจุดที่ล้ม",
+  "combat.float.player-hit": "{damage}"
 }
