@@ -1,89 +1,3229 @@
 {
   "schemaVersion": 1,
+  "hotbarSlots": 10,
   "skills": [
     {
       "id": "survivor_strike",
+      "classId": "novice",
       "nameKey": "skill.survivor_strike.name",
       "descriptionKey": "skill.survivor_strike.description",
       "type": "active",
       "maxLv": 10,
+      "prerequisites": [],
       "spCost": [
         3,
-        3,
-        4,
         4,
         5,
-        5,
-        6,
         6,
         7,
-        8
+        8,
+        9,
+        10,
+        11,
+        12
       ],
       "cooldownMs": 800,
       "castMs": 0,
       "afterCastMs": 250,
-      "range": 70,
+      "range": 72,
       "area": {
-        "shape": "single"
+        "shape": "single",
+        "radius": 0
       },
+      "powerPercent": [
+        105,
+        113,
+        121,
+        129,
+        137,
+        145,
+        153,
+        161,
+        169,
+        177
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
       "element": "neutral",
       "weaponTypes": [
         "blade",
         "dagger",
-        "mace",
-        "cart"
+        "mace"
       ],
-      "formula": "physical_basic",
-      "effectId": "fx_survivor_strike"
+      "consumeItems": [],
+      "effectId": "fx_survivor_strike",
+      "soundId": "sfx_survivor_strike",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 0
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
     },
     {
       "id": "field_first_aid",
+      "classId": "novice",
       "nameKey": "skill.field_first_aid.name",
       "descriptionKey": "skill.field_first_aid.description",
       "type": "active",
       "maxLv": 10,
+      "prerequisites": [],
       "spCost": [
         5,
-        5,
-        6,
         6,
         7,
-        7,
-        8,
         8,
         9,
-        10
+        10,
+        11,
+        12,
+        13,
+        14
       ],
       "cooldownMs": 3000,
       "castMs": 600,
-      "afterCastMs": 300,
+      "afterCastMs": 250,
       "range": 0,
       "area": {
-        "shape": "self"
+        "shape": "self",
+        "radius": 0
       },
+      "powerPercent": [
+        110,
+        125,
+        140,
+        155,
+        170,
+        185,
+        200,
+        215,
+        230,
+        245
+      ],
+      "healPercent": [
+        55,
+        63,
+        71,
+        79,
+        87,
+        95,
+        103,
+        111,
+        119,
+        127
+      ],
       "element": "neutral",
-      "formula": "heal_basic",
-      "effectId": "fx_first_aid"
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_field_first_aid",
+      "soundId": "sfx_field_first_aid",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "heal",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self",
+        "condition": {
+          "hpBelow": 40
+        }
+      }
     },
     {
       "id": "camp_rest",
+      "classId": "novice",
       "nameKey": "skill.camp_rest.name",
       "descriptionKey": "skill.camp_rest.description",
       "type": "toggle",
       "maxLv": 1,
+      "prerequisites": [],
       "spCost": [
         0
       ],
       "cooldownMs": 0,
       "castMs": 0,
-      "afterCastMs": 0,
+      "afterCastMs": 250,
       "range": 0,
       "area": {
-        "shape": "self"
+        "shape": "self",
+        "radius": 0
       },
+      "powerPercent": [
+        0
+      ],
+      "healPercent": [
+        0
+      ],
       "element": "neutral",
-      "formula": "none",
-      "effectId": "fx_rest"
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_camp_rest",
+      "soundId": "sfx_camp_rest",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "toggle",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": false,
+        "target": "self"
+      }
+    },
+    {
+      "id": "impact_cleave",
+      "classId": "vanguard",
+      "nameKey": "skill.impact_cleave.name",
+      "descriptionKey": "skill.impact_cleave.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "cooldownMs": 1100,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 82,
+      "area": {
+        "shape": "cone",
+        "radius": 82
+      },
+      "powerPercent": [
+        130,
+        150,
+        170,
+        190,
+        210
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [
+        "blade",
+        "mace"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_impact_cleave",
+      "soundId": "sfx_impact_cleave",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 0
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "thorn_guard",
+      "classId": "vanguard",
+      "nameKey": "skill.thorn_guard.name",
+      "descriptionKey": "skill.thorn_guard.description",
+      "type": "buff",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "cooldownMs": 9000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_thorn_guard",
+      "soundId": "sfx_thorn_guard",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "buff",
+        "stat": "PDEF",
+        "amountPerLevel": 3,
+        "durationMs": 6000
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self"
+      }
+    },
+    {
+      "id": "dread_shout",
+      "classId": "vanguard",
+      "nameKey": "skill.dread_shout.name",
+      "descriptionKey": "skill.dread_shout.description",
+      "type": "debuff",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "cooldownMs": 7000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 130,
+      "area": {
+        "shape": "circle",
+        "radius": 100
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_dread_shout",
+      "soundId": "sfx_dread_shout",
+      "statusEffect": {
+        "id": "slow",
+        "durationMs": 3000,
+        "chance": 1
+      },
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "debuff",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "iron_pulse",
+      "classId": "vanguard",
+      "nameKey": "skill.iron_pulse.name",
+      "descriptionKey": "skill.iron_pulse.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_iron_pulse",
+      "soundId": "sfx_iron_pulse",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "DEF": 2,
+        "MaxHP": 12
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "linebreaker",
+      "classId": "vanguard",
+      "nameKey": "skill.linebreaker.name",
+      "descriptionKey": "skill.linebreaker.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "impact_cleave",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "cooldownMs": 4500,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 105,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        160,
+        182,
+        204,
+        226,
+        248
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [
+        "blade",
+        "mace"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_linebreaker",
+      "soundId": "sfx_linebreaker",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "last_wall",
+      "classId": "vanguard",
+      "nameKey": "skill.last_wall.name",
+      "descriptionKey": "skill.last_wall.description",
+      "type": "toggle",
+      "maxLv": 1,
+      "prerequisites": [
+        {
+          "skillId": "thorn_guard",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        4
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0
+      ],
+      "healPercent": [
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_last_wall",
+      "soundId": "sfx_last_wall",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "toggle",
+        "stat": "PDEF",
+        "amountPerLevel": 8,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "ground_quake",
+      "classId": "vanguard",
+      "nameKey": "skill.ground_quake.name",
+      "descriptionKey": "skill.ground_quake.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "linebreaker",
+          "level": 2
+        }
+      ],
+      "spCost": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "cooldownMs": 6500,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 90,
+      "area": {
+        "shape": "circle",
+        "radius": 90
+      },
+      "powerPercent": [
+        170,
+        195,
+        220,
+        245,
+        270
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_ground_quake",
+      "soundId": "sfx_ground_quake",
+      "statusEffect": {
+        "id": "stun",
+        "durationMs": 900,
+        "chance": 0.35
+      },
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "unyielding_oath",
+      "classId": "vanguard",
+      "nameKey": "skill.unyielding_oath.name",
+      "descriptionKey": "skill.unyielding_oath.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "iron_pulse",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_unyielding_oath",
+      "soundId": "sfx_unyielding_oath",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "MaxHP": 20,
+        "critResistance": 1
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "ember_orb",
+      "classId": "arcanist",
+      "nameKey": "skill.ember_orb.name",
+      "descriptionKey": "skill.ember_orb.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "cooldownMs": 1200,
+      "castMs": 350,
+      "afterCastMs": 250,
+      "range": 210,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        125,
+        147,
+        169,
+        191,
+        213
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "fire",
+      "weaponTypes": [
+        "staff",
+        "focus"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_ember_orb",
+      "soundId": "sfx_ember_orb",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 0
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "frost_pillar",
+      "classId": "arcanist",
+      "nameKey": "skill.frost_pillar.name",
+      "descriptionKey": "skill.frost_pillar.description",
+      "type": "debuff",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "cooldownMs": 3500,
+      "castMs": 650,
+      "afterCastMs": 250,
+      "range": 180,
+      "area": {
+        "shape": "circle",
+        "radius": 72
+      },
+      "powerPercent": [
+        105,
+        123,
+        141,
+        159,
+        177
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "water",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_frost_pillar",
+      "soundId": "sfx_frost_pillar",
+      "statusEffect": {
+        "id": "slow",
+        "durationMs": 3500,
+        "chance": 1
+      },
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "debuff",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "chain_voltage",
+      "classId": "arcanist",
+      "nameKey": "skill.chain_voltage.name",
+      "descriptionKey": "skill.chain_voltage.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "cooldownMs": 5000,
+      "castMs": 500,
+      "afterCastMs": 250,
+      "range": 200,
+      "area": {
+        "shape": "chain",
+        "radius": 145
+      },
+      "powerPercent": [
+        115,
+        133,
+        151,
+        169,
+        187
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "wind",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_chain_voltage",
+      "soundId": "sfx_chain_voltage",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "mana_lattice",
+      "classId": "arcanist",
+      "nameKey": "skill.mana_lattice.name",
+      "descriptionKey": "skill.mana_lattice.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_mana_lattice",
+      "soundId": "sfx_mana_lattice",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "MATK": 3,
+        "MaxSP": 15
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "ash_meteor",
+      "classId": "arcanist",
+      "nameKey": "skill.ash_meteor.name",
+      "descriptionKey": "skill.ash_meteor.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "ember_orb",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "cooldownMs": 8000,
+      "castMs": 1100,
+      "afterCastMs": 250,
+      "range": 220,
+      "area": {
+        "shape": "circle",
+        "radius": 105
+      },
+      "powerPercent": [
+        190,
+        220,
+        250,
+        280,
+        310
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "fire",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_ash_meteor",
+      "soundId": "sfx_ash_meteor",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "static_field",
+      "classId": "arcanist",
+      "nameKey": "skill.static_field.name",
+      "descriptionKey": "skill.static_field.description",
+      "type": "toggle",
+      "maxLv": 1,
+      "prerequisites": [],
+      "spCost": [
+        5
+      ],
+      "cooldownMs": 1200,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 90
+      },
+      "powerPercent": [
+        0
+      ],
+      "healPercent": [
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_static_field",
+      "soundId": "sfx_static_field",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "toggle",
+        "stat": "MATK",
+        "amountPerLevel": 4,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "crystal_shell",
+      "classId": "arcanist",
+      "nameKey": "skill.crystal_shell.name",
+      "descriptionKey": "skill.crystal_shell.description",
+      "type": "buff",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "frost_pillar",
+          "level": 2
+        }
+      ],
+      "spCost": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "cooldownMs": 10000,
+      "castMs": 300,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_crystal_shell",
+      "soundId": "sfx_crystal_shell",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "buff",
+        "stat": "PDEF",
+        "amountPerLevel": 2,
+        "durationMs": 7000
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self"
+      }
+    },
+    {
+      "id": "storm_memory",
+      "classId": "arcanist",
+      "nameKey": "skill.storm_memory.name",
+      "descriptionKey": "skill.storm_memory.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "chain_voltage",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_storm_memory",
+      "soundId": "sfx_storm_memory",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "MATK": 4,
+        "MaxSP": 18
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "piercing_shot",
+      "classId": "ranger",
+      "nameKey": "skill.piercing_shot.name",
+      "descriptionKey": "skill.piercing_shot.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "cooldownMs": 900,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 240,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        135,
+        153,
+        171,
+        189,
+        207
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [
+        "bow"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_piercing_shot",
+      "soundId": "sfx_piercing_shot",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 0
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "scatter_shot",
+      "classId": "ranger",
+      "nameKey": "skill.scatter_shot.name",
+      "descriptionKey": "skill.scatter_shot.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "cooldownMs": 2800,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 190,
+      "area": {
+        "shape": "cone",
+        "radius": 160
+      },
+      "powerPercent": [
+        90,
+        104,
+        118,
+        132,
+        146
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [
+        "bow"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_scatter_shot",
+      "soundId": "sfx_scatter_shot",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "scrap_snare",
+      "classId": "ranger",
+      "nameKey": "skill.scrap_snare.name",
+      "descriptionKey": "skill.scrap_snare.description",
+      "type": "debuff",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "cooldownMs": 5500,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 175,
+      "area": {
+        "shape": "circle",
+        "radius": 55
+      },
+      "powerPercent": [
+        70,
+        80,
+        90,
+        100,
+        110
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_scrap_snare",
+      "soundId": "sfx_scrap_snare",
+      "statusEffect": {
+        "id": "slow",
+        "durationMs": 4500,
+        "chance": 1
+      },
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "debuff",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "trail_sense",
+      "classId": "ranger",
+      "nameKey": "skill.trail_sense.name",
+      "descriptionKey": "skill.trail_sense.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_trail_sense",
+      "soundId": "sfx_trail_sense",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "FLEE": 2,
+        "HIT": 2,
+        "CRIT": 1
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "eagle_line",
+      "classId": "ranger",
+      "nameKey": "skill.eagle_line.name",
+      "descriptionKey": "skill.eagle_line.description",
+      "type": "buff",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "cooldownMs": 9000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_eagle_line",
+      "soundId": "sfx_eagle_line",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "buff",
+        "stat": "ATK",
+        "amountPerLevel": 2,
+        "durationMs": 7000
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self"
+      }
+    },
+    {
+      "id": "split_reed",
+      "classId": "ranger",
+      "nameKey": "skill.split_reed.name",
+      "descriptionKey": "skill.split_reed.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "piercing_shot",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "cooldownMs": 3600,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 235,
+      "area": {
+        "shape": "chain",
+        "radius": 120
+      },
+      "powerPercent": [
+        125,
+        145,
+        165,
+        185,
+        205
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_split_reed",
+      "soundId": "sfx_split_reed",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "backstep_volley",
+      "classId": "ranger",
+      "nameKey": "skill.backstep_volley.name",
+      "descriptionKey": "skill.backstep_volley.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "scatter_shot",
+          "level": 2
+        }
+      ],
+      "spCost": [
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "cooldownMs": 6200,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 210,
+      "area": {
+        "shape": "cone",
+        "radius": 170
+      },
+      "powerPercent": [
+        145,
+        167,
+        189,
+        211,
+        233
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_backstep_volley",
+      "soundId": "sfx_backstep_volley",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "patient_hunter",
+      "classId": "ranger",
+      "nameKey": "skill.patient_hunter.name",
+      "descriptionKey": "skill.patient_hunter.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "trail_sense",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_patient_hunter",
+      "soundId": "sfx_patient_hunter",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "CRIT": 2,
+        "attackRange": 5
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "field_mend",
+      "classId": "mender",
+      "nameKey": "skill.field_mend.name",
+      "descriptionKey": "skill.field_mend.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "cooldownMs": 1800,
+      "castMs": 500,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        110,
+        125,
+        140,
+        155,
+        170
+      ],
+      "healPercent": [
+        85,
+        103,
+        121,
+        139,
+        157
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_field_mend",
+      "soundId": "sfx_field_mend",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 0
+      },
+      "runtime": {
+        "kind": "heal",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self",
+        "condition": {
+          "hpBelow": 55
+        }
+      }
+    },
+    {
+      "id": "aegis_blessing",
+      "classId": "mender",
+      "nameKey": "skill.aegis_blessing.name",
+      "descriptionKey": "skill.aegis_blessing.description",
+      "type": "buff",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "cooldownMs": 9000,
+      "castMs": 450,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_aegis_blessing",
+      "soundId": "sfx_aegis_blessing",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "buff",
+        "stat": "PDEF",
+        "amountPerLevel": 3,
+        "durationMs": 8000
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self"
+      }
+    },
+    {
+      "id": "banish_hollow",
+      "classId": "mender",
+      "nameKey": "skill.banish_hollow.name",
+      "descriptionKey": "skill.banish_hollow.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "cooldownMs": 2400,
+      "castMs": 350,
+      "afterCastMs": 250,
+      "range": 175,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        145,
+        165,
+        185,
+        205,
+        225
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "light",
+      "weaponTypes": [
+        "mace",
+        "staff"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_banish_hollow",
+      "soundId": "sfx_banish_hollow",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "steady_hands",
+      "classId": "mender",
+      "nameKey": "skill.steady_hands.name",
+      "descriptionKey": "skill.steady_hands.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_steady_hands",
+      "soundId": "sfx_steady_hands",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "MATK": 2,
+        "MaxSP": 10
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "renewal_ring",
+      "classId": "mender",
+      "nameKey": "skill.renewal_ring.name",
+      "descriptionKey": "skill.renewal_ring.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "field_mend",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "cooldownMs": 6500,
+      "castMs": 800,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "circle",
+        "radius": 95
+      },
+      "powerPercent": [
+        110,
+        125,
+        140,
+        155,
+        170
+      ],
+      "healPercent": [
+        110,
+        130,
+        150,
+        170,
+        190
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_renewal_ring",
+      "soundId": "sfx_renewal_ring",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "heal",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self"
+      }
+    },
+    {
+      "id": "calm_mind",
+      "classId": "mender",
+      "nameKey": "skill.calm_mind.name",
+      "descriptionKey": "skill.calm_mind.description",
+      "type": "toggle",
+      "maxLv": 1,
+      "prerequisites": [],
+      "spCost": [
+        4
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0
+      ],
+      "healPercent": [
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_calm_mind",
+      "soundId": "sfx_calm_mind",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "toggle",
+        "stat": "MDEF",
+        "amountPerLevel": 6,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "mercy_signal",
+      "classId": "mender",
+      "nameKey": "skill.mercy_signal.name",
+      "descriptionKey": "skill.mercy_signal.description",
+      "type": "buff",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "aegis_blessing",
+          "level": 2
+        }
+      ],
+      "spCost": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "cooldownMs": 12000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_mercy_signal",
+      "soundId": "sfx_mercy_signal",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "buff",
+        "stat": "MaxHP",
+        "amountPerLevel": 8,
+        "durationMs": 9000
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self"
+      }
+    },
+    {
+      "id": "aftercare",
+      "classId": "mender",
+      "nameKey": "skill.aftercare.name",
+      "descriptionKey": "skill.aftercare.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "steady_hands",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_aftercare",
+      "soundId": "sfx_aftercare",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "hpRegen": 1,
+        "spRegen": 1
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "backcut",
+      "classId": "shade",
+      "nameKey": "skill.backcut.name",
+      "descriptionKey": "skill.backcut.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 62,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        150,
+        172,
+        194,
+        216,
+        238
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [
+        "dagger",
+        "knife"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_backcut",
+      "soundId": "sfx_backcut",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 0
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "veil_step",
+      "classId": "shade",
+      "nameKey": "skill.veil_step.name",
+      "descriptionKey": "skill.veil_step.description",
+      "type": "buff",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "cooldownMs": 8000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_veil_step",
+      "soundId": "sfx_veil_step",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "buff",
+        "stat": "FLEE",
+        "amountPerLevel": 5,
+        "durationMs": 4500
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self"
+      }
+    },
+    {
+      "id": "glass_knife",
+      "classId": "shade",
+      "nameKey": "skill.glass_knife.name",
+      "descriptionKey": "skill.glass_knife.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "cooldownMs": 2100,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 155,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        115,
+        133,
+        151,
+        169,
+        187
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [
+        "dagger",
+        "knife"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_glass_knife",
+      "soundId": "sfx_glass_knife",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "soft_foot",
+      "classId": "shade",
+      "nameKey": "skill.soft_foot.name",
+      "descriptionKey": "skill.soft_foot.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_soft_foot",
+      "soundId": "sfx_soft_foot",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "FLEE": 3,
+        "CRIT": 1
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "bleed_mark",
+      "classId": "shade",
+      "nameKey": "skill.bleed_mark.name",
+      "descriptionKey": "skill.bleed_mark.description",
+      "type": "debuff",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "backcut",
+          "level": 2
+        }
+      ],
+      "spCost": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "cooldownMs": 4200,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 65,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        100,
+        112,
+        124,
+        136,
+        148
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_bleed_mark",
+      "soundId": "sfx_bleed_mark",
+      "statusEffect": {
+        "id": "bleed",
+        "durationMs": 5000,
+        "chance": 0.8
+      },
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "debuff",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "shadow_hold",
+      "classId": "shade",
+      "nameKey": "skill.shadow_hold.name",
+      "descriptionKey": "skill.shadow_hold.description",
+      "type": "toggle",
+      "maxLv": 1,
+      "prerequisites": [],
+      "spCost": [
+        5
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0
+      ],
+      "healPercent": [
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_shadow_hold",
+      "soundId": "sfx_shadow_hold",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "toggle",
+        "stat": "ATK",
+        "amountPerLevel": 5,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "crossfade",
+      "classId": "shade",
+      "nameKey": "skill.crossfade.name",
+      "descriptionKey": "skill.crossfade.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "veil_step",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "cooldownMs": 6000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 95,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        180,
+        206,
+        232,
+        258,
+        284
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_crossfade",
+      "soundId": "sfx_crossfade",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "silent_finish",
+      "classId": "shade",
+      "nameKey": "skill.silent_finish.name",
+      "descriptionKey": "skill.silent_finish.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "soft_foot",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_silent_finish",
+      "soundId": "sfx_silent_finish",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "ATK": 2,
+        "CRIT": 2
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "coin_burst",
+      "classId": "trader",
+      "nameKey": "skill.coin_burst.name",
+      "descriptionKey": "skill.coin_burst.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "cooldownMs": 1600,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 115,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        120,
+        140,
+        160,
+        180,
+        200
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [
+        "cart",
+        "blade"
+      ],
+      "consumeItems": [
+        {
+          "id": "scrap_credit",
+          "amount": [
+            5,
+            7,
+            9,
+            11,
+            13
+          ]
+        }
+      ],
+      "effectId": "fx_coin_burst",
+      "soundId": "sfx_coin_burst",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 0
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "barter_edge",
+      "classId": "trader",
+      "nameKey": "skill.barter_edge.name",
+      "descriptionKey": "skill.barter_edge.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_barter_edge",
+      "soundId": "sfx_barter_edge",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "maxWeight": 90,
+        "CRIT": 1
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "cart_rush",
+      "classId": "trader",
+      "nameKey": "skill.cart_rush.name",
+      "descriptionKey": "skill.cart_rush.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "cooldownMs": 3500,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 105,
+      "area": {
+        "shape": "line",
+        "radius": 90
+      },
+      "powerPercent": [
+        140,
+        162,
+        184,
+        206,
+        228
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [
+        "cart",
+        "blade"
+      ],
+      "consumeItems": [],
+      "effectId": "fx_cart_rush",
+      "soundId": "sfx_cart_rush",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 1
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "quick_haggle",
+      "classId": "trader",
+      "nameKey": "skill.quick_haggle.name",
+      "descriptionKey": "skill.quick_haggle.description",
+      "type": "buff",
+      "maxLv": 5,
+      "prerequisites": [],
+      "spCost": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "cooldownMs": 9000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_quick_haggle",
+      "soundId": "sfx_quick_haggle",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "buff",
+        "stat": "ATK",
+        "amountPerLevel": 1,
+        "durationMs": 9000
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "self"
+      }
+    },
+    {
+      "id": "weighted_toss",
+      "classId": "trader",
+      "nameKey": "skill.weighted_toss.name",
+      "descriptionKey": "skill.weighted_toss.description",
+      "type": "active",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "coin_burst",
+          "level": 2
+        }
+      ],
+      "spCost": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "cooldownMs": 3000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 145,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        145,
+        167,
+        189,
+        211,
+        233
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_weighted_toss",
+      "soundId": "sfx_weighted_toss",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 1,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "damage",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "portable_stall",
+      "classId": "trader",
+      "nameKey": "skill.portable_stall.name",
+      "descriptionKey": "skill.portable_stall.description",
+      "type": "toggle",
+      "maxLv": 1,
+      "prerequisites": [],
+      "spCost": [
+        3
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 0,
+      "area": {
+        "shape": "self",
+        "radius": 0
+      },
+      "powerPercent": [
+        0
+      ],
+      "healPercent": [
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_portable_stall",
+      "soundId": "sfx_portable_stall",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 2
+      },
+      "runtime": {
+        "kind": "toggle",
+        "stat": "maxWeight",
+        "amountPerLevel": 300,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "debt_marker",
+      "classId": "trader",
+      "nameKey": "skill.debt_marker.name",
+      "descriptionKey": "skill.debt_marker.description",
+      "type": "debuff",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "quick_haggle",
+          "level": 2
+        }
+      ],
+      "spCost": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "cooldownMs": 5500,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 125,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_debt_marker",
+      "soundId": "sfx_debt_marker",
+      "statusEffect": {
+        "id": "slow",
+        "durationMs": 2500,
+        "chance": 1
+      },
+      "interruptible": true,
+      "tree": {
+        "x": 0,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "debuff",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": null,
+      "auto": {
+        "allowed": true,
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "surplus_instinct",
+      "classId": "trader",
+      "nameKey": "skill.surplus_instinct.name",
+      "descriptionKey": "skill.surplus_instinct.description",
+      "type": "passive",
+      "maxLv": 5,
+      "prerequisites": [
+        {
+          "skillId": "barter_edge",
+          "level": 3
+        }
+      ],
+      "spCost": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "cooldownMs": 1000,
+      "castMs": 0,
+      "afterCastMs": 250,
+      "range": 72,
+      "area": {
+        "shape": "single",
+        "radius": 0
+      },
+      "powerPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "healPercent": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "element": "neutral",
+      "weaponTypes": [],
+      "consumeItems": [],
+      "effectId": "fx_surplus_instinct",
+      "soundId": "sfx_surplus_instinct",
+      "statusEffect": null,
+      "interruptible": true,
+      "tree": {
+        "x": 2,
+        "y": 3
+      },
+      "runtime": {
+        "kind": "passive",
+        "stat": null,
+        "amountPerLevel": 0,
+        "durationMs": 0
+      },
+      "passiveBonus": {
+        "maxWeight": 140,
+        "MaxHP": 8
+      },
+      "auto": {
+        "allowed": false,
+        "target": "enemy"
+      }
     }
   ]
 }
