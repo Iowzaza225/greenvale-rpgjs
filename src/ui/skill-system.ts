@@ -103,7 +103,6 @@ function renderHotbar(): void {
       if (id) void useSkill(id, "hotbar");
     });
   });
-  window.__GV_SKILL_STATE__ = { ...runtimeState, lastResult: detail };
   updateCooldownVisuals();
 }
 
@@ -448,6 +447,7 @@ function handleSkillResult(detail:any):void{
     const key=detail.reason==="no-sp"?"skill.ui.noSp":detail.reason==="cooldown"?"skill.ui.cooling":detail.reason==="no-target"?"skill.ui.noTarget":"skill.ui.locked";
     toast(t(key));
   }
+  window.__GV_SKILL_STATE__ = { ...runtimeState, lastResult: detail };
   updateCooldownVisuals();
 }
 
