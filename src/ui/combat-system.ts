@@ -75,7 +75,12 @@ function removeStatus(id:string):void{
 function floatText(detail:any):void{
   const el=floatRoot();if(!el)return;
   const type=String(detail?.type||"hit");
-  const damage=Math.max(0,Math.floor(Number(detail?.damage)||0));
+  const numeric=Number(detail?.damage);
+  const damage=Number.isFinite(numeric)?Math.max(0,Math.floor(Math.abs(numeric))):0;
+  const numericTypes=new Set(["hit","critical","block","player-hit","heal"]);
+  // MISS / PERFECT DODGE are text outcomes. Real damage outcomes must never
+  // create a misleading 0 or negative label.
+  if(numericTypes.has(type)&&damage<=0)return;
   const node=document.createElement("span");
   node.className=`gv4-float gv4-float--${type}`;
   const key=`combat.float.${type}`;
