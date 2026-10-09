@@ -139,17 +139,20 @@ function randomizeAppearance(): CharacterAppearance {
   };
 }
 
-function avatar(character: Pick<CharacterSave, "appearance"> | { appearance: CharacterAppearance }, size = "large"): string {
+function avatar(character: Pick<CharacterSave, "appearance" | "costumeId"> | { appearance: CharacterAppearance; costumeId?: string }, size = "large"): string {
   const appearance = character.appearance;
   const hairColor = option(creation.hairColors, appearance.hairColor);
   const skin = option(creation.skinColors, appearance.skinColor);
   const outfit = option(creation.outfits, appearance.outfit);
+  const costume = classesConfig.costumes.find((entry) => entry.id === character.costumeId);
+  const bodyColor = costume?.overlay?.body || outfit.color;
+  const accentColor = costume?.overlay?.accent || outfit.accent;
   return `
     <div class="gv-avatar gv-avatar--${size} gv-hair--${escapeHtml(appearance.hairStyle)}"
       data-gender="${escapeHtml(appearance.gender)}"
       data-direction="${previewDirection}"
       data-animation="${previewAnimation}"
-      style="--gv-hair:${hairColor.hex};--gv-skin:${skin.hex};--gv-outfit:${outfit.color};--gv-accent:${outfit.accent}">
+      style="--gv-hair:${hairColor.hex};--gv-skin:${skin.hex};--gv-outfit:${bodyColor};--gv-accent:${accentColor}">
       <div class="gv-avatar-shadow"></div>
       <div class="gv-avatar-body">
         <span class="gv-avatar-leg gv-avatar-leg-a"></span>
