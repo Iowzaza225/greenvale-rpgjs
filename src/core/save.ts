@@ -12,9 +12,23 @@ import {
   type CharacterProgression,
   type StatKey,
 } from "./character";
+import {
+  applySkillPassives,
+  assignHotbar,
+  defaultAutoBattle,
+  learnSkillLevel,
+  normalizeAutoBattle,
+  normalizeHotbar,
+  normalizeLearnedSkills,
+  resetLearnedSkills,
+  sanitizeHotbarForLearned,
+  type AutoBattleSettings,
+  type HotbarSlot,
+  type LearnedSkills,
+} from "./skills";
 
 export const SAVE_KEY = "greenvale.save";
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 const LEGACY_PROFILE_KEY = "greenvale.profile.v1";
 
 export type GenderId = "female" | "male";
@@ -49,6 +63,10 @@ export type CharacterSave = {
   stats: BaseStats;
   appearance: CharacterAppearance;
   costumeId: string;
+  learnedSkills: LearnedSkills;
+  hotbar: HotbarSlot[];
+  autoBattle: AutoBattleSettings;
+  skillResetItems: number;
   renameCredits: number;
   cutsceneSeen: boolean;
   tutorial: TutorialState;
@@ -139,6 +157,8 @@ function normalizeCharacter(raw: any, slot: number): CharacterSave | null {
   const progression = progressionFromRaw(raw);
   const classId = validClassIds.has(String(raw.classId)) ? String(raw.classId) : "novice";
   const costumeId = validCostumeIds.has(String(raw.costumeId)) ? String(raw.costumeId) : "none";
+  const learnedSkills = normalizeLearnedSkills(raw.learnedSkills);
+  const hotbar = sanitizeHotbarForLearned(normalizeHotbar(raw.hotbar), learnedSkills);
 
   return {
     id: String(raw.id || `local-${slot}-${raw.createdAt || time}`),
@@ -157,6 +177,10 @@ function normalizeCharacter(raw: any, slot: number): CharacterSave | null {
       ...(raw.appearance && typeof raw.appearance === "object" ? raw.appearance : {}),
     },
     costumeId,
+    learnedSkills,
+    hotbar,
+    autoBattle: normalizeAutoBattle(raw.autoBattle),
+    skillResetItems: Math.max(0, Math.floor(Number(raw.skillResetItems ?? 1) || 0)),
     renameCredits: Math.max(0, Number(raw.renameCredits ?? creation.freeRenames) || 0),
     cutsceneSeen: raw.cutsceneSeen === true,
     tutorial: {
@@ -194,6 +218,10 @@ function migrateLegacy(): GreenvaleSave {
     stats: progression.stats,
     appearance: defaultAppearance(),
     costumeId: "none",
+    learnedSkills: normalizeLearnedSkills(null),
+    hotbar: normalizeHotbar(null),
+    autoBattle: defaultAutoBattle(),
+    skillResetItems: 1,
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: true,
     tutorial: { step: 4, completed: true, trainingPotionUsed: true },
@@ -310,6 +338,10 @@ export function createCharacter(
     stats: progression.stats,
     appearance: { ...appearance },
     costumeId: "none",
+    learnedSkills: normalizeLearnedSkills(null),
+    hotbar: normalizeHotbar(null),
+    autoBattle: defaultAutoBattle(),
+    skillResetItems: 1,
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: false,
     tutorial: { step: 0, completed: false, trainingPotionUsed: false },
@@ -420,6 +452,58 @@ export function changeSelectedJob(targetClassId: string): CharacterSave | null {
   return updated;
 }
 
+export function learnSelectedSkill(skillId: string): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const updated = updateCharacter(selected.id, (character) => {
+    const result = learnSkillLevel(character.learnedSkills, character.classId, character.skillPoints, skillId);
+    character.learnedSkills = result.learned;
+    character.skillPoints = result.skillPoints;
+    character.hotbar = sanitizeHotbarForLearned(character.hotbar, character.learnedSkills);
+    return character;
+  });
+  gameEvents.emit("character:skill-learned", { characterId: updated.id, skillId, level: updated.learnedSkills[skillId] || 0 });
+  return updated;
+}
+
+export function assignSelectedHotbar(slot: number, skillId: string | null): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const updated = updateCharacter(selected.id, (character) => {
+    character.hotbar = assignHotbar(character.hotbar, character.learnedSkills, slot, skillId);
+    return character;
+  });
+  gameEvents.emit("character:hotbar", { characterId: updated.id, slot, skillId });
+  return updated;
+}
+
+export function resetSelectedSkills(): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  if (selected.skillResetItems <= 0) throw new Error("No skill reset item");
+  const updated = updateCharacter(selected.id, (character) => {
+    const reset = resetLearnedSkills(character.learnedSkills);
+    character.learnedSkills = reset.learned;
+    character.skillPoints += reset.refunded;
+    character.skillResetItems -= 1;
+    character.hotbar = sanitizeHotbarForLearned(character.hotbar, character.learnedSkills);
+    return character;
+  });
+  gameEvents.emit("character:skills-reset", { characterId: updated.id });
+  return updated;
+}
+
+export function updateSelectedAutoBattle(next: Partial<AutoBattleSettings>): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const updated = updateCharacter(selected.id, (character) => {
+    character.autoBattle = normalizeAutoBattle({ ...character.autoBattle, ...next });
+    return character;
+  });
+  gameEvents.emit("character:auto-battle", { characterId: updated.id, settings: updated.autoBattle });
+  return updated;
+}
+
 export function equipSelectedCostume(costumeId: string): CharacterSave | null {
   if (!validCostumeIds.has(costumeId)) throw new Error("Invalid costume");
   const selected = getSelectedCharacter();
@@ -442,7 +526,10 @@ export function triggerSelectedEmote(emoteId: string): void {
 }
 
 export function writeLegacyBridge(character: CharacterSave): void {
-  const derived = calculateDerivedStats(character.classId, progressionOf(character));
+  const derived = applySkillPassives(
+    calculateDerivedStats(character.classId, progressionOf(character)),
+    character.learnedSkills,
+  );
   const legacy = {
     name: character.name,
     classId: character.classId,
@@ -457,6 +544,9 @@ export function writeLegacyBridge(character: CharacterSave): void {
     stats: character.stats,
     derived,
     costumeId: character.costumeId,
+    learnedSkills: character.learnedSkills,
+    hotbar: character.hotbar,
+    autoBattle: character.autoBattle,
     updatedAt: now(),
   };
   localStorage.setItem(LEGACY_PROFILE_KEY, JSON.stringify(legacy));
