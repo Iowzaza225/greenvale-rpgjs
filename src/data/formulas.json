@@ -255,5 +255,153 @@
     "undead",
     "human",
     "demon"
-  ]
+  ],
+  "combat": {
+    "pvp": false,
+    "minHitChance": 5,
+    "maxHitChance": 95,
+    "baseHitChance": 80,
+    "critMultiplier": 1.5,
+    "blockMultiplier": 0.6,
+    "maxPerfectDodgeChance": 30,
+    "maxCritChance": 60,
+    "respawnInvulnerabilityMs": 3000,
+    "deathExpLossPercent": 5,
+    "autoAttackIntervalMs": 850,
+    "autoAttackRange": 82,
+    "autoLootRadius": 130
+  },
+  "elementMultipliers": {
+    "neutral": {
+      "neutral": 1,
+      "fire": 1,
+      "water": 1,
+      "wind": 1,
+      "earth": 1,
+      "light": 1,
+      "dark": 1
+    },
+    "fire": {
+      "neutral": 1,
+      "fire": 0.75,
+      "water": 0.75,
+      "wind": 1,
+      "earth": 1.25,
+      "light": 1,
+      "dark": 1
+    },
+    "water": {
+      "neutral": 1,
+      "fire": 1.25,
+      "water": 0.75,
+      "wind": 0.75,
+      "earth": 1,
+      "light": 1,
+      "dark": 1
+    },
+    "wind": {
+      "neutral": 1,
+      "fire": 1,
+      "water": 1.25,
+      "wind": 0.75,
+      "earth": 0.75,
+      "light": 1,
+      "dark": 1
+    },
+    "earth": {
+      "neutral": 1,
+      "fire": 0.75,
+      "water": 1,
+      "wind": 1.25,
+      "earth": 0.75,
+      "light": 1,
+      "dark": 1
+    },
+    "light": {
+      "neutral": 1,
+      "fire": 1,
+      "water": 1,
+      "wind": 1,
+      "earth": 1,
+      "light": 0.75,
+      "dark": 1.25
+    },
+    "dark": {
+      "neutral": 1,
+      "fire": 1,
+      "water": 1,
+      "wind": 1,
+      "earth": 1,
+      "light": 1.25,
+      "dark": 0.75
+    }
+  },
+  "sizeMultipliers": {
+    "melee": {
+      "small": 1,
+      "medium": 1,
+      "large": 0.9
+    },
+    "ranged": {
+      "small": 0.9,
+      "medium": 1,
+      "large": 1.1
+    },
+    "magic": {
+      "small": 1,
+      "medium": 1,
+      "large": 1
+    }
+  },
+  "raceMultipliers": {
+    "neutral": {
+      "beast": 1,
+      "plant": 1,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "fire": {
+      "beast": 1,
+      "plant": 1.2,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "water": {
+      "beast": 1,
+      "plant": 1,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "wind": {
+      "beast": 1.05,
+      "plant": 1,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "earth": {
+      "beast": 1,
+      "plant": 1.05,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "light": {
+      "beast": 1,
+      "plant": 1,
+      "undead": 1.25,
+      "human": 1,
+      "demon": 1.2
+    },
+    "dark": {
+      "beast": 1,
+      "plant": 1,
+      "undead": 0.9,
+      "human": 1.15,
+      "demon": 0.9
+    }
+  }
 }
