@@ -20,7 +20,7 @@ import {
   useAttack,
 } from "@rpgjs/action-battle/server";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts";
-import skillsData from "./data/skills.json";
+import skillsData from "./data/skills.json" with { type: "json" };
 
 const TrainingBlade = {
   id: "training-blade",
@@ -191,6 +191,7 @@ const STARTER_WEAPONS: Record<string, any> = {
 };
 
 let activePlayer: RpgPlayer | null = null;
+const activeEnemies = new Set<any>();
 
 function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
   const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
@@ -257,11 +258,13 @@ function entityCoord(entity: any, key: "x" | "y"): number {
 }
 
 function enemyEvents(player: RpgPlayer, range: number): any[] {
-  const map = player.getCurrentMap();
-  if (!map) return [];
+  // Do not walk through getCurrentMap().getEvents() from a browser-dispatched
+  // standalone event. On WebKit that bridge can expose the synchronized map
+  // facade instead of the authoritative room, which has no getEvents().
+  // Battle events register themselves here during server-side onInit instead.
   const px = entityCoord(player, "x");
   const py = entityCoord(player, "y");
-  return map.getEvents()
+  return Array.from(activeEnemies)
     .filter((event: any) => event?.battleAi && Number(event.hp) > 0)
     .map((event: any) => {
       const dx = entityCoord(event, "x") - px;
@@ -527,6 +530,8 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
       this.setHitbox(34, 36);
       this.teleport({ x, y });
       // BattleAi owns the wolf nameplate and HP bar; avoid duplicate overlays.
+
+      activeEnemies.add(this);
 
       (this as any).battleAi = new BattleAi(this, {
         preset: "aggressive",
