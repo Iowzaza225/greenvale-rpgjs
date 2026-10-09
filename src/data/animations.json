@@ -56,5 +56,14 @@
       "runtime": "idle",
       "placeholder": "css"
     }
-  ]
+  ],
+  "weaponAttackAnimations": {
+    "blade": "attack2",
+    "shield": "attack2",
+    "staff": "attack3",
+    "bow": "attack3",
+    "mace": "attack2",
+    "dagger": "attack2",
+    "cart": "attack3"
+  }
 }
