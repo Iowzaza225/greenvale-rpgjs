@@ -15,7 +15,8 @@ src/
     config.ts           loads and validates JSON game data
     event-bus.ts        internal decoupled event bus
     i18n.ts             Thai/English locale service
-    save.ts             versioned Guest save, migration, 3 character slots
+    save.ts             versioned Guest save, migration, stats/EXP/jobs
+    progression.ts      data-driven stat cost, derived stats and job rules
   data/
     classes.json
     skills.json
@@ -30,6 +31,10 @@ src/
     effects.json
     character_creation.json
     cutscene.json
+    exp_curves.json
+    animations.json
+    emotes.json
+    costumes.json
   i18n/
     th.json
     en.json
@@ -38,6 +43,8 @@ src/
   ui/
     onboarding.ts       title, slots, creator, prologue, tutorial
     onboarding.css      safe-area mobile UI + original CSS placeholders
+    character-system.ts stats, EXP, job change, emotes and costumes
+    character-system.css Phase 2 mobile character-system UI
   server.ts             current RPGJS authoritative gameplay module
   standalone.ts         browser bootstrap
 tests/
@@ -149,3 +156,23 @@ Character creation content is configured in `src/data/character_creation.json`: 
 The current login button is intentionally a backend-ready UI boundary only. It does not fake authentication. Guest saves are local to the browser/device until a real account backend is introduced.
 
 For Phase 1 validation see `docs/PHASE_1_QA.md`.
+
+
+## Phase 2 character and job system
+
+Save schema version 3 adds Base/Job EXP, STR/AGI/VIT/INT/DEX/LUK, unspent stat/skill points, equipment bridge data, costume selection, job history and rebirth counters.
+
+Content remains data-driven:
+
+- `classes.json`: class role, allowed weapons, class HP/SP growth, base ASPD, move speed, attack range, starter weapon, passive, icon/outfit placeholders, Job Lv cap and disabled second-job skeletons
+- `formulas.json`: increasing stat-point costs, derived-stat coefficients and human-readable formulas
+- `exp_curves.json`: explicit Base Lv 1–99 and Job Lv 1–50 tables
+- `animations.json`: idle/walk/run/attack/skill/hit/death/rest/cheer plus per-weapon attack mappings
+- `emotes.json`: 8 emotes
+- `costumes.json`: cosmetic-only overlays with no stat effects
+
+`src/core/progression.ts` interprets those configs. The save layer awards stat points when Base Lv rises and skill points when Job Lv rises. Novice can change to Vanguard, Arcanist, Ranger, Mender, Shade or Trader at Job Lv 10. First-job Job Lv resets to 1 and can grow to 50.
+
+The standalone RPGJS server receives a compact local profile snapshot and immediately reapplies HP/SP/ATK/DEF, movement tuning and configured starter weapons after stat allocation or job change. Existing Phase 0 combat remains intact.
+
+For testing see `docs/PHASE_2_QA.md`.
