@@ -91,6 +91,7 @@ function renderJobChange(character: CharacterSave): string {
     <strong>✓ ${esc(t("phase2.jobReady"))}</strong>
     <div class="gv-job-grid">
       ${jobs.map((job) => `<button type="button" data-cs-action="job" data-job="${job.id}">
+        <i class="gv-job-icon" style="--job-color:${esc((job as any).outfitColor || "#5b765f")}" data-icon="${esc((job as any).icon || "")}"></i>
         <b>${esc(t(job.nameKey))}</b>
         <span>${esc(t(`role.${job.role}`))}</span>
         <small>${esc(job.recommendedStats.join(" · "))}</small>
@@ -169,7 +170,7 @@ export function renderCharacterSystem(): void {
 
       <div class="gv-cs-section">
         <h4>${esc(t("phase2.animationLab"))}</h4>
-        <div class="gv-animation-stage" data-animation="${activeAnimation}">
+        <div class="gv-animation-stage" data-animation="${activeAnimation}" data-costume="${esc(character.costumeId)}" data-class="${esc(character.classId)}" style="--job-outfit:${esc((classCfg as any).outfitColor || "#58745f")}">
           <div class="gv-animation-dummy"><i></i><b></b><span></span></div>
           <em>${esc(t(`animation.${activeAnimation}`))}</em>
         </div>
