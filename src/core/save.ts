@@ -26,9 +26,10 @@ import {
   type HotbarSlot,
   type LearnedSkills,
 } from "./skills";
+import { applyDeathExpLoss } from "./combat";
 
 export const SAVE_KEY = "greenvale.save";
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 const LEGACY_PROFILE_KEY = "greenvale.profile.v1";
 
 export type GenderId = "female" | "male";
@@ -66,6 +67,12 @@ export type CharacterSave = {
   learnedSkills: LearnedSkills;
   hotbar: HotbarSlot[];
   autoBattle: AutoBattleSettings;
+  combatSettings: {
+    autoAttack: boolean;
+    autoLoot: boolean;
+    respawnMode: "save-point" | "item";
+  };
+  reviveKits: number;
   skillResetItems: number;
   renameCredits: number;
   cutsceneSeen: boolean;
@@ -180,6 +187,12 @@ function normalizeCharacter(raw: any, slot: number): CharacterSave | null {
     learnedSkills,
     hotbar,
     autoBattle: normalizeAutoBattle(raw.autoBattle),
+    combatSettings: {
+      autoAttack: raw.combatSettings?.autoAttack === true,
+      autoLoot: raw.combatSettings?.autoLoot !== false,
+      respawnMode: raw.combatSettings?.respawnMode === "item" ? "item" : "save-point",
+    },
+    reviveKits: Math.max(0, Math.floor(Number(raw.reviveKits ?? 1) || 0)),
     skillResetItems: Math.max(0, Math.floor(Number(raw.skillResetItems ?? 1) || 0)),
     renameCredits: Math.max(0, Number(raw.renameCredits ?? creation.freeRenames) || 0),
     cutsceneSeen: raw.cutsceneSeen === true,
@@ -221,6 +234,8 @@ function migrateLegacy(): GreenvaleSave {
     learnedSkills: normalizeLearnedSkills(null),
     hotbar: normalizeHotbar(null),
     autoBattle: defaultAutoBattle(),
+    combatSettings: { autoAttack: false, autoLoot: true, respawnMode: "save-point" },
+    reviveKits: 1,
     skillResetItems: 1,
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: true,
@@ -341,6 +356,8 @@ export function createCharacter(
     learnedSkills: normalizeLearnedSkills(null),
     hotbar: normalizeHotbar(null),
     autoBattle: defaultAutoBattle(),
+    combatSettings: { autoAttack: false, autoLoot: true, respawnMode: "save-point" },
+    reviveKits: 1,
     skillResetItems: 1,
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: false,
@@ -504,6 +521,47 @@ export function updateSelectedAutoBattle(next: Partial<AutoBattleSettings>): Cha
   return updated;
 }
 
+export function updateSelectedCombatSettings(
+  next: Partial<CharacterSave["combatSettings"]>,
+): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const updated = updateCharacter(selected.id, (character) => {
+    character.combatSettings = {
+      ...character.combatSettings,
+      ...next,
+      respawnMode: next.respawnMode === "item" ? "item" : next.respawnMode === "save-point" ? "save-point" : character.combatSettings.respawnMode,
+    };
+    return character;
+  });
+  gameEvents.emit("character:combat-settings", { characterId: updated.id, settings: updated.combatSettings });
+  return updated;
+}
+
+export function applySelectedDeathPenalty(): { character: CharacterSave | null; lostExp: number } {
+  const selected = getSelectedCharacter();
+  if (!selected) return { character: null, lostExp: 0 };
+  let lostExp = 0;
+  const updated = updateCharacter(selected.id, (character) => {
+    const result = applyDeathExpLoss(character.baseExp);
+    character.baseExp = result.nextExp;
+    lostExp = result.lost;
+    return character;
+  });
+  gameEvents.emit("character:death-penalty", { characterId: updated.id, lostExp });
+  return { character: updated, lostExp };
+}
+
+export function consumeSelectedReviveKit(): boolean {
+  const selected = getSelectedCharacter();
+  if (!selected || selected.reviveKits <= 0) return false;
+  updateCharacter(selected.id, (character) => {
+    character.reviveKits = Math.max(0, character.reviveKits - 1);
+    return character;
+  });
+  return true;
+}
+
 export function equipSelectedCostume(costumeId: string): CharacterSave | null {
   if (!validCostumeIds.has(costumeId)) throw new Error("Invalid costume");
   const selected = getSelectedCharacter();
@@ -547,6 +605,8 @@ export function writeLegacyBridge(character: CharacterSave): void {
     learnedSkills: character.learnedSkills,
     hotbar: character.hotbar,
     autoBattle: character.autoBattle,
+    combatSettings: character.combatSettings,
+    reviveKits: character.reviveKits,
     updatedAt: now(),
   };
   localStorage.setItem(LEGACY_PROFILE_KEY, JSON.stringify(legacy));
