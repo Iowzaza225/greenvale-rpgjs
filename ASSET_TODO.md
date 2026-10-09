@@ -38,7 +38,7 @@ The CSS placeholders are original project-generated shapes. They do not copy art
 | CSS class outfit colors | layered character equipment sheets | One original job outfit per class |
 | CSS costume overlays | `public/assets/costumes/` | Valley Cloak, Ash Scarf, Signal Coat; cosmetic only |
 | Character Lab animation dummy | layered sprite sheets | idle, walk, run, attack per weapon, skill, hit, death, rest, cheer |
-| Emoji development emotes | `public/assets/emotes/` | Replace all 8 with original Greenvale pixel emotes before art lock |
+| Original CSS pixel-emote placeholders | `public/assets/emotes/` | Replace all 8 with original Greenvale pixel emotes before art lock |
 | Starter weapon placeholders | `public/assets/weapons/` | staff, bow, mace, dagger and cart-tool art |
 
 Phase 2 gameplay data and animation mappings already reference stable ids, so final art can replace placeholders without changing save ids or game rules.
