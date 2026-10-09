@@ -204,3 +204,34 @@ The shared rules engine is `src/core/skills.ts`. It handles learning, prerequisi
 Greenvale uses its own 10-slot hotbar rather than the RPGJS synchronized hotbar. On portrait iPhone it displays as two rows of five above the movement/action controls and respects the bottom safe area. Learned skills can be quick-assigned or held and dragged to slots 0–9.
 
 See `docs/PHASE_3_QA.md`.
+
+
+## Phase 3 skill system
+
+Skills are fully data-driven from `src/data/skills.json`. The current dataset contains **51 original Greenvale skills**:
+
+- Novice: 3
+- Vanguard: 8
+- Arcanist: 8
+- Ranger: 8
+- Mender: 8
+- Shade: 8
+- Trader: 8
+
+Each skill record contains the gameplay fields needed by the Phase 3 runtime: `id`, `classId`, translation keys, type, MaxLv, prerequisites, SP-by-level, cooldown, cast time, after-cast delay, range, area shape, power/heal-by-level, element, weapon requirements, consumed items, formula id, icon/effect/sound ids, optional status effect, interrupt flag, skill-tree coordinates, runtime behavior and auto-battle metadata.
+
+### Add a new skill with JSON only
+
+1. Add one object to `src/data/skills.json`.
+2. Add `skill.<id>.name` and `skill.<id>.description` to `src/i18n/th.json` and `src/i18n/en.json`.
+3. Add the referenced `effectId` to `src/data/effects.json`.
+4. If the skill applies a status, reference an id already defined in `src/data/status_effects.json`.
+5. Build. `validateGameConfig()` rejects invalid class ids, wrong per-level array lengths, duplicate ids, missing prerequisites/effects/statuses, or classes with fewer than the required Phase 3 skill count.
+
+No TypeScript edit is required for a normal damage/heal/buff/debuff/toggle/passive skill that uses the existing runtime kinds.
+
+### Save / hotbar
+
+Save schema version 4 stores learned levels, 10 hotbar slots, auto-battle settings and the reset-item count. Old Phase 1/2/3 saves migrate automatically. The mobile hotbar is separate from RPGJS synchronized built-in skill state so iPhone Safari does not reintroduce the earlier async hydration failure.
+
+See `docs/PHASE_3_QA.md`.
