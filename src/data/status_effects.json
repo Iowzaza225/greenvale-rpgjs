@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "statuses": [
+    {
+      "id": "poison",
+      "nameKey": "status.poison.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_poison",
+      "tickMs": 1000,
+      "durationMs": 6000,
+      "effect": {
+        "type": "dot-percent-maxhp",
+        "value": 1
+      }
+    },
+    {
+      "id": "bleed",
+      "nameKey": "status.bleed.name",
+      "category": "debuff",
+      "stacking": "stack",
+      "maxStacks": 5,
+      "icon": "status_bleed",
+      "tickMs": 1000,
+      "durationMs": 5000,
+      "effect": {
+        "type": "dot-flat",
+        "value": 3
+      }
+    },
+    {
+      "id": "stun",
+      "nameKey": "status.stun.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_stun",
+      "durationMs": 1500,
+      "effect": {
+        "type": "disable-actions",
+        "value": 1
+      }
+    },
+    {
+      "id": "slow",
+      "nameKey": "status.slow.name",
+      "category": "debuff",
+      "stacking": "strongest",
+      "maxStacks": 1,
+      "icon": "status_slow",
+      "durationMs": 4000,
+      "effect": {
+        "type": "move-speed-multiplier",
+        "value": 0.55
+      }
+    },
+    {
+      "id": "freeze",
+      "nameKey": "status.freeze.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_freeze",
+      "durationMs": 2500,
+      "effect": {
+        "type": "disable-actions",
+        "value": 1
+      }
+    },
+    {
+      "id": "sleep",
+      "nameKey": "status.sleep.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_sleep",
+      "durationMs": 5000,
+      "effect": {
+        "type": "disable-until-hit",
+        "value": 1
+      }
+    },
+    {
+      "id": "silence",
+      "nameKey": "status.silence.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_silence",
+      "durationMs": 4500,
+      "effect": {
+        "type": "disable-skills",
+        "value": 1
+      }
+    },
+    {
+      "id": "blind",
+      "nameKey": "status.blind.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_blind",
+      "durationMs": 5000,
+      "effect": {
+        "type": "hit-penalty",
+        "value": 25
+      }
+    },
+    {
+      "id": "confusion",
+      "nameKey": "status.confusion.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_confusion",
+      "durationMs": 3500,
+      "effect": {
+        "type": "control-noise",
+        "value": 0.35
+      }
+    },
+    {
+      "id": "guard",
+      "nameKey": "status.guard.name",
+      "category": "buff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_guard",
+      "durationMs": 7000,
+      "effect": {
+        "type": "def-flat",
+        "value": 6
+      }
+    },
+    {
+      "id": "haste",
+      "nameKey": "status.haste.name",
+      "category": "buff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_haste",
+      "durationMs": 7000,
+      "effect": {
+        "type": "aspd-percent",
+        "value": 10
+      }
+    },
+    {
+      "id": "revive_guard",
+      "nameKey": "status.revive_guard.name",
+      "category": "buff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "icon": "status_revive_guard",
+      "durationMs": 3000,
+      "effect": {
+        "type": "invulnerable",
+        "value": 1
+      }
+    }
+  ]
+}

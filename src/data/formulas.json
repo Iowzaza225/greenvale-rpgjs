@@ -1,0 +1,407 @@
+{
+  "schemaVersion": 1,
+  "formulas": {
+    "atk": "STR + floor(DEX/5) + floor(LUK/5) + weaponATK",
+    "matk": "INT*1.5 + floor((INT*INT)/100)",
+    "def": "floor(VIT*0.8) + floor(STR/10)",
+    "mdef": "floor(INT*0.7) + floor(VIT*0.3)",
+    "hit": "baseLevel + DEX",
+    "flee": "baseLevel + AGI",
+    "perfectDodge": "floor(LUK/10) + passiveFlee",
+    "crit": "1 + LUK*0.3 + passiveCrit",
+    "critResistance": "floor(VIT/5) + floor(LUK/10)",
+    "aspd": "classBaseAspd + AGI*0.0025",
+    "maxHp": "(classBaseHp * baseLevel * classHpPerLevel) * (1 + VIT/100)",
+    "maxSp": "(classBaseSp * baseLevel * classSpPerLevel) * (1 + INT/150)",
+    "hpRegen": "1 + floor(VIT/5) + floor(MaxHP/200)",
+    "spRegen": "1 + floor(INT/6) + floor(MaxSP/100)",
+    "maxWeight": "classBaseWeight + STR*30 + VIT*10 + passiveWeight",
+    "attackRange": "classAttackRange",
+    "physical_basic": "max(1,(ATK * skillMultiplier * elementMultiplier * sizeMultiplier * raceMultiplier) - DEF)",
+    "magical_basic": "max(1,(MATK * skillMultiplier * elementMultiplier * sizeMultiplier * raceMultiplier) - MDEF)",
+    "heal_basic": "max(1,MATK * healMultiplier)"
+  },
+  "progression": {
+    "baseLevelCap": 99,
+    "jobLevelCap": 50,
+    "noviceJobChangeLevel": 10,
+    "statPointsPerBaseLevel": 3,
+    "skillPointsPerJobLevel": 1,
+    "statPointCostTiers": [
+      {
+        "min": 1,
+        "max": 10,
+        "cost": 1
+      },
+      {
+        "min": 11,
+        "max": 20,
+        "cost": 2
+      },
+      {
+        "min": 21,
+        "max": 30,
+        "cost": 3
+      },
+      {
+        "min": 31,
+        "max": 40,
+        "cost": 4
+      },
+      {
+        "min": 41,
+        "max": 50,
+        "cost": 5
+      },
+      {
+        "min": 51,
+        "max": 60,
+        "cost": 6
+      },
+      {
+        "min": 61,
+        "max": 70,
+        "cost": 7
+      },
+      {
+        "min": 71,
+        "max": 80,
+        "cost": 8
+      },
+      {
+        "min": 81,
+        "max": 90,
+        "cost": 9
+      },
+      {
+        "min": 91,
+        "max": 98,
+        "cost": 10
+      }
+    ]
+  },
+  "expTables": {
+    "base": [
+      46,
+      83,
+      135,
+      198,
+      272,
+      356,
+      449,
+      551,
+      661,
+      778,
+      904,
+      1036,
+      1176,
+      1322,
+      1475,
+      1635,
+      1801,
+      1973,
+      2151,
+      2334,
+      2524,
+      2720,
+      2920,
+      3127,
+      3339,
+      3556,
+      3778,
+      4006,
+      4239,
+      4476,
+      4719,
+      4967,
+      5219,
+      5476,
+      5738,
+      6005,
+      6276,
+      6552,
+      6833,
+      7117,
+      7407,
+      7700,
+      7999,
+      8301,
+      8608,
+      8919,
+      9234,
+      9553,
+      9877,
+      10205,
+      10536,
+      10872,
+      11212,
+      11556,
+      11904,
+      12262,
+      12641,
+      13041,
+      13463,
+      13907,
+      14374,
+      14864,
+      15378,
+      15915,
+      16476,
+      17061,
+      17670,
+      18304,
+      18962,
+      19645,
+      20353,
+      21085,
+      21843,
+      22626,
+      23434,
+      24267,
+      25126,
+      26010,
+      26920,
+      27855,
+      28817,
+      29804,
+      30816,
+      31855,
+      32920,
+      34011,
+      35128,
+      36271,
+      37440,
+      38636,
+      39858,
+      41107,
+      42382,
+      43683,
+      45011,
+      46365,
+      47746,
+      49154,
+      0
+    ],
+    "job": [
+      32,
+      59,
+      95,
+      138,
+      188,
+      243,
+      304,
+      369,
+      440,
+      515,
+      594,
+      677,
+      764,
+      855,
+      949,
+      1047,
+      1149,
+      1253,
+      1361,
+      1473,
+      1587,
+      1704,
+      1824,
+      1948,
+      2074,
+      2202,
+      2334,
+      2468,
+      2605,
+      2745,
+      2892,
+      3052,
+      3224,
+      3409,
+      3606,
+      3815,
+      4037,
+      4272,
+      4518,
+      4777,
+      5048,
+      5332,
+      5627,
+      5935,
+      6255,
+      6587,
+      6932,
+      7288,
+      7657,
+      0
+    ]
+  },
+  "elements": [
+    "neutral",
+    "fire",
+    "water",
+    "wind",
+    "earth",
+    "light",
+    "dark"
+  ],
+  "sizes": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "races": [
+    "beast",
+    "plant",
+    "undead",
+    "human",
+    "demon"
+  ],
+  "combat": {
+    "pvp": false,
+    "minHitChance": 5,
+    "maxHitChance": 95,
+    "baseHitChance": 80,
+    "critMultiplier": 1.5,
+    "blockMultiplier": 0.6,
+    "maxPerfectDodgeChance": 30,
+    "maxCritChance": 60,
+    "respawnInvulnerabilityMs": 3000,
+    "deathExpLossPercent": 5,
+    "autoAttackIntervalMs": 850,
+    "autoAttackRange": 82,
+    "autoLootRadius": 130
+  },
+  "elementMultipliers": {
+    "neutral": {
+      "neutral": 1,
+      "fire": 1,
+      "water": 1,
+      "wind": 1,
+      "earth": 1,
+      "light": 1,
+      "dark": 1
+    },
+    "fire": {
+      "neutral": 1,
+      "fire": 0.75,
+      "water": 0.75,
+      "wind": 1,
+      "earth": 1.25,
+      "light": 1,
+      "dark": 1
+    },
+    "water": {
+      "neutral": 1,
+      "fire": 1.25,
+      "water": 0.75,
+      "wind": 0.75,
+      "earth": 1,
+      "light": 1,
+      "dark": 1
+    },
+    "wind": {
+      "neutral": 1,
+      "fire": 1,
+      "water": 1.25,
+      "wind": 0.75,
+      "earth": 0.75,
+      "light": 1,
+      "dark": 1
+    },
+    "earth": {
+      "neutral": 1,
+      "fire": 0.75,
+      "water": 1,
+      "wind": 1.25,
+      "earth": 0.75,
+      "light": 1,
+      "dark": 1
+    },
+    "light": {
+      "neutral": 1,
+      "fire": 1,
+      "water": 1,
+      "wind": 1,
+      "earth": 1,
+      "light": 0.75,
+      "dark": 1.25
+    },
+    "dark": {
+      "neutral": 1,
+      "fire": 1,
+      "water": 1,
+      "wind": 1,
+      "earth": 1,
+      "light": 1.25,
+      "dark": 0.75
+    }
+  },
+  "sizeMultipliers": {
+    "melee": {
+      "small": 1,
+      "medium": 1,
+      "large": 0.9
+    },
+    "ranged": {
+      "small": 0.9,
+      "medium": 1,
+      "large": 1.1
+    },
+    "magic": {
+      "small": 1,
+      "medium": 1,
+      "large": 1
+    }
+  },
+  "raceMultipliers": {
+    "neutral": {
+      "beast": 1,
+      "plant": 1,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "fire": {
+      "beast": 1,
+      "plant": 1.2,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "water": {
+      "beast": 1,
+      "plant": 1,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "wind": {
+      "beast": 1.05,
+      "plant": 1,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "earth": {
+      "beast": 1,
+      "plant": 1.05,
+      "undead": 1,
+      "human": 1,
+      "demon": 1
+    },
+    "light": {
+      "beast": 1,
+      "plant": 1,
+      "undead": 1.25,
+      "human": 1,
+      "demon": 1.2
+    },
+    "dark": {
+      "beast": 1,
+      "plant": 1,
+      "undead": 0.9,
+      "human": 1.15,
+      "demon": 0.9
+    }
+  }
+}
