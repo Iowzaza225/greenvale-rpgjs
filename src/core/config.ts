@@ -84,6 +84,47 @@ export function validateGameConfig(): void {
 
   assertUniqueIds("classes", classes.classes);
   assertUniqueIds("skills", skills.skills);
+
+  const skillIds = new Set(skills.skills.map((skill) => skill.id));
+  const effectIds = new Set(effects.effects.map((effect) => effect.id));
+  const statusIds = new Set(statusEffects.statuses.map((status) => status.id));
+  for (const skill of skills.skills as any[]) {
+    if (!skill.classId || !classes.classes.some((entry) => entry.id === skill.classId)) {
+      throw new Error(`Skill "${skill.id}" references invalid classId`);
+    }
+    if (!Number.isInteger(skill.maxLv) || skill.maxLv < 1) {
+      throw new Error(`Skill "${skill.id}" has invalid maxLv`);
+    }
+    if (!Array.isArray(skill.spCost) || skill.spCost.length !== skill.maxLv) {
+      throw new Error(`Skill "${skill.id}" spCost must match maxLv`);
+    }
+    if (!Array.isArray(skill.powerPercent) || skill.powerPercent.length !== skill.maxLv) {
+      throw new Error(`Skill "${skill.id}" powerPercent must match maxLv`);
+    }
+    if (!Array.isArray(skill.healPercent) || skill.healPercent.length !== skill.maxLv) {
+      throw new Error(`Skill "${skill.id}" healPercent must match maxLv`);
+    }
+    if (!skill.formula || !skill.effectId || !skill.soundId || !skill.iconId) {
+      throw new Error(`Skill "${skill.id}" is missing formula/effect/sound/icon references`);
+    }
+    if (!effectIds.has(skill.effectId)) {
+      throw new Error(`Skill "${skill.id}" references missing effect "${skill.effectId}"`);
+    }
+    for (const prerequisite of skill.prerequisites ?? []) {
+      if (!skillIds.has(prerequisite.skillId)) {
+        throw new Error(`Skill "${skill.id}" references missing prerequisite "${prerequisite.skillId}"`);
+      }
+    }
+    if (skill.statusEffect?.id && !statusIds.has(skill.statusEffect.id)) {
+      throw new Error(`Skill "${skill.id}" references missing status "${skill.statusEffect.id}"`);
+    }
+  }
+  const noviceSkillCount = skills.skills.filter((skill) => skill.classId === "novice").length;
+  if (noviceSkillCount < 3) throw new Error("Novice requires at least 3 skills");
+  for (const classEntry of classes.classes.filter((entry) => entry.id !== "novice")) {
+    const count = skills.skills.filter((skill) => skill.classId === classEntry.id).length;
+    if (count < 8) throw new Error(`Class "${classEntry.id}" requires at least 8 skills`);
+  }
   assertUniqueIds("monsters", monsters.monsters);
   assertUniqueIds("items", items.items);
   assertUniqueIds("quests", quests.quests);
