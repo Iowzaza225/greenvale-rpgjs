@@ -41,7 +41,8 @@
       },
       "spriteProfile": "novice-placeholder",
       "starterCostume": "none",
-      "starterWeaponId": "camp_blade"
+      "starterWeaponId": "camp_blade",
+      "moveSpeed": 3.1
     },
     {
       "id": "vanguard",
@@ -76,7 +77,8 @@
       },
       "spriteProfile": "vanguard-placeholder",
       "starterCostume": "none",
-      "starterWeaponId": "camp_blade"
+      "starterWeaponId": "camp_blade",
+      "moveSpeed": 2.9
     },
     {
       "id": "arcanist",
@@ -110,7 +112,8 @@
       },
       "spriteProfile": "arcanist-placeholder",
       "starterCostume": "none",
-      "starterWeaponId": "training_staff"
+      "starterWeaponId": "training_staff",
+      "moveSpeed": 3
     },
     {
       "id": "ranger",
@@ -144,7 +147,8 @@
       },
       "spriteProfile": "ranger-placeholder",
       "starterCostume": "none",
-      "starterWeaponId": "training_bow"
+      "starterWeaponId": "training_bow",
+      "moveSpeed": 3.35
     },
     {
       "id": "mender",
@@ -179,7 +183,8 @@
       },
       "spriteProfile": "mender-placeholder",
       "starterCostume": "none",
-      "starterWeaponId": "field_mace"
+      "starterWeaponId": "field_mace",
+      "moveSpeed": 3
     },
     {
       "id": "shade",
@@ -213,7 +218,8 @@
       },
       "spriteProfile": "shade-placeholder",
       "starterCostume": "none",
-      "starterWeaponId": "scrap_dagger"
+      "starterWeaponId": "scrap_dagger",
+      "moveSpeed": 3.6
     },
     {
       "id": "trader",
@@ -247,7 +253,8 @@
       },
       "spriteProfile": "trader-placeholder",
       "starterCostume": "none",
-      "starterWeaponId": "trader_cart_tool"
+      "starterWeaponId": "trader_cart_tool",
+      "moveSpeed": 3.05
     }
   ],
   "jobChange": {
