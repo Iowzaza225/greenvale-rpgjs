@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "emotes": [
+    {
+      "id": "hello",
+      "nameKey": "emote.hello",
+      "glyph": "👋"
+    },
+    {
+      "id": "happy",
+      "nameKey": "emote.happy",
+      "glyph": "😊"
+    },
+    {
+      "id": "laugh",
+      "nameKey": "emote.laugh",
+      "glyph": "😆"
+    },
+    {
+      "id": "heart",
+      "nameKey": "emote.heart",
+      "glyph": "❤"
+    },
+    {
+      "id": "angry",
+      "nameKey": "emote.angry",
+      "glyph": "💢"
+    },
+    {
+      "id": "sad",
+      "nameKey": "emote.sad",
+      "glyph": "😢"
+    },
+    {
+      "id": "question",
+      "nameKey": "emote.question",
+      "glyph": "?"
+    },
+    {
+      "id": "alert",
+      "nameKey": "emote.alert",
+      "glyph": "!"
+    }
+  ]
+}
