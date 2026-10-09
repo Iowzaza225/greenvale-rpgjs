@@ -79,7 +79,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_survivor_strike"
     },
     {
       "id": "field_first_aid",
@@ -157,7 +159,9 @@
         "condition": {
           "hpBelow": 40
         }
-      }
+      },
+      "formula": "heal_basic",
+      "iconId": "icon_skill_field_first_aid"
     },
     {
       "id": "camp_rest",
@@ -205,7 +209,9 @@
       "auto": {
         "allowed": false,
         "target": "self"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_camp_rest"
     },
     {
       "id": "impact_cleave",
@@ -268,7 +274,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_impact_cleave"
     },
     {
       "id": "thorn_guard",
@@ -328,7 +336,9 @@
       "auto": {
         "allowed": true,
         "target": "self"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_thorn_guard"
     },
     {
       "id": "dread_shout",
@@ -392,7 +402,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_dread_shout"
     },
     {
       "id": "iron_pulse",
@@ -455,7 +467,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_iron_pulse"
     },
     {
       "id": "linebreaker",
@@ -523,7 +537,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_linebreaker"
     },
     {
       "id": "last_wall",
@@ -576,7 +592,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_last_wall"
     },
     {
       "id": "ground_quake",
@@ -645,7 +663,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_ground_quake"
     },
     {
       "id": "unyielding_oath",
@@ -713,7 +733,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_unyielding_oath"
     },
     {
       "id": "ember_orb",
@@ -776,7 +798,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "magical_basic",
+      "iconId": "icon_skill_ember_orb"
     },
     {
       "id": "frost_pillar",
@@ -840,7 +864,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "magical_basic",
+      "iconId": "icon_skill_frost_pillar"
     },
     {
       "id": "chain_voltage",
@@ -900,7 +926,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "magical_basic",
+      "iconId": "icon_skill_chain_voltage"
     },
     {
       "id": "mana_lattice",
@@ -963,7 +991,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_mana_lattice"
     },
     {
       "id": "ash_meteor",
@@ -1028,7 +1058,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "magical_basic",
+      "iconId": "icon_skill_ash_meteor"
     },
     {
       "id": "static_field",
@@ -1076,7 +1108,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_static_field"
     },
     {
       "id": "crystal_shell",
@@ -1141,7 +1175,9 @@
       "auto": {
         "allowed": true,
         "target": "self"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_crystal_shell"
     },
     {
       "id": "storm_memory",
@@ -1209,7 +1245,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_storm_memory"
     },
     {
       "id": "piercing_shot",
@@ -1271,7 +1309,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_piercing_shot"
     },
     {
       "id": "scatter_shot",
@@ -1333,7 +1373,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_scatter_shot"
     },
     {
       "id": "scrap_snare",
@@ -1397,7 +1439,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_scrap_snare"
     },
     {
       "id": "trail_sense",
@@ -1461,7 +1505,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_trail_sense"
     },
     {
       "id": "eagle_line",
@@ -1521,7 +1567,9 @@
       "auto": {
         "allowed": true,
         "target": "self"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_eagle_line"
     },
     {
       "id": "split_reed",
@@ -1586,7 +1634,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_split_reed"
     },
     {
       "id": "backstep_volley",
@@ -1651,7 +1701,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_backstep_volley"
     },
     {
       "id": "patient_hunter",
@@ -1719,7 +1771,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_patient_hunter"
     },
     {
       "id": "field_mend",
@@ -1782,7 +1836,9 @@
         "condition": {
           "hpBelow": 55
         }
-      }
+      },
+      "formula": "heal_basic",
+      "iconId": "icon_skill_field_mend"
     },
     {
       "id": "aegis_blessing",
@@ -1842,7 +1898,9 @@
       "auto": {
         "allowed": true,
         "target": "self"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_aegis_blessing"
     },
     {
       "id": "banish_hollow",
@@ -1905,7 +1963,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "magical_basic",
+      "iconId": "icon_skill_banish_hollow"
     },
     {
       "id": "steady_hands",
@@ -1968,7 +2028,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_steady_hands"
     },
     {
       "id": "renewal_ring",
@@ -2033,7 +2095,9 @@
       "auto": {
         "allowed": true,
         "target": "self"
-      }
+      },
+      "formula": "heal_basic",
+      "iconId": "icon_skill_renewal_ring"
     },
     {
       "id": "calm_mind",
@@ -2081,7 +2145,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_calm_mind"
     },
     {
       "id": "mercy_signal",
@@ -2146,7 +2212,9 @@
       "auto": {
         "allowed": true,
         "target": "self"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_mercy_signal"
     },
     {
       "id": "aftercare",
@@ -2214,7 +2282,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_aftercare"
     },
     {
       "id": "backcut",
@@ -2277,7 +2347,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_backcut"
     },
     {
       "id": "veil_step",
@@ -2337,7 +2409,9 @@
       "auto": {
         "allowed": true,
         "target": "self"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_veil_step"
     },
     {
       "id": "glass_knife",
@@ -2400,7 +2474,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_glass_knife"
     },
     {
       "id": "soft_foot",
@@ -2463,7 +2539,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_soft_foot"
     },
     {
       "id": "bleed_mark",
@@ -2532,7 +2610,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_bleed_mark"
     },
     {
       "id": "shadow_hold",
@@ -2580,7 +2660,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_shadow_hold"
     },
     {
       "id": "crossfade",
@@ -2645,7 +2727,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_crossfade"
     },
     {
       "id": "silent_finish",
@@ -2713,7 +2797,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_silent_finish"
     },
     {
       "id": "coin_burst",
@@ -2787,7 +2873,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_coin_burst"
     },
     {
       "id": "barter_edge",
@@ -2850,7 +2938,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_barter_edge"
     },
     {
       "id": "cart_rush",
@@ -2913,7 +3003,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_cart_rush"
     },
     {
       "id": "quick_haggle",
@@ -2973,7 +3065,9 @@
       "auto": {
         "allowed": true,
         "target": "self"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_quick_haggle"
     },
     {
       "id": "weighted_toss",
@@ -3038,7 +3132,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "physical_basic",
+      "iconId": "icon_skill_weighted_toss"
     },
     {
       "id": "portable_stall",
@@ -3086,7 +3182,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_portable_stall"
     },
     {
       "id": "debt_marker",
@@ -3155,7 +3253,9 @@
       "auto": {
         "allowed": true,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_debt_marker"
     },
     {
       "id": "surplus_instinct",
@@ -3223,7 +3323,9 @@
       "auto": {
         "allowed": false,
         "target": "enemy"
-      }
+      },
+      "formula": "none",
+      "iconId": "icon_skill_surplus_instinct"
     }
   ]
 }
