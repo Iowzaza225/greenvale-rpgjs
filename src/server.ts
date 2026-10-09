@@ -186,6 +186,52 @@ const STARTER_WEAPONS: Record<string, any> = {
   engineer: EngineerCutter,
 };
 
+let activePlayer: RpgPlayer | null = null;
+
+function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
+  const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
+  const derived = profile.derived || {};
+  const maxHp = Math.max(1, Number(derived.MaxHP) || stats.hp);
+  const maxSp = Math.max(1, Number(derived.MaxSP) || stats.sp);
+  const attack = Math.max(1, Number(derived.ATK) || stats.atk);
+  const defense = Math.max(0, Number(derived.DEF) || stats.pdef);
+
+  player.name = profile.name;
+  player.param[MAXHP] = maxHp;
+  player.param[MAXSP] = maxSp;
+  player.param[ATK] = attack;
+  player.param[PDEF] = defense;
+  player.speed = stats.speed;
+  player.setVariable("greenvale.class.id", profile.classId);
+  player.setVariable("greenvale.base.level", profile.baseLevel || 1);
+  player.setVariable("greenvale.job.level", profile.jobLevel || 1);
+
+  if (refill) {
+    player.hp = maxHp;
+    player.sp = maxSp;
+  } else {
+    player.hp = Math.min(maxHp, Math.max(1, Number(player.hp) || maxHp));
+    player.sp = Math.min(maxSp, Math.max(0, Number(player.sp) || maxSp));
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("greenvale:character-runtime", () => {
+    if (!activePlayer) return;
+    try {
+      const profile = getProfile();
+      applyProfileToPlayer(activePlayer, profile, false);
+      const starterWeapon = STARTER_WEAPONS[profile.classId] || TrainingBlade;
+      if ((activePlayer.getItem(starterWeapon.id)?.quantity() ?? 0) < 1) {
+        activePlayer.addItem(starterWeapon, 1);
+      }
+      activePlayer.equip(starterWeapon.id);
+    } catch (error) {
+      console.warn("[Greenvale] Runtime character refresh failed", error);
+    }
+  });
+}
+
 function getProfile(): Profile {
   const fallback: Profile = { name: "Survivor", classId: "novice", started: true, kills: 0, completed: false };
   try {
@@ -333,25 +379,10 @@ const Mara: EventDefinition = {
 const player = {
   async onConnected(player: RpgPlayer) {
     const profile = getProfile();
-    const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
-    const derived = profile.derived || {};
-    const maxHp = Math.max(1, Number(derived.MaxHP) || stats.hp);
-    const maxSp = Math.max(1, Number(derived.MaxSP) || stats.sp);
-    const attack = Math.max(1, Number(derived.ATK) || stats.atk);
-    const defense = Math.max(0, Number(derived.DEF) || stats.pdef);
-    player.name = profile.name;
+    activePlayer = player;
     player.setGraphic("hero");
     player.initializeDefaultStats();
-    player.param[MAXHP] = maxHp;
-    player.param[MAXSP] = maxSp;
-    player.param[ATK] = attack;
-    player.param[PDEF] = defense;
-    player.hp = maxHp;
-    player.sp = maxSp;
-    player.speed = stats.speed;
-    player.setVariable("greenvale.class.id", profile.classId);
-    player.setVariable("greenvale.base.level", profile.baseLevel || 1);
-    player.setVariable("greenvale.job.level", profile.jobLevel || 1);
+    applyProfileToPlayer(player, profile, true);
     player.setVariable("greenvale.quest.kills", profile.kills);
     player.setVariable("greenvale.quest.main", profile.completed ? "first-hunt-complete" : "first-hunt");
     player.setHitbox(30, 38);
