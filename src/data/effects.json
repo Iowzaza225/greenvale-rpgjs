@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "effects": [
+    {
+      "id": "fx_survivor_strike",
+      "type": "placeholder",
+      "asset": "placeholder://survivor-strike"
+    },
+    {
+      "id": "fx_first_aid",
+      "type": "placeholder",
+      "asset": "placeholder://first-aid"
+    },
+    {
+      "id": "fx_rest",
+      "type": "placeholder",
+      "asset": "placeholder://rest"
+    }
+  ]
+}

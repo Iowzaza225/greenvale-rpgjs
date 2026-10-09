@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "classes": [
+    {
+      "id": "novice",
+      "nameKey": "class.novice.name",
+      "descriptionKey": "class.novice.description",
+      "baseHp": 100,
+      "baseSp": 40,
+      "aspd": 1,
+      "weapons": [
+        "blade"
+      ],
+      "role": "all-rounder",
+      "difficulty": 1,
+      "next": [
+        "vanguard",
+        "arcanist",
+        "ranger",
+        "mender",
+        "shade",
+        "trader"
+      ],
+      "recommendedStats": [
+        "STR",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "pulse",
+      "jobStage": "novice",
+      "jobMaxLevel": 10,
+      "baseAspd": 1,
+      "attackRange": 58,
+      "weightBonus": 0,
+      "passive": {
+        "id": "adaptable",
+        "effects": {
+          "maxHpPct": 0,
+          "maxSpPct": 0
+        }
+      },
+      "spriteProfile": "novice-placeholder",
+      "starterCostume": "none",
+      "starterWeaponId": "camp_blade",
+      "moveSpeed": 3.1,
+      "icon": "placeholder://class/novice",
+      "outfitColor": "#5b765f",
+      "hpPerLevel": 100,
+      "spPerLevel": 3
+    },
+    {
+      "id": "vanguard",
+      "nameKey": "class.vanguard.name",
+      "descriptionKey": "class.vanguard.description",
+      "baseHp": 150,
+      "baseSp": 35,
+      "aspd": 0.95,
+      "weapons": [
+        "blade",
+        "shield"
+      ],
+      "role": "tank",
+      "difficulty": 2,
+      "recommendedStats": [
+        "STR",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "shock",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 0.95,
+      "attackRange": 62,
+      "weightBonus": 180,
+      "passive": {
+        "id": "frontline_resolve",
+        "effects": {
+          "maxHpPct": 8,
+          "blockPct": 5
+        }
+      },
+      "spriteProfile": "vanguard-placeholder",
+      "starterCostume": "none",
+      "starterWeaponId": "camp_blade",
+      "moveSpeed": 2.9,
+      "icon": "placeholder://class/vanguard",
+      "outfitColor": "#665f52",
+      "hpPerLevel": 150,
+      "spPerLevel": 2
+    },
+    {
+      "id": "arcanist",
+      "nameKey": "class.arcanist.name",
+      "descriptionKey": "class.arcanist.description",
+      "baseHp": 90,
+      "baseSp": 90,
+      "aspd": 0.9,
+      "weapons": [
+        "staff"
+      ],
+      "role": "magic-dps",
+      "difficulty": 3,
+      "recommendedStats": [
+        "INT",
+        "DEX",
+        "VIT"
+      ],
+      "previewFx": "orb",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 0.9,
+      "attackRange": 72,
+      "weightBonus": 0,
+      "passive": {
+        "id": "arcane_reservoir",
+        "effects": {
+          "maxSpPct": 10,
+          "matkPct": 5
+        }
+      },
+      "spriteProfile": "arcanist-placeholder",
+      "starterCostume": "none",
+      "starterWeaponId": "training_staff",
+      "moveSpeed": 3,
+      "icon": "placeholder://class/arcanist",
+      "outfitColor": "#4f5f86",
+      "hpPerLevel": 90,
+      "spPerLevel": 6
+    },
+    {
+      "id": "ranger",
+      "nameKey": "class.ranger.name",
+      "descriptionKey": "class.ranger.description",
+      "baseHp": 105,
+      "baseSp": 50,
+      "aspd": 1.1,
+      "weapons": [
+        "bow"
+      ],
+      "role": "ranged-dps",
+      "difficulty": 2,
+      "recommendedStats": [
+        "DEX",
+        "AGI",
+        "LUK"
+      ],
+      "previewFx": "arrow",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 1.1,
+      "attackRange": 180,
+      "weightBonus": 40,
+      "passive": {
+        "id": "keen_eye",
+        "effects": {
+          "hitFlat": 5,
+          "critFlat": 3
+        }
+      },
+      "spriteProfile": "ranger-placeholder",
+      "starterCostume": "none",
+      "starterWeaponId": "training_bow",
+      "moveSpeed": 3.35,
+      "icon": "placeholder://class/ranger",
+      "outfitColor": "#4d7458",
+      "hpPerLevel": 105,
+      "spPerLevel": 3
+    },
+    {
+      "id": "mender",
+      "nameKey": "class.mender.name",
+      "descriptionKey": "class.mender.description",
+      "baseHp": 100,
+      "baseSp": 80,
+      "aspd": 0.95,
+      "weapons": [
+        "mace",
+        "staff"
+      ],
+      "role": "support",
+      "difficulty": 2,
+      "recommendedStats": [
+        "INT",
+        "VIT",
+        "DEX"
+      ],
+      "previewFx": "heal",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 0.95,
+      "attackRange": 90,
+      "weightBonus": 20,
+      "passive": {
+        "id": "calm_pulse",
+        "effects": {
+          "maxSpPct": 5,
+          "mdefPct": 5
+        }
+      },
+      "spriteProfile": "mender-placeholder",
+      "starterCostume": "none",
+      "starterWeaponId": "field_mace",
+      "moveSpeed": 3,
+      "icon": "placeholder://class/mender",
+      "outfitColor": "#6f7a72",
+      "hpPerLevel": 100,
+      "spPerLevel": 5
+    },
+    {
+      "id": "shade",
+      "nameKey": "class.shade.name",
+      "descriptionKey": "class.shade.description",
+      "baseHp": 100,
+      "baseSp": 50,
+      "aspd": 1.2,
+      "weapons": [
+        "dagger"
+      ],
+      "role": "burst",
+      "difficulty": 4,
+      "recommendedStats": [
+        "AGI",
+        "STR",
+        "LUK"
+      ],
+      "previewFx": "slash",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 1.2,
+      "attackRange": 54,
+      "weightBonus": 20,
+      "passive": {
+        "id": "ghost_step",
+        "effects": {
+          "fleeFlat": 5,
+          "perfectDodgeFlat": 2
+        }
+      },
+      "spriteProfile": "shade-placeholder",
+      "starterCostume": "none",
+      "starterWeaponId": "scrap_dagger",
+      "moveSpeed": 3.6,
+      "icon": "placeholder://class/shade",
+      "outfitColor": "#514d62",
+      "hpPerLevel": 100,
+      "spPerLevel": 3
+    },
+    {
+      "id": "trader",
+      "nameKey": "class.trader.name",
+      "descriptionKey": "class.trader.description",
+      "baseHp": 115,
+      "baseSp": 55,
+      "aspd": 1,
+      "weapons": [
+        "cart",
+        "blade"
+      ],
+      "role": "utility",
+      "difficulty": 3,
+      "recommendedStats": [
+        "DEX",
+        "LUK",
+        "VIT"
+      ],
+      "previewFx": "coin",
+      "jobStage": "first",
+      "jobMaxLevel": 50,
+      "baseAspd": 1,
+      "attackRange": 60,
+      "weightBonus": 420,
+      "passive": {
+        "id": "pack_rat",
+        "effects": {
+          "maxWeightFlat": 400
+        }
+      },
+      "spriteProfile": "trader-placeholder",
+      "starterCostume": "none",
+      "starterWeaponId": "trader_cart_tool",
+      "moveSpeed": 3.05,
+      "icon": "placeholder://class/trader",
+      "outfitColor": "#7d6848",
+      "hpPerLevel": 115,
+      "spPerLevel": 3
+    }
+  ],
+  "jobChange": {
+    "noviceRequiredJobLevel": 10,
+    "resetJobLevelTo": 1,
+    "resetJobExp": true
+  },
+  "rebirth": {
+    "enabled": false,
+    "requiredBaseLevel": 99,
+    "requiredJobLevel": 50,
+    "preserveCosmetics": true,
+    "secondJobs": [
+      {
+        "id": "bastion",
+        "from": "vanguard",
+        "enabled": false
+      },
+      {
+        "id": "stormweaver",
+        "from": "arcanist",
+        "enabled": false
+      },
+      {
+        "id": "deadeye",
+        "from": "ranger",
+        "enabled": false
+      },
+      {
+        "id": "lifewarden",
+        "from": "mender",
+        "enabled": false
+      },
+      {
+        "id": "nightveil",
+        "from": "shade",
+        "enabled": false
+      },
+      {
+        "id": "convoy_master",
+        "from": "trader",
+        "enabled": false
+      }
+    ]
+  }
+}

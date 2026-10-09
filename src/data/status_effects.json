@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "statuses": [
+    {
+      "id": "poison",
+      "nameKey": "status.poison.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1
+    },
+    {
+      "id": "bleed",
+      "nameKey": "status.bleed.name",
+      "category": "debuff",
+      "stacking": "stack",
+      "maxStacks": 5
+    },
+    {
+      "id": "stun",
+      "nameKey": "status.stun.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1
+    },
+    {
+      "id": "slow",
+      "nameKey": "status.slow.name",
+      "category": "debuff",
+      "stacking": "strongest",
+      "maxStacks": 1
+    }
+  ]
+}
