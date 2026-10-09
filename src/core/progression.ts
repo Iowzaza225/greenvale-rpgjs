@@ -45,6 +45,10 @@ type ClassConfig = (typeof classesData.classes)[number] & {
   baseAspd: number;
   attackRange: number;
   weightBonus: number;
+  hpPerLevel: number;
+  spPerLevel: number;
+  outfitColor: string;
+  icon: string;
   starterWeaponId: string;
   passive?: { id: string; effects?: Record<string, number> };
   jobMaxLevel: number;
@@ -161,9 +165,12 @@ export function calculateDerivedStats(character: CharacterProgressionView): Deri
     stats.DEX * Number(rules.aspd.dexMultiplier);
   ASPD = Math.min(Number(rules.aspd.max), Math.max(Number(rules.aspd.min), ASPD));
 
-  let MaxHP = (Number(classConfig.baseHp) * baseLevel) * (1 + stats.VIT / Number(rules.maxHp.vitScaleDivisor));
+  let MaxHP =
+    (Number(classConfig.baseHp) + Number(classConfig.hpPerLevel) * Math.max(0, baseLevel - 1)) *
+    (1 + stats.VIT / Number(rules.maxHp.vitScaleDivisor));
   let MaxSP =
     Number(classConfig.baseSp) +
+    Number(classConfig.spPerLevel) * Math.max(0, baseLevel - 1) +
     stats.INT * Number(rules.maxSp.intFlatMultiplier) +
     baseLevel * Number(rules.maxSp.baseLevelFlatMultiplier);
   MaxSP *= 1 + stats.INT / Number(rules.maxSp.intScaleDivisor);
