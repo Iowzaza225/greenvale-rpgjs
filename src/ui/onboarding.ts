@@ -534,6 +534,7 @@ function renderInGameShell(): void {
   const menuTitle = document.getElementById("gv-panel-title");
   const menuProfile = document.getElementById("gv-panel-profile");
   const characterButton = document.getElementById("gv-character-btn");
+  const skillButton = document.getElementById("gv-skill-btn");
   const resume = document.getElementById("gv-resume");
   const returnTitle = document.getElementById("gv-title-btn");
   if (menuTitle) menuTitle.textContent = t("menu.title");
@@ -542,6 +543,7 @@ function renderInGameShell(): void {
     menuProfile.textContent = selected ? `${selected.name} · ${className} · Base ${selected.baseLevel} / Job ${selected.jobLevel}` : "";
   }
   if (characterButton) characterButton.textContent = t("menu.character");
+  if (skillButton) skillButton.textContent = t("menu.skills");
   if (resume) resume.textContent = t("menu.resume");
   if (returnTitle) returnTitle.textContent = t("menu.returnTitle");
 }
