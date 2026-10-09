@@ -50,8 +50,8 @@ test("Phase 4 combat rules and mobile UI stay stable on iPhone WebKit", async ({
   await expect(page.locator("[data-auto-attack]")).toBeVisible();
   await expect(page.locator(".gv4-readonly")).toContainText("ปิดอยู่");
 
-  await page.locator("[data-auto-attack]").check();
-  await page.locator("[data-auto-loot]").uncheck();
+  await page.locator("label.gv4-toggle").first().click();
+  await page.locator("label.gv4-toggle").nth(1).click();
   const combatSettings = await page.evaluate(() => {
     const save = JSON.parse(localStorage.getItem("greenvale.save") || "null");
     const char = save.characters.find((entry: any) => entry?.id === save.selectedCharacterId);
