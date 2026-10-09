@@ -44,3 +44,16 @@
 .gv-animation-stage[data-costume="ash-scarf"] .gv-animation-dummy::after{z-index:3;left:5px;top:17px;width:23px;height:6px;border-radius:4px;background:#9a9285;box-shadow:12px 5px 0 -2px #9a9285}
 .gv-animation-stage[data-costume="signal-coat"] .gv-animation-dummy::after{left:1px;top:18px;width:31px;height:40px;border-radius:8px;background:#4b6570;border-bottom:4px solid #d1b45f}
 #gv-panel .gv-modal{width:min(100%,620px);max-height:min(94vh,860px);overflow:auto;-webkit-overflow-scrolling:touch}
+
+.gv-emote-pixel{position:relative;display:block;width:24px;height:24px;margin:0 auto 3px;border:2px solid #d9c77f;border-radius:7px;background:#273a32;image-rendering:pixelated}
+.gv-emote-pixel::before,.gv-emote-pixel::after{content:"";position:absolute;background:#f1e4b5}
+.gv-emote-pixel--hello::before{left:5px;top:4px;width:3px;height:11px;box-shadow:5px -2px 0 #f1e4b5,10px 1px 0 #f1e4b5}.gv-emote-pixel--hello::after{left:6px;bottom:3px;width:11px;height:3px}
+.gv-emote-pixel--happy::before,.gv-emote-pixel--laugh::before,.gv-emote-pixel--sad::before{left:5px;top:6px;width:3px;height:3px;box-shadow:9px 0 0 #f1e4b5}
+.gv-emote-pixel--happy::after{left:6px;bottom:5px;width:10px;height:4px;border-radius:0 0 8px 8px}
+.gv-emote-pixel--laugh::after{left:5px;bottom:4px;width:12px;height:6px;border-radius:0 0 8px 8px}
+.gv-emote-pixel--sad::after{left:6px;bottom:4px;width:10px;height:4px;border-radius:8px 8px 0 0}
+.gv-emote-pixel--heart{transform:rotate(45deg);border-radius:4px 10px 4px 10px;background:#a94c53;border-color:#e6b1a6}.gv-emote-pixel--heart::before{left:-2px;top:4px;width:10px;height:10px;border-radius:50%;background:#a94c53}.gv-emote-pixel--heart::after{left:4px;top:-2px;width:10px;height:10px;border-radius:50%;background:#a94c53}
+.gv-emote-pixel--angry::before{left:4px;top:5px;width:6px;height:2px;transform:rotate(20deg);box-shadow:9px 0 0 #f1e4b5}.gv-emote-pixel--angry::after{left:6px;bottom:5px;width:10px;height:2px}
+.gv-emote-pixel--question::before{content:"?";inset:0;background:transparent;color:#f1e4b5;font:900 18px/20px ui-monospace;text-align:center}.gv-emote-pixel--question::after{display:none}
+.gv-emote-pixel--alert::before{content:"!";inset:0;background:transparent;color:#e6ba62;font:900 19px/20px ui-monospace;text-align:center}.gv-emote-pixel--alert::after{display:none}
+#gv-emote-pop .gv-emote-pixel{width:42px;height:42px;margin:0;transform:scale(1.15)}
