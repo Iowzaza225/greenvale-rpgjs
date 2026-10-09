@@ -1,44 +1,91 @@
 {
   "schemaVersion": 1,
+  "statKeys": [
+    "STR",
+    "AGI",
+    "VIT",
+    "INT",
+    "DEX",
+    "LUK"
+  ],
+  "maxStat": 99,
   "classes": [
     {
       "id": "novice",
       "nameKey": "class.novice.name",
       "descriptionKey": "class.novice.description",
-      "baseHp": 100,
-      "baseSp": 40,
-      "aspd": 1,
-      "weapons": [
-        "blade"
-      ],
+      "icon": "class_novice",
       "role": "all-rounder",
       "difficulty": 1,
-      "next": [
-        "vanguard",
-        "arcanist",
-        "ranger",
-        "mender",
-        "shade",
-        "trader"
-      ],
       "recommendedStats": [
         "STR",
         "VIT",
         "DEX"
       ],
-      "previewFx": "pulse"
+      "jobChange": {
+        "requiredJobLevel": 10,
+        "next": [
+          "vanguard",
+          "arcanist",
+          "ranger",
+          "mender",
+          "shade",
+          "trader"
+        ]
+      },
+      "weapons": [
+        "blade",
+        "dagger",
+        "mace"
+      ],
+      "baseHp": 100,
+      "baseSp": 40,
+      "hpPerLevel": 1,
+      "spPerLevel": 1,
+      "aspd": 1,
+      "attackRange": 64,
+      "baseWeight": 2000,
+      "starterWeaponAtk": 14,
+      "passive": {
+        "id": "survivor_instinct",
+        "nameKey": "passive.novice.name",
+        "bonuses": {
+          "maxHpPct": 0,
+          "maxSpPct": 0,
+          "atkPct": 0,
+          "matkPct": 0,
+          "fleeFlat": 0,
+          "critFlat": 0,
+          "maxWeightFlat": 0
+        }
+      },
+      "outfit": {
+        "id": "outfit_novice",
+        "body": "#5b765f",
+        "accent": "#d1c188"
+      },
+      "animations": {
+        "idle": "idle",
+        "walk": "walk",
+        "run": "run",
+        "attack": "attack_blade",
+        "skill": "skill",
+        "hit": "hit",
+        "death": "death",
+        "rest": "rest",
+        "emote": "emote"
+      },
+      "secondJob": {
+        "enabled": false,
+        "id": null,
+        "rebirthRequired": true
+      }
     },
     {
       "id": "vanguard",
       "nameKey": "class.vanguard.name",
       "descriptionKey": "class.vanguard.description",
-      "baseHp": 150,
-      "baseSp": 35,
-      "aspd": 0.95,
-      "weapons": [
-        "blade",
-        "shield"
-      ],
+      "icon": "class_vanguard",
       "role": "tank",
       "difficulty": 2,
       "recommendedStats": [
@@ -46,18 +93,59 @@
         "VIT",
         "DEX"
       ],
-      "previewFx": "shock"
+      "weapons": [
+        "blade",
+        "shield",
+        "mace"
+      ],
+      "baseHp": 155,
+      "baseSp": 34,
+      "hpPerLevel": 1.16,
+      "spPerLevel": 0.86,
+      "aspd": 0.95,
+      "attackRange": 70,
+      "baseWeight": 2400,
+      "starterWeaponAtk": 17,
+      "passive": {
+        "id": "frontline_grit",
+        "nameKey": "passive.vanguard.name",
+        "bonuses": {
+          "maxHpPct": 12,
+          "maxSpPct": 0,
+          "atkPct": 2,
+          "matkPct": 0,
+          "fleeFlat": 0,
+          "critFlat": 0,
+          "maxWeightFlat": 250
+        }
+      },
+      "outfit": {
+        "id": "outfit_vanguard",
+        "body": "#4f6258",
+        "accent": "#b59b65"
+      },
+      "animations": {
+        "idle": "idle",
+        "walk": "walk",
+        "run": "run",
+        "attack": "attack_heavy",
+        "skill": "skill_guard",
+        "hit": "hit",
+        "death": "death",
+        "rest": "rest",
+        "emote": "emote"
+      },
+      "secondJob": {
+        "enabled": false,
+        "id": "vanguard_second",
+        "rebirthRequired": true
+      }
     },
     {
       "id": "arcanist",
       "nameKey": "class.arcanist.name",
       "descriptionKey": "class.arcanist.description",
-      "baseHp": 90,
-      "baseSp": 90,
-      "aspd": 0.9,
-      "weapons": [
-        "staff"
-      ],
+      "icon": "class_arcanist",
       "role": "magic-dps",
       "difficulty": 3,
       "recommendedStats": [
@@ -65,18 +153,58 @@
         "DEX",
         "VIT"
       ],
-      "previewFx": "orb"
+      "weapons": [
+        "staff",
+        "focus"
+      ],
+      "baseHp": 88,
+      "baseSp": 100,
+      "hpPerLevel": 0.9,
+      "spPerLevel": 1.22,
+      "aspd": 0.9,
+      "attackRange": 165,
+      "baseWeight": 1800,
+      "starterWeaponAtk": 9,
+      "passive": {
+        "id": "afterglow_reserve",
+        "nameKey": "passive.arcanist.name",
+        "bonuses": {
+          "maxHpPct": 0,
+          "maxSpPct": 15,
+          "atkPct": 0,
+          "matkPct": 6,
+          "fleeFlat": 0,
+          "critFlat": 0,
+          "maxWeightFlat": 0
+        }
+      },
+      "outfit": {
+        "id": "outfit_arcanist",
+        "body": "#4f556e",
+        "accent": "#a7b6d8"
+      },
+      "animations": {
+        "idle": "idle",
+        "walk": "walk",
+        "run": "run",
+        "attack": "attack_staff",
+        "skill": "skill_cast",
+        "hit": "hit",
+        "death": "death",
+        "rest": "rest",
+        "emote": "emote"
+      },
+      "secondJob": {
+        "enabled": false,
+        "id": "arcanist_second",
+        "rebirthRequired": true
+      }
     },
     {
       "id": "ranger",
       "nameKey": "class.ranger.name",
       "descriptionKey": "class.ranger.description",
-      "baseHp": 105,
-      "baseSp": 50,
-      "aspd": 1.1,
-      "weapons": [
-        "bow"
-      ],
+      "icon": "class_ranger",
       "role": "ranged-dps",
       "difficulty": 2,
       "recommendedStats": [
@@ -84,19 +212,57 @@
         "AGI",
         "LUK"
       ],
-      "previewFx": "arrow"
+      "weapons": [
+        "bow"
+      ],
+      "baseHp": 105,
+      "baseSp": 52,
+      "hpPerLevel": 1,
+      "spPerLevel": 1,
+      "aspd": 1.08,
+      "attackRange": 220,
+      "baseWeight": 1950,
+      "starterWeaponAtk": 15,
+      "passive": {
+        "id": "trail_focus",
+        "nameKey": "passive.ranger.name",
+        "bonuses": {
+          "maxHpPct": 0,
+          "maxSpPct": 0,
+          "atkPct": 3,
+          "matkPct": 0,
+          "fleeFlat": 4,
+          "critFlat": 3,
+          "maxWeightFlat": 0
+        }
+      },
+      "outfit": {
+        "id": "outfit_ranger",
+        "body": "#4e6654",
+        "accent": "#c2a66d"
+      },
+      "animations": {
+        "idle": "idle",
+        "walk": "walk",
+        "run": "run",
+        "attack": "attack_bow",
+        "skill": "skill_shot",
+        "hit": "hit",
+        "death": "death",
+        "rest": "rest",
+        "emote": "emote"
+      },
+      "secondJob": {
+        "enabled": false,
+        "id": "ranger_second",
+        "rebirthRequired": true
+      }
     },
     {
       "id": "mender",
       "nameKey": "class.mender.name",
       "descriptionKey": "class.mender.description",
-      "baseHp": 100,
-      "baseSp": 80,
-      "aspd": 0.95,
-      "weapons": [
-        "mace",
-        "staff"
-      ],
+      "icon": "class_mender",
       "role": "support",
       "difficulty": 2,
       "recommendedStats": [
@@ -104,18 +270,58 @@
         "VIT",
         "DEX"
       ],
-      "previewFx": "heal"
+      "weapons": [
+        "mace",
+        "staff"
+      ],
+      "baseHp": 102,
+      "baseSp": 86,
+      "hpPerLevel": 1.02,
+      "spPerLevel": 1.12,
+      "aspd": 0.96,
+      "attackRange": 145,
+      "baseWeight": 2000,
+      "starterWeaponAtk": 11,
+      "passive": {
+        "id": "field_grace",
+        "nameKey": "passive.mender.name",
+        "bonuses": {
+          "maxHpPct": 5,
+          "maxSpPct": 8,
+          "atkPct": 0,
+          "matkPct": 2,
+          "fleeFlat": 0,
+          "critFlat": 0,
+          "maxWeightFlat": 0
+        }
+      },
+      "outfit": {
+        "id": "outfit_mender",
+        "body": "#687169",
+        "accent": "#b8d9c5"
+      },
+      "animations": {
+        "idle": "idle",
+        "walk": "walk",
+        "run": "run",
+        "attack": "attack_mace",
+        "skill": "skill_heal",
+        "hit": "hit",
+        "death": "death",
+        "rest": "rest",
+        "emote": "emote"
+      },
+      "secondJob": {
+        "enabled": false,
+        "id": "mender_second",
+        "rebirthRequired": true
+      }
     },
     {
       "id": "shade",
       "nameKey": "class.shade.name",
       "descriptionKey": "class.shade.description",
-      "baseHp": 100,
-      "baseSp": 50,
-      "aspd": 1.2,
-      "weapons": [
-        "dagger"
-      ],
+      "icon": "class_shade",
       "role": "burst",
       "difficulty": 4,
       "recommendedStats": [
@@ -123,19 +329,58 @@
         "STR",
         "LUK"
       ],
-      "previewFx": "slash"
+      "weapons": [
+        "dagger",
+        "knife"
+      ],
+      "baseHp": 98,
+      "baseSp": 54,
+      "hpPerLevel": 0.98,
+      "spPerLevel": 1,
+      "aspd": 1.18,
+      "attackRange": 58,
+      "baseWeight": 1850,
+      "starterWeaponAtk": 13,
+      "passive": {
+        "id": "quiet_step",
+        "nameKey": "passive.shade.name",
+        "bonuses": {
+          "maxHpPct": 0,
+          "maxSpPct": 0,
+          "atkPct": 4,
+          "matkPct": 0,
+          "fleeFlat": 8,
+          "critFlat": 5,
+          "maxWeightFlat": 0
+        }
+      },
+      "outfit": {
+        "id": "outfit_shade",
+        "body": "#3d4549",
+        "accent": "#796c83"
+      },
+      "animations": {
+        "idle": "idle",
+        "walk": "walk",
+        "run": "run_fast",
+        "attack": "attack_dagger",
+        "skill": "skill_shadow",
+        "hit": "hit",
+        "death": "death",
+        "rest": "rest",
+        "emote": "emote"
+      },
+      "secondJob": {
+        "enabled": false,
+        "id": "shade_second",
+        "rebirthRequired": true
+      }
     },
     {
       "id": "trader",
       "nameKey": "class.trader.name",
       "descriptionKey": "class.trader.description",
-      "baseHp": 115,
-      "baseSp": 55,
-      "aspd": 1,
-      "weapons": [
-        "cart",
-        "blade"
-      ],
+      "icon": "class_trader",
       "role": "utility",
       "difficulty": 3,
       "recommendedStats": [
@@ -143,7 +388,136 @@
         "LUK",
         "VIT"
       ],
-      "previewFx": "coin"
+      "weapons": [
+        "cart",
+        "blade"
+      ],
+      "baseHp": 118,
+      "baseSp": 56,
+      "hpPerLevel": 1.04,
+      "spPerLevel": 1,
+      "aspd": 1,
+      "attackRange": 72,
+      "baseWeight": 2800,
+      "starterWeaponAtk": 14,
+      "passive": {
+        "id": "pack_rat",
+        "nameKey": "passive.trader.name",
+        "bonuses": {
+          "maxHpPct": 0,
+          "maxSpPct": 0,
+          "atkPct": 0,
+          "matkPct": 0,
+          "fleeFlat": 0,
+          "critFlat": 1,
+          "maxWeightFlat": 900
+        }
+      },
+      "outfit": {
+        "id": "outfit_trader",
+        "body": "#76634b",
+        "accent": "#d4ae62"
+      },
+      "animations": {
+        "idle": "idle",
+        "walk": "walk",
+        "run": "run",
+        "attack": "attack_cart",
+        "skill": "skill_coin",
+        "hit": "hit",
+        "death": "death",
+        "rest": "rest",
+        "emote": "emote"
+      },
+      "secondJob": {
+        "enabled": false,
+        "id": "trader_second",
+        "rebirthRequired": true
+      }
     }
-  ]
+  ],
+  "emotes": [
+    {
+      "id": "wave",
+      "nameKey": "emote.wave",
+      "animation": "emote_wave"
+    },
+    {
+      "id": "cheer",
+      "nameKey": "emote.cheer",
+      "animation": "emote_cheer"
+    },
+    {
+      "id": "laugh",
+      "nameKey": "emote.laugh",
+      "animation": "emote_laugh"
+    },
+    {
+      "id": "sad",
+      "nameKey": "emote.sad",
+      "animation": "emote_sad"
+    },
+    {
+      "id": "angry",
+      "nameKey": "emote.angry",
+      "animation": "emote_angry"
+    },
+    {
+      "id": "thanks",
+      "nameKey": "emote.thanks",
+      "animation": "emote_thanks"
+    },
+    {
+      "id": "sit",
+      "nameKey": "emote.sit",
+      "animation": "rest"
+    },
+    {
+      "id": "signal",
+      "nameKey": "emote.signal",
+      "animation": "emote_signal"
+    }
+  ],
+  "costumes": [
+    {
+      "id": "none",
+      "nameKey": "costume.none",
+      "overlay": null,
+      "statEffect": false
+    },
+    {
+      "id": "greenvale_scout",
+      "nameKey": "costume.greenvale_scout",
+      "overlay": {
+        "body": "#49635a",
+        "accent": "#c9b774"
+      },
+      "statEffect": false
+    },
+    {
+      "id": "ash_wanderer",
+      "nameKey": "costume.ash_wanderer",
+      "overlay": {
+        "body": "#57595d",
+        "accent": "#8d8174"
+      },
+      "statEffect": false
+    },
+    {
+      "id": "signal_runner",
+      "nameKey": "costume.signal_runner",
+      "overlay": {
+        "body": "#385c66",
+        "accent": "#9fc4c8"
+      },
+      "statEffect": false
+    }
+  ],
+  "rebirth": {
+    "enabled": false,
+    "minBaseLevel": 99,
+    "resetBaseLevelTo": 1,
+    "keepCostumes": true,
+    "keepAchievements": true
+  }
 }
