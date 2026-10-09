@@ -1,14 +1,134 @@
 {
   "schemaVersion": 1,
-  "formulas": {
-    "atk": "STR + floor(DEX/5) + floor(LUK/5) + weaponATK",
-    "matk": "INT*1.5 + floor((INT*INT)/100)",
-    "hit": "baseLevel + DEX",
-    "flee": "baseLevel + AGI",
-    "maxHp": "(classBaseHp * baseLevel) * (1 + VIT/100)",
-    "physical_basic": "max(1,(ATK * skillMultiplier * elementMultiplier * sizeMultiplier * raceMultiplier) - DEF)",
-    "magical_basic": "max(1,(MATK * skillMultiplier * elementMultiplier * sizeMultiplier * raceMultiplier) - MDEF)",
-    "heal_basic": "max(1,MATK * healMultiplier)"
+  "statPointCost": [
+    {
+      "min": 1,
+      "max": 9,
+      "cost": 1
+    },
+    {
+      "min": 10,
+      "max": 19,
+      "cost": 2
+    },
+    {
+      "min": 20,
+      "max": 29,
+      "cost": 3
+    },
+    {
+      "min": 30,
+      "max": 39,
+      "cost": 4
+    },
+    {
+      "min": 40,
+      "max": 49,
+      "cost": 5
+    },
+    {
+      "min": 50,
+      "max": 59,
+      "cost": 6
+    },
+    {
+      "min": 60,
+      "max": 69,
+      "cost": 7
+    },
+    {
+      "min": 70,
+      "max": 79,
+      "cost": 8
+    },
+    {
+      "min": 80,
+      "max": 89,
+      "cost": 9
+    },
+    {
+      "min": 90,
+      "max": 99,
+      "cost": 10
+    }
+  ],
+  "derived": {
+    "atk": {
+      "strMultiplier": 1,
+      "dexFloorDivisor": 5,
+      "lukFloorDivisor": 5,
+      "weaponAtkMultiplier": 1
+    },
+    "matk": {
+      "intMultiplier": 1.5,
+      "intSquareDivisor": 100
+    },
+    "def": {
+      "vitMultiplier": 0.8,
+      "strFloorDivisor": 10,
+      "armorDefMultiplier": 1
+    },
+    "mdef": {
+      "intMultiplier": 0.6,
+      "vitMultiplier": 0.4,
+      "gearMdefMultiplier": 1
+    },
+    "hit": {
+      "baseLevelMultiplier": 1,
+      "dexMultiplier": 1
+    },
+    "flee": {
+      "baseLevelMultiplier": 1,
+      "agiMultiplier": 1
+    },
+    "perfectDodge": {
+      "lukFloorDivisor": 10
+    },
+    "crit": {
+      "base": 1,
+      "lukFloorDivisor": 3
+    },
+    "critResist": {
+      "lukFloorDivisor": 5,
+      "vitFloorDivisor": 10
+    },
+    "aspd": {
+      "agiMultiplier": 0.003,
+      "dexMultiplier": 0.001,
+      "min": 0.6,
+      "max": 2.5
+    },
+    "maxHp": {
+      "vitScaleDivisor": 100
+    },
+    "maxSp": {
+      "intFlatMultiplier": 3,
+      "baseLevelFlatMultiplier": 2,
+      "intScaleDivisor": 200
+    },
+    "hpRegen": {
+      "base": 1,
+      "vitFloorDivisor": 5,
+      "maxHpFloorDivisor": 200
+    },
+    "spRegen": {
+      "base": 1,
+      "intFloorDivisor": 6,
+      "maxSpFloorDivisor": 120
+    },
+    "maxWeight": {
+      "base": 2000,
+      "strMultiplier": 30,
+      "vitMultiplier": 10
+    },
+    "attackRange": {
+      "minimum": 48
+    }
+  },
+  "combat": {
+    "physical": "max(1,(ATK * skillMultiplier * elementMultiplier * sizeMultiplier * raceMultiplier) - DEF)",
+    "magical": "max(1,(MATK * skillMultiplier * elementMultiplier * sizeMultiplier * raceMultiplier) - MDEF)",
+    "heal": "max(1,MATK * healMultiplier)"
   },
   "elements": [
     "neutral",
