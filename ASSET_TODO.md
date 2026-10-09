@@ -28,3 +28,15 @@ New missing art must use an original CSS/SVG/Canvas placeholder or a clearly mar
 | Text-only Greenvale wordmark | Final original Greenvale Afterfall logo | Branding pass |
 
 The CSS placeholders are original project-generated shapes. They do not copy art from the reference screenshots.
+
+
+## Phase 2 placeholders
+
+| Placeholder | Final original asset |
+| --- | --- |
+| CSS two-letter class badges | 7 original class icons: Novice, Vanguard, Arcanist, Ranger, Mender, Shade, Trader |
+| CSS costume mannequins | Layered costume sprites for Greenvale Scout, Ash Wanderer and Signal Runner |
+| Text emote bubble | 8 original emote sprite animations/icons |
+| Shared temporary RPGJS hero sheet | Per-class outfit sheets and weapon-specific idle/walk/run/attack/skill/hit/death/rest/emote animation sheets |
+
+All final art must remain original to Greenvale Afterfall.
