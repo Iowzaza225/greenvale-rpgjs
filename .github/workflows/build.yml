@@ -2,7 +2,7 @@ name: Greenvale Build Check
 
 on:
   push:
-    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding ]
+    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs-stats ]
   pull_request:
     branches: [ main, feature/greenvale-menu-quests, phase/0-foundation ]
   workflow_dispatch:
@@ -46,6 +46,9 @@ jobs:
 
       - name: Phase 1 iPhone WebKit onboarding
         run: pnpm run test:phase1
+
+      - name: Phase 2 iPhone WebKit character system
+        run: pnpm run test:phase2
 
       - name: Upload Playwright traces on failure
         if: failure()
