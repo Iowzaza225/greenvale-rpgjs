@@ -9,6 +9,7 @@ import {
 } from "../core/save";
 import {
   canLearnSkill,
+  getCastInterruptProtection,
   getClassTreeSkills,
   getSkill,
   getSkillLevel,
@@ -476,7 +477,9 @@ export function initSkillSystem():void{
     if(detail.maxHp!==undefined)runtimeState.maxHp=Number(detail.maxHp)||0;
     if(casting){
       const skill=getSkill(casting.skillId);
-      if(skill?.interruptible!==false)cancelCast(true);
+      const character=getSelectedCharacter();
+      const protection=character ? getCastInterruptProtection(character.learnedSkills) : 0;
+      if(skill?.interruptible!==false && Math.random() >= protection) cancelCast(true);
     }
   });
   window.addEventListener("greenvale:character-updated",()=>{renderHotbar();if(root()&&!root()!.hidden)renderWindow();});
