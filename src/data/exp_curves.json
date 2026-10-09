@@ -1,0 +1,752 @@
+{
+  "schemaVersion": 1,
+  "base": [
+    {
+      "level": 1,
+      "expToNext": 105,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 2,
+      "expToNext": 296,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 3,
+      "expToNext": 549,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 4,
+      "expToNext": 856,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 5,
+      "expToNext": 1210,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 6,
+      "expToNext": 1608,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 7,
+      "expToNext": 2046,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 8,
+      "expToNext": 2523,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 9,
+      "expToNext": 3037,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 10,
+      "expToNext": 3585,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 11,
+      "expToNext": 4167,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 12,
+      "expToNext": 4781,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 13,
+      "expToNext": 5426,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 14,
+      "expToNext": 6102,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 15,
+      "expToNext": 6807,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 16,
+      "expToNext": 7541,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 17,
+      "expToNext": 8303,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 18,
+      "expToNext": 9092,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 19,
+      "expToNext": 9908,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 20,
+      "expToNext": 10751,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 21,
+      "expToNext": 11619,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 22,
+      "expToNext": 12512,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 23,
+      "expToNext": 13431,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 24,
+      "expToNext": 14373,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 25,
+      "expToNext": 15340,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 26,
+      "expToNext": 16330,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 27,
+      "expToNext": 17344,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 28,
+      "expToNext": 18380,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 29,
+      "expToNext": 19439,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 30,
+      "expToNext": 20521,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 31,
+      "expToNext": 21625,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 32,
+      "expToNext": 22750,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 33,
+      "expToNext": 23897,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 34,
+      "expToNext": 25065,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 35,
+      "expToNext": 26254,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 36,
+      "expToNext": 27464,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 37,
+      "expToNext": 28695,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 38,
+      "expToNext": 29946,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 39,
+      "expToNext": 31217,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 40,
+      "expToNext": 32508,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 41,
+      "expToNext": 33819,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 42,
+      "expToNext": 35150,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 43,
+      "expToNext": 36500,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 44,
+      "expToNext": 37869,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 45,
+      "expToNext": 39257,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 46,
+      "expToNext": 40665,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 47,
+      "expToNext": 42091,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 48,
+      "expToNext": 43535,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 49,
+      "expToNext": 44998,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 50,
+      "expToNext": 46479,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 51,
+      "expToNext": 47979,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 52,
+      "expToNext": 49496,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 53,
+      "expToNext": 51032,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 54,
+      "expToNext": 52585,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 55,
+      "expToNext": 54156,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 56,
+      "expToNext": 55744,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 57,
+      "expToNext": 57350,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 58,
+      "expToNext": 58973,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 59,
+      "expToNext": 60613,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 60,
+      "expToNext": 62271,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 61,
+      "expToNext": 63945,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 62,
+      "expToNext": 65636,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 63,
+      "expToNext": 67344,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 64,
+      "expToNext": 69069,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 65,
+      "expToNext": 70810,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 66,
+      "expToNext": 72567,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 67,
+      "expToNext": 74341,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 68,
+      "expToNext": 76131,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 69,
+      "expToNext": 77937,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 70,
+      "expToNext": 79760,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 71,
+      "expToNext": 81598,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 72,
+      "expToNext": 83452,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 73,
+      "expToNext": 85322,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 74,
+      "expToNext": 87208,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 75,
+      "expToNext": 89110,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 76,
+      "expToNext": 91027,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 77,
+      "expToNext": 92959,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 78,
+      "expToNext": 94907,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 79,
+      "expToNext": 96871,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 80,
+      "expToNext": 98849,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 81,
+      "expToNext": 100843,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 82,
+      "expToNext": 102852,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 83,
+      "expToNext": 104876,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 84,
+      "expToNext": 106915,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 85,
+      "expToNext": 108969,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 86,
+      "expToNext": 111037,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 87,
+      "expToNext": 113121,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 88,
+      "expToNext": 115219,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 89,
+      "expToNext": 117332,
+      "statPointsOnLevelUp": 4
+    },
+    {
+      "level": 90,
+      "expToNext": 119460,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 91,
+      "expToNext": 121602,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 92,
+      "expToNext": 123758,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 93,
+      "expToNext": 125929,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 94,
+      "expToNext": 128114,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 95,
+      "expToNext": 130314,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 96,
+      "expToNext": 132528,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 97,
+      "expToNext": 134756,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 98,
+      "expToNext": 136998,
+      "statPointsOnLevelUp": 3
+    },
+    {
+      "level": 99,
+      "expToNext": null,
+      "statPointsOnLevelUp": 0
+    }
+  ],
+  "job": [
+    {
+      "level": 1,
+      "expToNext": 75,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 2,
+      "expToNext": 201,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 3,
+      "expToNext": 362,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 4,
+      "expToNext": 552,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 5,
+      "expToNext": 766,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 6,
+      "expToNext": 1004,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 7,
+      "expToNext": 1263,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 8,
+      "expToNext": 1541,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 9,
+      "expToNext": 1837,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 10,
+      "expToNext": 2151,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 11,
+      "expToNext": 2482,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 12,
+      "expToNext": 2829,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 13,
+      "expToNext": 3191,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 14,
+      "expToNext": 3567,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 15,
+      "expToNext": 3959,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 16,
+      "expToNext": 4363,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 17,
+      "expToNext": 4782,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 18,
+      "expToNext": 5213,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 19,
+      "expToNext": 5658,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 20,
+      "expToNext": 6114,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 21,
+      "expToNext": 6583,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 22,
+      "expToNext": 7064,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 23,
+      "expToNext": 7556,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 24,
+      "expToNext": 8060,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 25,
+      "expToNext": 8576,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 26,
+      "expToNext": 9102,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 27,
+      "expToNext": 9639,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 28,
+      "expToNext": 10186,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 29,
+      "expToNext": 10744,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 30,
+      "expToNext": 11313,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 31,
+      "expToNext": 11891,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 32,
+      "expToNext": 12480,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 33,
+      "expToNext": 13078,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 34,
+      "expToNext": 13686,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 35,
+      "expToNext": 14304,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 36,
+      "expToNext": 14931,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 37,
+      "expToNext": 15568,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 38,
+      "expToNext": 16214,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 39,
+      "expToNext": 16868,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 40,
+      "expToNext": 17532,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 41,
+      "expToNext": 18205,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 42,
+      "expToNext": 18887,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 43,
+      "expToNext": 19577,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 44,
+      "expToNext": 20276,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 45,
+      "expToNext": 20984,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 46,
+      "expToNext": 21700,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 47,
+      "expToNext": 22424,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 48,
+      "expToNext": 23157,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 49,
+      "expToNext": 23897,
+      "skillPointsOnLevelUp": 1
+    },
+    {
+      "level": 50,
+      "expToNext": null,
+      "skillPointsOnLevelUp": 0
+    }
+  ]
+}
