@@ -840,6 +840,7 @@ export default createServer({
   providers: [
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
+      feedback: { damageNumbers: false },
       animations: { attack: { animationName: "attack2", repeat: 1 } },
       combat: {
         pvp: false,
