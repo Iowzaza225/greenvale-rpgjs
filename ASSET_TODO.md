@@ -40,3 +40,16 @@ The CSS placeholders are original project-generated shapes. They do not copy art
 | Shared temporary RPGJS hero sheet | Per-class outfit sheets and weapon-specific idle/walk/run/attack/skill/hit/death/rest/emote animation sheets |
 
 All final art must remain original to Greenvale Afterfall.
+
+
+## Phase 3 skill placeholders
+
+| Placeholder | Final original asset |
+| --- | --- |
+| Two-letter CSS skill icons | 51 original skill icons matching Greenvale Afterfall visual language |
+| `placeholder://skill/<id>` effects | Unique VFX/sprite sheets for every skill id |
+| `sfx_<skill-id>` references | Original cast/impact audio for each skill |
+| Generic cast-bar presentation | Final Greenvale cast/interrupt animation and sound |
+| Generic cooldown conic overlay | Final icon masks/cooldown ring art |
+
+The placeholder ids are stable so final art/audio can replace them without changing skill logic.
