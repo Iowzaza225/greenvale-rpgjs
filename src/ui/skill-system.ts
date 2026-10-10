@@ -450,8 +450,12 @@ function handleSkillResult(detail:any):void{
     const skill=getSkill(id);cooldowns.set(id,Number(detail.readyAt)||Date.now()+(Number(skill?.cooldownMs)||0));
     if(detail.source!=="auto")toast(t("skill.ui.used",{skill:skillName(id)}));
   }else if(id&&detail?.reason&&detail.source!=="auto"){
-    const key=detail.reason==="no-sp"?"skill.ui.noSp":detail.reason==="cooldown"?"skill.ui.cooling":detail.reason==="no-target"?"skill.ui.noTarget":"skill.ui.locked";
-    toast(t(key));
+    if(detail.reason==="approaching"){
+      toast(t("skill.ui.approaching",{target:detail.targetName||"Target"}));
+    }else{
+      const key=detail.reason==="no-sp"?"skill.ui.noSp":detail.reason==="cooldown"?"skill.ui.cooling":detail.reason==="no-target"?"skill.ui.outOfRange":"skill.ui.locked";
+      toast(t(key));
+    }
   }
   window.__GV_SKILL_STATE__ = { ...runtimeState, lastResult: detail };
   updateCooldownVisuals();
