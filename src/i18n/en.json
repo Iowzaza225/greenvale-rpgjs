@@ -387,5 +387,7 @@
   "skill.ui.changeJob": "Change job",
   "skill.ui.kicker": "GREENVALE · SKILLS",
   "skill.ui.levelShort": "Lv",
-  "skill.ui.spShort": "SP"
+  "skill.ui.spShort": "SP",
+  "skill.ui.approaching": "Targeting and moving into range of {target}…",
+  "skill.ui.outOfRange": "Target is outside skill range."
 }
