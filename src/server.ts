@@ -407,17 +407,53 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
   const startedAt = Date.now();
   let lastDistance = combatDistance(activePlayer, target);
   let lastProgressAt = startedAt;
+  let approachMode: "moveTo" | "step" = "moveTo";
   pendingSkillApproach = { skillId, token };
 
   const beginTrackingMove = () => {
-    if (!activePlayer) return;
+    if (!activePlayer || approachMode === "step") return;
     try {
-      // RPGJS moveTo(target) uses SeekAvoid with a live target provider.
-      // This is more reliable on iPhone/WebKit than repeatedly calling moveTo()
-      // with static coordinates, which continuously replaced the movement strategy.
+      // Normal server mode: use RPGJS SeekAvoid against the live target.
       activePlayer.moveTo(target);
     } catch (error) {
-      console.warn("[Greenvale] Skill auto-approach failed", error);
+      // Standalone/browser mode can expose a synchronized map facade that has
+      // no moveManager. Falling back to small synchronized steps keeps the
+      // mobile skill assist playable without touching built-in hotbar sync.
+      approachMode = "step";
+      try { activePlayer.stopMoveTo?.(); } catch {}
+      console.info("[Greenvale] moveTo unavailable; using standalone step assist", error);
+    }
+  };
+
+  const stepTowardTarget = () => {
+    if (!activePlayer || approachMode !== "step") return;
+    const px = entityCoord(activePlayer, "x");
+    const py = entityCoord(activePlayer, "y");
+    const tx = entityCoord(target, "x");
+    const ty = entityCoord(target, "y");
+    const dx = tx - px;
+    const dy = ty - py;
+    const centerDistance = Math.hypot(dx, dy);
+    if (!Number.isFinite(centerDistance) || centerDistance <= 0.001) return;
+
+    const desiredCenterDistance =
+      Math.max(0, targetRange + entityCombatRadius(activePlayer) + entityCombatRadius(target) - 4);
+    const remaining = Math.max(0, centerDistance - desiredCenterDistance);
+    if (remaining <= 0) return;
+
+    const step = Math.min(16, remaining);
+    const nextX = Math.max(24, Math.min(CAMP_WIDTH - 24, px + (dx / centerDistance) * step));
+    const nextY = Math.max(24, Math.min(CAMP_HEIGHT - 24, py + (dy / centerDistance) * step));
+
+    try {
+      const result = activePlayer.teleport({ x: nextX, y: nextY });
+      if (result && typeof (result as any).catch === "function") {
+        void (result as Promise<unknown>).catch((error) => {
+          console.warn("[Greenvale] Step assist teleport failed", error);
+        });
+      }
+    } catch (error) {
+      console.warn("[Greenvale] Step assist failed", error);
     }
   };
 
@@ -446,15 +482,20 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
       return;
     }
 
-    if (distance + 2 < lastDistance) {
+    if (approachMode === "step") {
+      stepTowardTarget();
+    } else if (distance + 2 < lastDistance) {
       lastDistance = distance;
       lastProgressAt = now;
     } else if (now - lastProgressAt >= SKILL_APPROACH_STUCK_MS) {
-      // Re-seed SeekAvoid only when movement has genuinely stopped making
-      // progress. Do not recreate it every frame.
       beginTrackingMove();
       lastProgressAt = now;
       lastDistance = distance;
+    }
+
+    if (distance + 2 < lastDistance) {
+      lastDistance = distance;
+      lastProgressAt = now;
     }
 
     if (now - startedAt > SKILL_APPROACH_TIMEOUT_MS || distance > SKILL_ASSIST_MAX_DISTANCE + 160) {
@@ -466,11 +507,12 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
         source,
         targetDistance: Math.round(distance),
         targetRange,
+        approachMode,
       });
       return;
     }
 
-    pendingSkillApproach.timer = window.setTimeout(tick, 80);
+    pendingSkillApproach.timer = window.setTimeout(tick, approachMode === "step" ? 60 : 80);
   };
 
   dispatchSkillState("greenvale:skill-result", {
@@ -481,6 +523,7 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
     targetName: String(target?.name || "Target"),
     targetDistance: Math.round(lastDistance),
     targetRange,
+    approachMode,
   });
 
   beginTrackingMove();
