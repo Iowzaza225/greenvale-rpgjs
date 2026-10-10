@@ -14,6 +14,18 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
   await expect(page.locator("#rpg canvas")).toBeVisible({ timeout: 30_000 });
   await expect.poll(async () => page.evaluate(() => !!(window as any).__GV_PHASE2__)).toBe(true);
 
+  // Real-device regression: from the spawn point, pressing the default melee
+  // skill must acquire the nearest wolf, approach it and execute instead of
+  // ending with "no target in range".
+  await expect(page.locator("[data-hotbar-slot='0']")).toBeVisible();
+  await page.locator("[data-hotbar-slot='0']").click();
+  await expect.poll(async () => page.evaluate(() => {
+    const result = (window as any).__GV_SKILL_STATE__?.lastResult;
+    return result?.skillId === "survivor_strike" && result?.ok === true;
+  }), { timeout: 8_000 }).toBe(true);
+  const noviceCast = await page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult);
+  expect(noviceCast.damage).toBeGreaterThan(0);
+
   // Raise Novice high enough to unlock the first job and earn skill points.
   await page.evaluate(() => (window as any).__GV_PHASE2__.gainExp(9000, 9000));
 
