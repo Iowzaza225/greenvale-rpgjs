@@ -387,5 +387,7 @@
   "skill.ui.changeJob": "เปลี่ยนอาชีพ",
   "skill.ui.kicker": "GREENVALE · สกิล",
   "skill.ui.levelShort": "Lv",
-  "skill.ui.spShort": "SP"
+  "skill.ui.spShort": "SP",
+  "skill.ui.approaching": "กำลังล็อกเป้าหมายและเข้าใกล้ {target}…",
+  "skill.ui.outOfRange": "เป้าหมายอยู่นอกระยะสกิล"
 }
