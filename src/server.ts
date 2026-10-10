@@ -192,6 +192,7 @@ const STARTER_WEAPONS: Record<string, any> = {
 
 let activePlayer: RpgPlayer | null = null;
 const activeEnemies = new Set<any>();
+const SKILL_RANGE_TOLERANCE = 8;
 
 function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
   const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
@@ -297,7 +298,7 @@ function enemyCandidates(player: RpgPlayer): Array<{ event: any; distance: numbe
 
 function enemyEvents(player: RpgPlayer, range: number): any[] {
   return enemyCandidates(player)
-    .filter(({ distance }) => distance <= range)
+    .filter(({ distance }) => distance <= range + SKILL_RANGE_TOLERANCE)
     .map(({ event }) => event);
 }
 
@@ -487,7 +488,7 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
       };
     }
 
-    if (distance <= targetRange + 6) {
+    if (distance <= targetRange + SKILL_RANGE_TOLERANCE) {
       try { activePlayer.stopMoveTo?.(); } catch {}
       pendingSkillApproach = null;
       executeGreenvaleSkill({ ...detail, skillId, level, _approachRetry: true });
