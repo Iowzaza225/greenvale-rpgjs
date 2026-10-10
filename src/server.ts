@@ -383,6 +383,9 @@ function applyStatus(target: any, skill: any, level: number) {
   }
 }
 
+const SKILL_ASSIST_MAX_DISTANCE = 680;
+const SKILL_APPROACH_TIMEOUT_MS = 8500;
+
 let pendingSkillApproach: { skillId: string; token: number; timer?: number } | null = null;
 let skillApproachToken = 0;
 
@@ -406,6 +409,12 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
   const tick = () => {
     if (!activePlayer || !pendingSkillApproach || pendingSkillApproach.token !== token) return;
     if (entityNumber(target, "hp") <= 0) {
+      const replacement = enemyCandidates(activePlayer)[0];
+      if (replacement && replacement.distance <= SKILL_ASSIST_MAX_DISTANCE) {
+        stopSkillApproach();
+        startSkillApproach(detail, skill, level, replacement.event, targetRange);
+        return;
+      }
       stopSkillApproach();
       dispatchSkillState("greenvale:skill-result", { ok: false, reason: "no-target", skillId, source });
       return;
@@ -419,7 +428,7 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
       return;
     }
 
-    if (Date.now() - startedAt > 4500 || distance > 360) {
+    if (Date.now() - startedAt > SKILL_APPROACH_TIMEOUT_MS || distance > SKILL_ASSIST_MAX_DISTANCE + 120) {
       stopSkillApproach();
       dispatchSkillState("greenvale:skill-result", {
         ok: false,
@@ -510,7 +519,7 @@ function executeGreenvaleSkill(detail: any) {
       // target acquires the nearest visible enemy and walks into legal range.
       // Damage is still applied only after the authoritative range check passes.
       const nearest = enemyCandidates(activePlayer)[0];
-      const assistRange = Math.max(260, targetRange + 120);
+      const assistRange = Math.max(SKILL_ASSIST_MAX_DISTANCE, targetRange + 220);
       if (!detail?._approachRetry && nearest && nearest.distance <= assistRange) {
         startSkillApproach(detail, skill, level, nearest.event, targetRange);
         return;
@@ -583,6 +592,17 @@ if (typeof window !== "undefined") {
     executeGreenvaleSkill((event as CustomEvent).detail || {});
   });
   window.addEventListener("greenvale:skill-state-request", () => dispatchSkillState());
+
+  // QA-only position hook. It is enabled only on ?debug=1 and exists so the
+  // iPhone WebKit test can reproduce "enemy visible but outside skill range".
+  window.addEventListener("greenvale:debug-player-position", (event) => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    const detail = (event as CustomEvent).detail || {};
+    const x = Number(detail.x);
+    const y = Number(detail.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    activePlayer.teleport({ x, y });
+  });
 }
 
 function getProfile(): Profile {
