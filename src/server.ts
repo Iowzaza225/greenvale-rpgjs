@@ -383,8 +383,9 @@ function applyStatus(target: any, skill: any, level: number) {
   }
 }
 
-const SKILL_ASSIST_MAX_DISTANCE = 680;
-const SKILL_APPROACH_TIMEOUT_MS = 8500;
+const SKILL_ASSIST_MAX_DISTANCE = 900;
+const SKILL_APPROACH_TIMEOUT_MS = 10000;
+const SKILL_APPROACH_STUCK_MS = 1200;
 
 let pendingSkillApproach: { skillId: string; token: number; timer?: number } | null = null;
 let skillApproachToken = 0;
@@ -404,15 +405,30 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
   const skillId = String(skill.id);
   const source = detail?.source === "auto" ? "auto" : "manual";
   const startedAt = Date.now();
+  let lastDistance = combatDistance(activePlayer, target);
+  let lastProgressAt = startedAt;
   pendingSkillApproach = { skillId, token };
+
+  const beginTrackingMove = () => {
+    if (!activePlayer) return;
+    try {
+      // RPGJS moveTo(target) uses SeekAvoid with a live target provider.
+      // This is more reliable on iPhone/WebKit than repeatedly calling moveTo()
+      // with static coordinates, which continuously replaced the movement strategy.
+      activePlayer.moveTo(target);
+    } catch (error) {
+      console.warn("[Greenvale] Skill auto-approach failed", error);
+    }
+  };
 
   const tick = () => {
     if (!activePlayer || !pendingSkillApproach || pendingSkillApproach.token !== token) return;
+
     if (entityNumber(target, "hp") <= 0) {
-      const replacement = enemyCandidates(activePlayer)[0];
-      if (replacement && replacement.distance <= SKILL_ASSIST_MAX_DISTANCE) {
+      const replacementTarget = enemyCandidates(activePlayer)[0];
+      if (replacementTarget && replacementTarget.distance <= SKILL_ASSIST_MAX_DISTANCE) {
         stopSkillApproach();
-        startSkillApproach(detail, skill, level, replacement.event, targetRange);
+        startSkillApproach(detail, skill, level, replacementTarget.event, targetRange);
         return;
       }
       stopSkillApproach();
@@ -420,15 +436,28 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
       return;
     }
 
+    const now = Date.now();
     const distance = combatDistance(activePlayer, target);
-    if (distance <= targetRange + 4) {
+
+    if (distance <= targetRange + 6) {
       try { activePlayer.stopMoveTo?.(); } catch {}
       pendingSkillApproach = null;
       executeGreenvaleSkill({ ...detail, skillId, level, _approachRetry: true });
       return;
     }
 
-    if (Date.now() - startedAt > SKILL_APPROACH_TIMEOUT_MS || distance > SKILL_ASSIST_MAX_DISTANCE + 120) {
+    if (distance + 2 < lastDistance) {
+      lastDistance = distance;
+      lastProgressAt = now;
+    } else if (now - lastProgressAt >= SKILL_APPROACH_STUCK_MS) {
+      // Re-seed SeekAvoid only when movement has genuinely stopped making
+      // progress. Do not recreate it every frame.
+      beginTrackingMove();
+      lastProgressAt = now;
+      lastDistance = distance;
+    }
+
+    if (now - startedAt > SKILL_APPROACH_TIMEOUT_MS || distance > SKILL_ASSIST_MAX_DISTANCE + 160) {
       stopSkillApproach();
       dispatchSkillState("greenvale:skill-result", {
         ok: false,
@@ -441,29 +470,7 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
       return;
     }
 
-    const px = entityCoord(activePlayer, "x");
-    const py = entityCoord(activePlayer, "y");
-    const tx = entityCoord(target, "x");
-    const ty = entityCoord(target, "y");
-    const dx = tx - px;
-    const dy = ty - py;
-    const centerDistance = Math.max(1, Math.hypot(dx, dy));
-    const desiredCenterDistance = Math.max(30, targetRange + entityCombatRadius(activePlayer) + entityCombatRadius(target) - 6);
-    const destination = {
-      x: tx - (dx / centerDistance) * desiredCenterDistance,
-      y: ty - (dy / centerDistance) * desiredCenterDistance,
-    };
-
-    try {
-      activePlayer.moveTo(destination);
-    } catch (error) {
-      stopSkillApproach();
-      console.warn("[Greenvale] Skill auto-approach failed", error);
-      dispatchSkillState("greenvale:skill-result", { ok: false, reason: "no-target", skillId, source });
-      return;
-    }
-
-    pendingSkillApproach.timer = window.setTimeout(tick, 90);
+    pendingSkillApproach.timer = window.setTimeout(tick, 80);
   };
 
   dispatchSkillState("greenvale:skill-result", {
@@ -472,10 +479,12 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
     skillId,
     source,
     targetName: String(target?.name || "Target"),
-    targetDistance: Math.round(combatDistance(activePlayer, target)),
+    targetDistance: Math.round(lastDistance),
     targetRange,
   });
-  tick();
+
+  beginTrackingMove();
+  pendingSkillApproach.timer = window.setTimeout(tick, 80);
 }
 
 function executeGreenvaleSkill(detail: any) {
