@@ -475,6 +475,18 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
     const now = Date.now();
     const distance = combatDistance(activePlayer, target);
 
+    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("debug")) {
+      (window as any).__GV_APPROACH_DEBUG__ = {
+        skillId,
+        approachMode,
+        elapsedMs: now - startedAt,
+        distance: Math.round(distance * 10) / 10,
+        targetRange,
+        player: { x: entityCoord(activePlayer, "x"), y: entityCoord(activePlayer, "y") },
+        target: { x: entityCoord(target, "x"), y: entityCoord(target, "y"), hp: entityNumber(target, "hp") },
+      };
+    }
+
     if (distance <= targetRange + 6) {
       try { activePlayer.stopMoveTo?.(); } catch {}
       pendingSkillApproach = null;
