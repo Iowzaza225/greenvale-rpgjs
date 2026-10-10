@@ -268,23 +268,37 @@ function entityNumber(entity: any, key: string): number {
   }
 }
 
-function enemyEvents(player: RpgPlayer, range: number): any[] {
+function entityCombatRadius(entity: any): number {
+  // Greenvale currently uses 30x38 for the player and 34x36 for wolves.
+  // RPGJS coordinates represent the body position, while players judge range
+  // from the visible sprite edges. Using a conservative radius prevents a
+  // monster that is visibly touching the player from being reported as out of range.
+  if (entity === activePlayer) return 18;
+  return 20;
+}
+
+function combatDistance(a: any, b: any): number {
+  const dx = entityCoord(a, "x") - entityCoord(b, "x");
+  const dy = entityCoord(a, "y") - entityCoord(b, "y");
+  const centerDistance = Math.hypot(dx, dy);
+  return Math.max(0, centerDistance - entityCombatRadius(a) - entityCombatRadius(b));
+}
+
+function enemyCandidates(player: RpgPlayer): Array<{ event: any; distance: number }> {
   // Do not walk through getCurrentMap().getEvents() from a browser-dispatched
   // standalone event. On WebKit that bridge can expose the synchronized map
   // facade instead of the authoritative room, which has no getEvents().
   // Battle events register themselves here during server-side onInit instead.
-  const px = entityCoord(player, "x");
-  const py = entityCoord(player, "y");
   return Array.from(activeEnemies)
     .filter((event: any) => event?.battleAi && entityNumber(event, "hp") > 0)
-    .map((event: any) => {
-      const dx = entityCoord(event, "x") - px;
-      const dy = entityCoord(event, "y") - py;
-      return { event, distance: Math.hypot(dx, dy) };
-    })
-    .filter(({ distance }: any) => distance <= range)
-    .sort((a: any, b: any) => a.distance - b.distance)
-    .map(({ event }: any) => event);
+    .map((event: any) => ({ event, distance: combatDistance(player, event) }))
+    .sort((a: any, b: any) => a.distance - b.distance);
+}
+
+function enemyEvents(player: RpgPlayer, range: number): any[] {
+  return enemyCandidates(player)
+    .filter(({ distance }) => distance <= range)
+    .map(({ event }) => event);
 }
 
 function dispatchSkillState(type = "greenvale:skill-state", extra: Record<string, any> = {}) {
@@ -369,6 +383,92 @@ function applyStatus(target: any, skill: any, level: number) {
   }
 }
 
+let pendingSkillApproach: { skillId: string; token: number; timer?: number } | null = null;
+let skillApproachToken = 0;
+
+function stopSkillApproach() {
+  if (!pendingSkillApproach) return;
+  if (pendingSkillApproach.timer) window.clearTimeout(pendingSkillApproach.timer);
+  try { activePlayer?.stopMoveTo?.(); } catch {}
+  pendingSkillApproach = null;
+}
+
+function startSkillApproach(detail: any, skill: any, level: number, target: any, targetRange: number) {
+  if (!activePlayer) return;
+  stopSkillApproach();
+
+  const token = ++skillApproachToken;
+  const skillId = String(skill.id);
+  const source = detail?.source === "auto" ? "auto" : "manual";
+  const startedAt = Date.now();
+  pendingSkillApproach = { skillId, token };
+
+  const tick = () => {
+    if (!activePlayer || !pendingSkillApproach || pendingSkillApproach.token !== token) return;
+    if (entityNumber(target, "hp") <= 0) {
+      stopSkillApproach();
+      dispatchSkillState("greenvale:skill-result", { ok: false, reason: "no-target", skillId, source });
+      return;
+    }
+
+    const distance = combatDistance(activePlayer, target);
+    if (distance <= targetRange + 4) {
+      try { activePlayer.stopMoveTo?.(); } catch {}
+      pendingSkillApproach = null;
+      executeGreenvaleSkill({ ...detail, skillId, level, _approachRetry: true });
+      return;
+    }
+
+    if (Date.now() - startedAt > 4500 || distance > 360) {
+      stopSkillApproach();
+      dispatchSkillState("greenvale:skill-result", {
+        ok: false,
+        reason: "no-target",
+        skillId,
+        source,
+        targetDistance: Math.round(distance),
+        targetRange,
+      });
+      return;
+    }
+
+    const px = entityCoord(activePlayer, "x");
+    const py = entityCoord(activePlayer, "y");
+    const tx = entityCoord(target, "x");
+    const ty = entityCoord(target, "y");
+    const dx = tx - px;
+    const dy = ty - py;
+    const centerDistance = Math.max(1, Math.hypot(dx, dy));
+    const desiredCenterDistance = Math.max(30, targetRange + entityCombatRadius(activePlayer) + entityCombatRadius(target) - 6);
+    const destination = {
+      x: tx - (dx / centerDistance) * desiredCenterDistance,
+      y: ty - (dy / centerDistance) * desiredCenterDistance,
+    };
+
+    try {
+      activePlayer.moveTo(destination);
+    } catch (error) {
+      stopSkillApproach();
+      console.warn("[Greenvale] Skill auto-approach failed", error);
+      dispatchSkillState("greenvale:skill-result", { ok: false, reason: "no-target", skillId, source });
+      return;
+    }
+
+    pendingSkillApproach.timer = window.setTimeout(tick, 90);
+  };
+
+  dispatchSkillState("greenvale:skill-result", {
+    ok: false,
+    reason: "approaching",
+    skillId,
+    source,
+    targetName: String(target?.name || "Target"),
+    targetDistance: Math.round(combatDistance(activePlayer, target)),
+    targetRange,
+  });
+  tick();
+}
+
 function executeGreenvaleSkill(detail: any) {
   if (!activePlayer) return;
   const skillId = String(detail?.skillId || "");
@@ -406,20 +506,24 @@ function executeGreenvaleSkill(detail: any) {
     const targetRange = Math.max(40, Number(skill.range) || 80);
     const targets = enemyEvents(activePlayer, targetRange);
     if (targets.length === 0) {
-      const diagnostics = Array.from(activeEnemies).slice(0, 8).map((event: any) => {
-        const px = entityCoord(activePlayer, "x");
-        const py = entityCoord(activePlayer, "y");
-        const ex = entityCoord(event, "x");
-        const ey = entityCoord(event, "y");
-        return {
-          id: String(event?.id || event?.name || "enemy"),
-          hp: entityNumber(event, "hp"),
-          x: ex,
-          y: ey,
-          distance: Math.round(Math.hypot(ex - px, ey - py) * 10) / 10,
-          hasBattleAi: !!event?.battleAi,
-        };
-      });
+      // Mobile MMORPG assist: pressing an offensive skill without a selected
+      // target acquires the nearest visible enemy and walks into legal range.
+      // Damage is still applied only after the authoritative range check passes.
+      const nearest = enemyCandidates(activePlayer)[0];
+      const assistRange = Math.max(260, targetRange + 120);
+      if (!detail?._approachRetry && nearest && nearest.distance <= assistRange) {
+        startSkillApproach(detail, skill, level, nearest.event, targetRange);
+        return;
+      }
+
+      const diagnostics = enemyCandidates(activePlayer).slice(0, 8).map(({ event, distance }) => ({
+        id: String(event?.id || event?.name || "enemy"),
+        hp: entityNumber(event, "hp"),
+        x: entityCoord(event, "x"),
+        y: entityCoord(event, "y"),
+        distance: Math.round(distance * 10) / 10,
+        hasBattleAi: !!event?.battleAi,
+      }));
       dispatchSkillState("greenvale:skill-result", {
         ok: false,
         reason: "no-target",
@@ -655,6 +759,9 @@ const player = {
   },
 
   onInput(player: RpgPlayer, { action }: any) {
+    if (["up", "down", "left", "right"].includes(String(action))) {
+      stopSkillApproach();
+    }
     if (action === "escape" || action === "back") {
       void player.callMainMenu({
         menus: [
