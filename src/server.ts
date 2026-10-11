@@ -1197,8 +1197,6 @@ if (typeof window !== "undefined") {
     const detail = (event as CustomEvent).detail || {};
     applyPlayerStatus(String(detail.id || "bleed"), Number(detail.durationMs) || 1200, Number(detail.sourceLevel) || 1);
   });
-}
-
   window.setInterval(() => {
     if (!activePlayer || Number(activePlayer.hp) <= 0) return;
     const profile = getProfile();
@@ -1206,6 +1204,7 @@ if (typeof window !== "undefined") {
       executeBasicAttack("auto");
     }
   }, 240);
+}
 
 function getProfile(): Profile {
   const fallback: Profile = { name: "Survivor", classId: "novice", started: true, kills: 0, completed: false };
