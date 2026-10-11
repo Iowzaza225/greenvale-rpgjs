@@ -79,3 +79,17 @@ All final combat presentation must remain original to Greenvale Afterfall.
 | Text mini-boss announcement | Original world-announcement panel and SFX |
 
 All Phase 5 names and data are original Greenvale Afterfall content.
+
+## Phase 6 effects/audio placeholders
+
+| Placeholder | Final original asset |
+| --- | --- |
+| CSS slash/impact particles | Original weapon hit sprite sheets and contact sparks |
+| CSS crit/block/dodge/status bursts | Original combat feedback VFX set |
+| CSS element palettes | Original fire/water/wind/earth/light/dark particle sheets |
+| CSS heal ring | Original healing pulse/rune animation |
+| Generated Web Audio oscillators | Original attack, impact, crit, block, heal, skill, loot, monster and ambience SFX |
+| CSS rain lines | Original lightweight rain sprite/particle pass |
+| CSS day/dusk/night overlay | Original lighting LUT/ambient treatment and map light sources |
+
+Generated tones are temporary and intentionally asset-free so iPhone Safari audio behavior can be tested before final audio production.
