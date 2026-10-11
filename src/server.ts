@@ -896,7 +896,7 @@ function applyStatus(target: any, skill: any, level: number) {
       }
       let damage = 0;
       if (def.tickKind === "percentMaxHp") {
-        damage = Math.max(1, Math.round((Number(target?.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90) * Number(def.tickValue) / 100));
+        damage = Math.max(1, Math.round((Number(target?.param?.[MAXHP]) || Number(monsterConfigForEntity(target).hp) || 1) * Number(def.tickValue) / 100));
       } else if (def.tickKind === "sourceLevel") {
         damage = Math.max(1, Math.round(Number(def.tickValue) * level * state.stacks));
       } else if (def.tickKind === "flat") {
@@ -1466,7 +1466,7 @@ function attachMonsterAi(entity: any, config: MonsterConfig) {
       onMonsterDefeated(entity, attacker);
     },
     presentation: {
-      role: config.boss ? "boss" : "enemy",
+      role: "enemy",
       name: String(config.name || config.id),
       healthBar: {
         text: String(config.name || config.id),
