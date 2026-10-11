@@ -1035,12 +1035,14 @@ function stepPlayerToward(target: any, step = 22) {
 let autoApproachTarget: any = null;
 let autoApproachDistance = Number.POSITIVE_INFINITY;
 let autoApproachProgressAt = 0;
+let autoApproachMode: "moveTo" | "step" = "moveTo";
 
 function autoCombatTick() {
   if (!activePlayer || activePlayer.getVariable("greenvale.dead")) return;
   const profile = getProfile();
   if (!profile.combatSettings?.autoAttack || pendingSkillApproach) {
     autoApproachTarget = null;
+    autoApproachMode = "moveTo";
     return;
   }
 
@@ -1048,6 +1050,7 @@ function autoCombatTick() {
   if (!nearest || nearest.distance > Number(combatConfig.autoAttack.maxAcquireDistance || 640)) {
     setTargetHud(null);
     autoApproachTarget = null;
+    autoApproachMode = "moveTo";
     return;
   }
 
@@ -1060,15 +1063,34 @@ function autoCombatTick() {
       autoApproachTarget = target;
       autoApproachDistance = nearest.distance;
       autoApproachProgressAt = now;
-      try { activePlayer.moveTo(target); } catch { stepPlayerToward(target); }
+      autoApproachMode = "moveTo";
+      try {
+        activePlayer.moveTo(target);
+      } catch {
+        autoApproachMode = "step";
+        stepPlayerToward(target, 34);
+      }
       return;
     }
+
+    if (autoApproachMode === "step") {
+      // In the standalone iPhone build RPGJS moveTo() may return successfully
+      // without moving because the authoritative physics body is not exposed
+      // through the browser bridge. Once that is detected, keep taking bounded
+      // synchronized steps every combat tick instead of waiting ~1s per step.
+      stepPlayerToward(target, 34);
+      autoApproachDistance = nearest.distance;
+      autoApproachProgressAt = now;
+      return;
+    }
+
     if (nearest.distance + 2 < autoApproachDistance) {
       autoApproachDistance = nearest.distance;
       autoApproachProgressAt = now;
-    } else if (now - autoApproachProgressAt > 900) {
+    } else if (now - autoApproachProgressAt > 700) {
       try { activePlayer.stopMoveTo?.(); } catch {}
-      stepPlayerToward(target);
+      autoApproachMode = "step";
+      stepPlayerToward(target, 34);
       autoApproachProgressAt = now;
       autoApproachDistance = nearest.distance;
     }
@@ -1077,6 +1099,7 @@ function autoCombatTick() {
 
   try { activePlayer.stopMoveTo?.(); } catch {}
   autoApproachTarget = null;
+  autoApproachMode = "moveTo";
   const aspd = Math.max(.5, Number(profile.derived?.ASPD) || 1);
   const interval = Math.max(350, Math.round(1000 / aspd));
   const now = Date.now();
