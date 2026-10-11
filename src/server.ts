@@ -21,7 +21,6 @@ import {
 } from "@rpgjs/action-battle/server";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts";
 import skillsData from "./data/skills.json" with { type: "json" };
-import monstersData from "./data/monsters.json" with { type: "json" };
 import dropsData from "./data/drops.json" with { type: "json" };
 import statusData from "./data/status_effects.json" with { type: "json" };
 import {
@@ -31,6 +30,13 @@ import {
   rollDrop,
   type CombatStats,
 } from "./core/combat.ts";
+import {
+  bossPhaseIndex,
+  difficultyColor,
+  getMonsterConfig,
+  spawnEntriesForMap,
+  type MonsterConfig,
+} from "./core/monsters.ts";
 
 const TrainingBlade = {
   id: "training-blade",
@@ -209,11 +215,19 @@ const STARTER_WEAPONS: Record<string, any> = {
   engineer: EngineerCutter,
 };
 
-const WOLF_CONFIG = (monstersData.monsters as any[]).find((entry) => entry.id === "ashfang_wolf") || {
-  id: "ashfang_wolf", level: 3, hp: 90, atk: 13, def: 3, mdef: 1, hit: 12, flee: 8,
+const WOLF_CONFIG = (getMonsterConfig("ashfang_wolf") || {
+  id: "ashfang_wolf",
+  name: "Ashfang Wolf",
+  nameKey: "monster.ashfang_wolf.name",
+  level: 3, hp: 90, atk: 13, def: 3, mdef: 1, hit: 12, flee: 8, moveSpeed: 1.35,
+  element: "neutral", size: "medium", race: "beast", baseExp: 18, jobExp: 8,
+  visionRange: 230, attackRange: 58, ai: "aggressive", skills: [], dropTableId: "ashfang_wolf",
+  sprite: "placeholder_wolf", sound: "placeholder_wolf", respawnMs: 8000,
   crit: 3, critResistance: 1, perfectDodge: 1, blockChance: 2, blockReduction: .35,
-  element: "neutral", size: "medium", race: "beast", attackRange: 58,
-};
+  aggro: { memoryMs: 5000, leashRange: 420, assistRadius: 90 },
+  basicAttack: { element: "neutral", statusEffect: { id: "bleed", chance: .12, durationMs: 4000 } },
+  autoLootRadius: 120,
+}) as MonsterConfig;
 
 function classWeaponType(classId: string): string {
   const map: Record<string, string> = {
@@ -244,23 +258,32 @@ function profileCombatStats(profile: Profile): CombatStats {
   };
 }
 
-function wolfCombatStats(): CombatStats {
+function monsterConfigForEntity(entity: any): MonsterConfig {
+  return ((entity as any)?.greenvaleMonsterConfig as MonsterConfig) || WOLF_CONFIG;
+}
+
+function monsterCombatStats(source: any = WOLF_CONFIG): CombatStats {
+  const config = ((source as any)?.greenvaleMonsterConfig || source || WOLF_CONFIG) as MonsterConfig;
   return {
-    ATK: Number(WOLF_CONFIG.atk) || 13,
-    MATK: Math.max(1, (Number(WOLF_CONFIG.atk) || 13) * .7),
-    DEF: Number(WOLF_CONFIG.def) || 3,
-    MDEF: Number(WOLF_CONFIG.mdef) || 1,
-    HIT: Number(WOLF_CONFIG.hit) || 12,
-    FLEE: Number(WOLF_CONFIG.flee) || 8,
-    CRIT: Number(WOLF_CONFIG.crit) || 3,
-    critResistance: Number(WOLF_CONFIG.critResistance) || 1,
-    perfectDodge: Number(WOLF_CONFIG.perfectDodge) || 1,
-    blockChance: Number(WOLF_CONFIG.blockChance) || 2,
-    blockReduction: Number(WOLF_CONFIG.blockReduction) || .35,
-    element: String(WOLF_CONFIG.element || "neutral") as any,
-    size: String(WOLF_CONFIG.size || "medium") as any,
-    race: String(WOLF_CONFIG.race || "beast") as any,
+    ATK: Number(config.atk) || 1,
+    MATK: Math.max(1, (Number(config.atk) || 1) * .7),
+    DEF: Number(config.def) || 0,
+    MDEF: Number(config.mdef) || 0,
+    HIT: Number(config.hit) || 1,
+    FLEE: Number(config.flee) || 0,
+    CRIT: Number(config.crit) || 0,
+    critResistance: Number(config.critResistance) || 0,
+    perfectDodge: Number(config.perfectDodge) || 0,
+    blockChance: Number(config.blockChance) || 0,
+    blockReduction: Number(config.blockReduction) || 0,
+    element: String(config.element || "neutral") as any,
+    size: String(config.size || "medium") as any,
+    race: String(config.race || "beast") as any,
   };
+}
+
+function wolfCombatStats(): CombatStats {
+  return monsterCombatStats(WOLF_CONFIG);
 }
 
 
@@ -413,18 +436,38 @@ function dispatchTargetState(target: any | null = currentTarget()) {
     dispatchCombat("greenvale:target-state", { target: null });
     return;
   }
+  const config = monsterConfigForEntity(target);
+  const maxHp = Math.max(1, Number(target?.param?.[MAXHP]) || Number(config.hp) || 1);
+  const hp = entityNumber(target, "hp");
+  const phase = bossPhaseIndex(config, hp, maxHp);
   dispatchCombat("greenvale:target-state", {
     target: {
       id: combatEventId(target),
-      name: String(target?.name || "Target"),
-      hp: entityNumber(target, "hp"),
-      maxHp: Math.max(1, Number(target?.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90),
+      monsterId: config.id,
+      name: String(config.name || target?.name || "Target"),
+      level: Number(config.level) || 1,
+      hp,
+      maxHp,
       distance: Math.round(combatDistance(activePlayer, target)),
-      element: WOLF_CONFIG.element || "neutral",
-      size: WOLF_CONFIG.size || "medium",
-      race: WOLF_CONFIG.race || "beast",
+      element: config.element || "neutral",
+      size: config.size || "medium",
+      race: config.race || "beast",
+      ai: config.ai || "aggressive",
+      difficultyColor: difficultyColor(Number(getProfile().baseLevel) || 1, Number(config.level) || 1),
+      boss: !!config.boss,
+      phase,
     },
   });
+  if (config.boss?.bar) {
+    dispatchCombat("greenvale:boss-state", {
+      active: true,
+      monsterId: config.id,
+      name: String(config.name || target?.name || config.id),
+      hp,
+      maxHp,
+      phase,
+    });
+  }
 }
 
 function cycleCombatTarget() {
@@ -459,6 +502,20 @@ function applyEnemyCombatDamage(
         raw: { damage, outcome: result.outcome },
         metadata: { ...metadata, greenvaleCombat: true, outcome: result.outcome },
       });
+      const config = monsterConfigForEntity(target);
+      if (config.ai === "assist" && activePlayer) {
+        const assistRadius = Math.max(0, Number(config.aggro?.assistRadius) || 0);
+        for (const ally of activeEnemies) {
+          if (ally === target || entityNumber(ally, "hp") <= 0) continue;
+          if (combatDistance(target, ally) > assistRadius) continue;
+          ally.battleAi?.handleDamage?.(activePlayer, {
+            damage: 0,
+            defeated: false,
+            raw: { damage: 0, outcome: "assist" },
+            metadata: { greenvaleAssistAggro: true },
+          });
+        }
+      }
     } catch (error) {
       console.warn("[Greenvale] custom combat AI damage hook failed", error);
     }
@@ -471,7 +528,7 @@ function applyEnemyCombatDamage(
     targetId: combatEventId(target),
     targetName: String(target?.name || "Target"),
     hp: after,
-    maxHp: Math.max(1, Number(target?.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90),
+    maxHp: Math.max(1, Number(target?.param?.[MAXHP]) || Number(monsterConfigForEntity(target).hp) || 1),
     elementMultiplier: result.elementMultiplier,
     sizeMultiplier: result.sizeMultiplier,
     raceMultiplier: result.raceMultiplier,
@@ -612,14 +669,14 @@ function executeBasicAttack(source: "manual" | "auto" = "manual", approached = f
 
   const result = resolveDamage(
     profileCombatStats(profile),
-    wolfCombatStats(),
+    monsterCombatStats(target),
     {
       kind: "physical",
       powerPercent: 100,
       element: "neutral",
       weaponType: classWeaponType(profile.classId),
-      targetSize: String(WOLF_CONFIG.size || "medium") as any,
-      targetRace: String(WOLF_CONFIG.race || "beast") as any,
+      targetSize: String(monsterConfigForEntity(target).size || "medium") as any,
+      targetRace: String(monsterConfigForEntity(target).race || "beast") as any,
     },
   );
   applyEnemyCombatDamage(target, result, { source, attackType: "basic" });
@@ -792,7 +849,7 @@ function applyEnemyDotDamage(target: any, damage: number, statusId: string) {
     targetId: combatEventId(target),
     targetName: String(target?.name || "Target"),
     hp: after,
-    maxHp: Math.max(1, Number(target?.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90),
+    maxHp: Math.max(1, Number(target?.param?.[MAXHP]) || Number(monsterConfigForEntity(target).hp) || 1),
   });
 }
 
@@ -1109,14 +1166,14 @@ function executeGreenvaleSkill(detail: any) {
       if (percent > 0) {
         const result = resolveDamage(
           profileCombatStats(profile),
-          wolfCombatStats(),
+          monsterCombatStats(target),
           {
             kind: skill.formula === "magical_basic" ? "magical" : "physical",
             powerPercent: percent,
             element: String(skill.element || "neutral") as any,
             weaponType: classWeaponType(profile.classId),
-            targetSize: String(WOLF_CONFIG.size || "medium") as any,
-            targetRace: String(WOLF_CONFIG.race || "beast") as any,
+            targetSize: String(monsterConfigForEntity(target).size || "medium") as any,
+            targetRace: String(monsterConfigForEntity(target).race || "beast") as any,
           },
         );
         landed = result.outcome !== "miss" && result.outcome !== "perfect-dodge";
@@ -1179,6 +1236,20 @@ if (typeof window !== "undefined") {
     lockedTarget = target;
     dispatchTargetState(target);
   });
+  window.addEventListener("greenvale:debug-target-monster", (event) => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    const monsterId = String((event as CustomEvent).detail?.monsterId || "");
+    const target = Array.from(activeEnemies).find((entry: any) => monsterConfigForEntity(entry).id === monsterId);
+    if (!target) return;
+    lockedTarget = target;
+    dispatchTargetState(target);
+  });
+  window.addEventListener("greenvale:debug-activate-miniboss", (event) => {
+    if (!new URLSearchParams(window.location.search).has("debug")) return;
+    const monsterId = String((event as CustomEvent).detail?.monsterId || "marrowtusk");
+    const target = Array.from((globalThis as any).__GV_MINIBOSSES__ || []).find((entry: any) => monsterConfigForEntity(entry).id === monsterId);
+    target?.greenvaleActivate?.();
+  });
   window.addEventListener("greenvale:debug-force-loot", () => {
     if (!new URLSearchParams(window.location.search).has("debug")) return;
     dispatchCombat("greenvale:loot-drop", {
@@ -1204,6 +1275,40 @@ if (typeof window !== "undefined") {
       executeBasicAttack("auto");
     }
   }, 240);
+
+  window.setInterval(() => {
+    if (!activePlayer) return;
+    for (const enemy of activeEnemies) {
+      const config = monsterConfigForEntity(enemy);
+      const maxHp = Math.max(1, Number(config.hp) || 1);
+      const hp = entityNumber(enemy, "hp");
+      if (config.ai === "coward" && hp > 0 && hp / maxHp <= Math.max(.05, Number(config.cowardThreshold) || .25)) {
+        const ex = entityCoord(enemy, "x");
+        const ey = entityCoord(enemy, "y");
+        const px = entityCoord(activePlayer, "x");
+        const py = entityCoord(activePlayer, "y");
+        const dx = ex - px;
+        const dy = ey - py;
+        const len = Math.max(1, Math.hypot(dx, dy));
+        try {
+          enemy.teleport({
+            x: Math.max(24, Math.min(CAMP_WIDTH - 24, ex + dx / len * 12)),
+            y: Math.max(24, Math.min(CAMP_HEIGHT - 24, ey + dy / len * 12)),
+          });
+        } catch {}
+      }
+      if (config.boss?.bar && lockedTarget === enemy && hp > 0) {
+        dispatchCombat("greenvale:boss-state", {
+          active: true,
+          monsterId: config.id,
+          name: String(config.name || config.id),
+          hp,
+          maxHp,
+          phase: bossPhaseIndex(config, hp, maxHp),
+        });
+      }
+    }
+  }, 420);
 }
 
 function getProfile(): Profile {
@@ -1246,8 +1351,8 @@ function saveQuestProgress(kills: number, completed: boolean) {
   }
 }
 
-function rollWolfLoot() {
-  const table = (dropsData.dropTables as any[]).find((entry) => entry.id === WOLF_CONFIG.dropTableId);
+function rollMonsterLoot(config: MonsterConfig) {
+  const table = (dropsData.dropTables as any[]).find((entry) => entry.id === config.dropTableId);
   if (!table) return;
   const drops: Array<{ itemId: string; quantity: number }> = [];
   const rolls = Math.max(1, Math.floor(Number(table.rolls) || 1));
@@ -1260,104 +1365,176 @@ function rollWolfLoot() {
   }
   if (!drops.length) return;
   dispatchCombat("greenvale:loot-drop", {
-    sourceId: "ashfang_wolf",
-    sourceName: "Ashfang Wolf",
+    sourceId: config.id,
+    sourceName: String(config.name || config.id),
     drops,
-    autoLootRadius: Number((dropsData as any).settings?.autoLootRadius) || Number(WOLF_CONFIG.autoLootRadius) || 120,
+    autoLootRadius: Number(config.autoLootRadius) || Number((dropsData as any).settings?.autoLootRadius) || 120,
   });
 }
 
-function onWolfDefeated(attacker?: any) {
-  if (!attacker || typeof attacker.getVariable !== "function") return;
-
-  // EXP progression is independent from the first quest. In standalone mode the
-  // server and client share the browser, so the authoritative defeat hook emits
-  // a narrow event that the versioned character save consumes.
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("greenvale:experience", {
-      detail: { baseExp: Number(WOLF_CONFIG.baseExp) || 18, jobExp: Number(WOLF_CONFIG.jobExp) || 8, source: "ashfang_wolf" },
-    }));
-  }
-  rollWolfLoot();
-  lockedTarget = null;
-  dispatchTargetState(null);
-
-  if (attacker.getVariable("greenvale.quest.main") !== "first-hunt") return;
-  const next = Math.min(3, Number(attacker.getVariable("greenvale.quest.kills") || 0) + 1);
-  attacker.setVariable("greenvale.quest.kills", next);
-  attacker.addItem(WolfFang, 1);
-  const done = next >= 3;
-  if (done) {
-    attacker.setVariable("greenvale.quest.main", "first-hunt-complete");
-    attacker.gold += 25;
-    attacker.addItem(GreenvaleSaber, 1);
-    attacker.equip(GreenvaleSaber.id);
-    void attacker.showText("เควสสำเร็จ! รอยเขี้ยวในป่า\nได้รับ 25 Gold + Greenvale Saber\nกลับไปคุยกับ Mara ที่ค่าย");
-  } else if (typeof attacker.showNotification === "function") {
-    void attacker.showNotification("ภารกิจแรก: กำจัด Ashfang Wolf " + next + "/3");
-  }
-  saveQuestProgress(next, done);
+function scheduleMonsterRespawn(entity: any, config: MonsterConfig) {
+  const spawn = entity?.greenvaleSpawn;
+  if (!spawn || config.miniBoss) return;
+  activeEnemies.delete(entity);
+  window.setTimeout(() => {
+    try {
+      entity.hp = Math.max(1, Number(config.hp) || 1);
+      entity.sp = 20;
+      entity.through = false;
+      entity.teleport({ x: spawn.x, y: spawn.y });
+      activeEnemies.add(entity);
+      attachMonsterAi(entity, config);
+    } catch (error) {
+      console.warn("[Greenvale] monster respawn failed", config.id, error);
+    }
+  }, Math.max(1000, Number(config.respawnMs) || 8000));
 }
 
-function MutantWolf(name: string, x: number, y: number): EventDefinition {
+function onMonsterDefeated(entity: any, attacker?: any) {
+  const config = monsterConfigForEntity(entity);
+  activeEnemies.delete(entity);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("greenvale:experience", {
+      detail: { baseExp: Number(config.baseExp) || 0, jobExp: Number(config.jobExp) || 0, source: config.id },
+    }));
+    dispatchCombat("greenvale:monster-defeated", {
+      monsterId: config.id,
+      name: String(config.name || config.id),
+      level: Number(config.level) || 1,
+      boss: !!config.boss,
+    });
+    if (config.boss?.bar) {
+      dispatchCombat("greenvale:boss-state", { active: false, monsterId: config.id, hp: 0, maxHp: Number(config.hp) || 1 });
+    }
+  }
+  rollMonsterLoot(config);
+  if (lockedTarget === entity) {
+    lockedTarget = null;
+    dispatchTargetState(null);
+  }
+
+  if (config.id === "ashfang_wolf" && attacker && typeof attacker.getVariable === "function" && attacker.getVariable("greenvale.quest.main") === "first-hunt") {
+    const next = Math.min(3, Number(attacker.getVariable("greenvale.quest.kills") || 0) + 1);
+    attacker.setVariable("greenvale.quest.kills", next);
+    attacker.addItem(WolfFang, 1);
+    const done = next >= 3;
+    if (done) {
+      attacker.setVariable("greenvale.quest.main", "first-hunt-complete");
+      attacker.gold += 25;
+      attacker.addItem(GreenvaleSaber, 1);
+      attacker.equip(GreenvaleSaber.id);
+      void attacker.showText("เควสสำเร็จ! รอยเขี้ยวในป่า\nได้รับ 25 Gold + Greenvale Saber\nกลับไปคุยกับ Mara ที่ค่าย");
+    } else if (typeof attacker.showNotification === "function") {
+      void attacker.showNotification("ภารกิจแรก: กำจัด Ashfang Wolf " + next + "/3");
+    }
+    saveQuestProgress(next, done);
+  }
+  scheduleMonsterRespawn(entity, config);
+}
+
+function monsterAttackCooldown(config: MonsterConfig): number {
+  if (config.ai === "ranged") return 1950;
+  if (config.ai === "boss") return 1450;
+  if (config.ai === "coward") return 1750;
+  return Math.max(1200, 1850 - Math.round((Number(config.moveSpeed) || 1) * 140));
+}
+
+function attachMonsterAi(entity: any, config: MonsterConfig) {
+  const passive = config.ai === "passive";
+  const ranged = config.ai === "ranged";
+  const attackRange = Math.max(42, Number(config.attackRange) || 58);
+  entity.battleAi = new BattleAi(entity, {
+    preset: "aggressive",
+    enemyType: EnemyType.Aggressive,
+    faction: "mutants",
+    targets: "players",
+    visionRange: passive ? 0 : Math.max(60, Number(config.visionRange) || 180),
+    attackRange,
+    attackCooldown: monsterAttackCooldown(config),
+    dodgeChance: Math.max(0, Math.min(.35, Number(config.perfectDodge || 0) / 100)),
+    attackPatterns: [AttackPattern.Melee],
+    simpleBehavior: {
+      when: [ifTargetInRange(useAttack(AttackPattern.Melee), ranged ? attackRange + 4 : attackRange)],
+      otherwise: chase(),
+    },
+    rewards: { exp: Number(config.baseExp) || 0, gold: Math.max(1, Math.round((Number(config.level) || 1) * .8)) },
+    onDefeated: ({ attacker, reward }: any) => {
+      if (attacker && typeof attacker.getVariable === "function") reward.giveTo(attacker);
+      onMonsterDefeated(entity, attacker);
+    },
+    presentation: {
+      role: config.boss ? "boss" : "enemy",
+      name: String(config.name || config.id),
+      healthBar: {
+        text: String(config.name || config.id),
+        style: { width: config.boss ? 92 : 68, height: config.boss ? 8 : 6, fontSize: config.boss ? 12 : 11 },
+        layout: { width: config.boss ? 104 : 76, marginBottom: 10 },
+      },
+    },
+  });
+}
+
+function activateMiniBoss(entity: any, config: MonsterConfig) {
+  const spawn = entity?.greenvaleSpawn;
+  if (!spawn || entity?.greenvaleSpawnActive) return;
+  entity.greenvaleSpawnActive = true;
+  entity.through = false;
+  entity.hp = Math.max(1, Number(config.hp) || 1);
+  entity.teleport({ x: spawn.x, y: spawn.y });
+  activeEnemies.add(entity);
+  attachMonsterAi(entity, config);
+  dispatchCombat("greenvale:monster-announce", { monsterId: config.id, name: String(config.name || config.id) });
+}
+
+function scheduleMiniBoss(entity: any, config: MonsterConfig) {
+  const min = Math.max(60_000, Number(config.miniBoss?.randomSpawnMinMs) || 1_800_000);
+  const max = Math.max(min, Number(config.miniBoss?.randomSpawnMaxMs) || 3_600_000);
+  const delay = min + Math.floor(Math.random() * (max - min + 1));
+  window.setTimeout(() => activateMiniBoss(entity, config), delay);
+}
+
+function GreenvaleMonster(eventName: string, monsterId: string, x: number, y: number, spawnIndex = 0): EventDefinition {
+  const config = getMonsterConfig(monsterId) || WOLF_CONFIG;
   return {
-    name,
+    name: eventName,
     onInit() {
-      this.setGraphic("monster");
-      this.name = "Ashfang Wolf";
-      this.speed = 1.35;
-      this.through = false;
-      this.initializeDefaultStats();
-      this.param[MAXHP] = 90;
-      this.param[MAXSP] = 20;
-      this.param[ATK] = 13;
-      this.param[PDEF] = 3;
-      this.hp = 90;
-      this.sp = 20;
-      this.addItem(WolfClaw, 1);
-      this.equip(WolfClaw.id);
-      this.setHitbox(34, 36);
-      this.teleport({ x, y });
-      // BattleAi owns the wolf nameplate and HP bar; avoid duplicate overlays.
+      const entity = this as any;
+      entity.greenvaleMonsterConfig = config;
+      entity.greenvaleSpawn = { x, y, spawnIndex, eventName };
+      entity.greenvaleSpawnActive = !config.miniBoss;
+      entity.setGraphic("monster");
+      entity.name = String(config.name || config.id);
+      entity.speed = Math.max(.4, Number(config.moveSpeed) || 1);
+      entity.through = false;
+      entity.initializeDefaultStats();
+      entity.param[MAXHP] = Math.max(1, Number(config.hp) || 1);
+      entity.param[MAXSP] = 20;
+      entity.param[ATK] = Math.max(1, Number(config.atk) || 1);
+      entity.param[PDEF] = Math.max(0, Number(config.def) || 0);
+      entity.hp = Math.max(1, Number(config.hp) || 1);
+      entity.sp = 20;
+      entity.addItem(WolfClaw, 1);
+      entity.equip(WolfClaw.id);
+      entity.setHitbox(config.size === "large" ? 42 : config.size === "small" ? 28 : 34, config.size === "large" ? 44 : 36);
 
-      activeEnemies.add(this);
+      if (config.miniBoss) {
+        entity.through = true;
+        entity.teleport({ x: -180, y: -180 });
+        entity.greenvaleActivate = () => activateMiniBoss(entity, config);
+        const pool = ((globalThis as any).__GV_MINIBOSSES__ ||= new Set<any>());
+        pool.add(entity);
+        scheduleMiniBoss(entity, config);
+        return;
+      }
 
-      (this as any).battleAi = new BattleAi(this, {
-        preset: "aggressive",
-        enemyType: EnemyType.Aggressive,
-        faction: "mutants",
-        targets: "players",
-        visionRange: 230,
-        attackRange: 58,
-        attackCooldown: 1650,
-        dodgeChance: 0.08,
-        attackPatterns: [AttackPattern.Melee],
-        simpleBehavior: {
-          when: [
-            ifTargetInRange(useAttack(AttackPattern.Melee), 58),
-          ],
-          otherwise: chase(),
-        },
-        rewards: { exp: 18, gold: 4 },
-        onDefeated: ({ attacker, reward }: any) => {
-          if (attacker && typeof attacker.getVariable === "function") {
-            reward.giveTo(attacker);
-            onWolfDefeated(attacker);
-          }
-        },
-        presentation: {
-          role: "enemy",
-          name: "Ashfang Wolf",
-          healthBar: {
-            text: "Ashfang Wolf",
-            style: { width: 68, height: 6, fontSize: 11 },
-            layout: { width: 76, marginBottom: 10 },
-          },
-        },
-      });
+      entity.teleport({ x, y });
+      activeEnemies.add(entity);
+      attachMonsterAi(entity, config);
     },
   };
 }
+
+const PHASE5_SPAWNS = spawnEntriesForMap(CAMP_MAP_ID);
 
 const Mara: EventDefinition = {
   name: "Mara",
@@ -1471,16 +1648,17 @@ export default createServer({
 
             if (attacker === activePlayer && target?.battleAi) {
               const profile = getProfile();
+              const targetConfig = monsterConfigForEntity(target);
               const result = resolveDamage(
                 profileCombatStats(profile),
-                wolfCombatStats(),
+                monsterCombatStats(target),
                 {
                   kind: "physical",
                   powerPercent: 100,
                   element: "neutral",
                   weaponType: classWeaponType(profile.classId),
-                  targetSize: String(WOLF_CONFIG.size || "medium") as any,
-                  targetRace: String(WOLF_CONFIG.race || "beast") as any,
+                  targetSize: String(targetConfig.size || "medium") as any,
+                  targetRace: String(targetConfig.race || "beast") as any,
                 },
               );
               lockedTarget = target;
@@ -1493,7 +1671,7 @@ export default createServer({
                   targetId: combatEventId(target),
                   targetName: String(target?.name || "Ashfang Wolf"),
                   hp,
-                  maxHp: Number(target.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90,
+                  maxHp: Number(target.param?.[MAXHP]) || Number(monsterConfigForEntity(target).hp) || 1,
                 });
                 dispatchTargetState(target);
                 return false;
@@ -1510,13 +1688,14 @@ export default createServer({
 
             if (attacker?.battleAi && typeof target?.getVariable === "function") {
               if (target.getVariable("greenvale.invulnerable")) return false;
+              const attackerConfig = monsterConfigForEntity(attacker);
               const result = resolveDamage(
-                wolfCombatStats(),
+                monsterCombatStats(attacker),
                 profileCombatStats(getProfile()),
                 {
                   kind: "physical",
                   powerPercent: 100,
-                  element: String(WOLF_CONFIG.basicAttack?.element || WOLF_CONFIG.element || "neutral") as any,
+                  element: String(attackerConfig.basicAttack?.element || attackerConfig.element || "neutral") as any,
                   targetSize: "medium",
                   targetRace: "human",
                 },
@@ -1527,7 +1706,7 @@ export default createServer({
                   outcome: result.outcome,
                   damage: 0,
                   attackType: "basic",
-                  attackerName: "Ashfang Wolf",
+                  attackerName: String(monsterConfigForEntity(attacker).name || attacker?.name || "Monster"),
                   hp,
                   maxHp: Number(target.param?.[MAXHP]) || 0,
                 });
@@ -1564,7 +1743,7 @@ export default createServer({
                 targetId: combatEventId(target),
                 targetName: String(target?.name || "Ashfang Wolf"),
                 hp: Number(target.hp) || 0,
-                maxHp: Number(target.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90,
+                maxHp: Number(target.param?.[MAXHP]) || Number(monsterConfigForEntity(target).hp) || 1,
                 elementMultiplier: result?.elementMultiplier ?? 1,
                 sizeMultiplier: result?.sizeMultiplier ?? 1,
                 raceMultiplier: result?.raceMultiplier ?? 1,
@@ -1579,7 +1758,7 @@ export default createServer({
                 outcome: result?.outcome || "hit",
                 damage,
                 attackType: "basic",
-                attackerName: "Ashfang Wolf",
+                attackerName: String(monsterConfigForEntity(attacker).name || attacker?.name || "Monster"),
                 hp: Number(target.hp) || 0,
                 maxHp: Number(target.param?.[MAXHP]) || 0,
               });
@@ -1591,9 +1770,10 @@ export default createServer({
                   outcome: result?.outcome || "hit",
                 },
               }));
-              const status = WOLF_CONFIG.basicAttack?.statusEffect;
+              const attackerConfig = monsterConfigForEntity(attacker);
+              const status = attackerConfig.basicAttack?.statusEffect;
               if (status?.id && Math.random() < Number(status.chance || 0)) {
-                applyPlayerStatus(String(status.id), Number(status.durationMs) || undefined, Number(WOLF_CONFIG.level) || 1);
+                applyPlayerStatus(String(status.id), Number(status.durationMs) || undefined, Number(attackerConfig.level) || 1);
               }
               return context;
             }
@@ -1648,9 +1828,9 @@ export default createServer({
             hitboxes: CAMP_HITBOXES,
             events: [
               { event: Mara },
-              { event: MutantWolf("wolf-a", 1030, 420) },
-              { event: MutantWolf("wolf-b", 1180, 500) },
-              { event: MutantWolf("wolf-c", 980, 710) },
+              ...PHASE5_SPAWNS.map((spawn) => ({
+                event: GreenvaleMonster(spawn.eventName, spawn.monsterId, spawn.x, spawn.y, spawn.spawnIndex),
+              })),
             ],
           } as any,
         ],
