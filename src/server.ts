@@ -21,6 +21,10 @@ import {
 } from "@rpgjs/action-battle/server";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts";
 import skillsData from "./data/skills.json" with { type: "json" };
+import monstersData from "./data/monsters.json" with { type: "json" };
+import dropsData from "./data/drops.json" with { type: "json" };
+import statusEffectsData from "./data/status_effects.json" with { type: "json" };
+import { combatConfig, calculateThreat, randomInt, resolveCombatHit, rollChance, type AttackKind, type CombatantStats } from "./core/combat.ts";
 
 const TrainingBlade = {
   id: "training-blade",
@@ -151,10 +155,25 @@ type Profile = {
     MATK?: number;
     DEF?: number;
     MDEF?: number;
+    HIT?: number;
+    FLEE?: number;
+    perfectDodge?: number;
+    CRIT?: number;
+    critResistance?: number;
+    BLOCK?: number;
+    blockReduction?: number;
     MaxHP?: number;
     MaxSP?: number;
+    ASPD?: number;
+    attackRange?: number;
   };
   learnedSkills?: Record<string, number>;
+  combatSettings?: {
+    autoAttack?: boolean;
+    autoLoot?: boolean;
+    autoLootRadius?: number;
+  };
+  lootInventory?: Record<string, number>;
   updatedAt?: number;
 };
 
@@ -688,6 +707,8 @@ function getProfile(): Profile {
       jobLevel: Math.max(1, Number(data.jobLevel) || 1),
       derived: data.derived && typeof data.derived === "object" ? data.derived : undefined,
       learnedSkills: data.learnedSkills && typeof data.learnedSkills === "object" ? data.learnedSkills : {},
+      combatSettings: data.combatSettings && typeof data.combatSettings === "object" ? data.combatSettings : { autoAttack: false, autoLoot: true, autoLootRadius: 220 },
+      lootInventory: data.lootInventory && typeof data.lootInventory === "object" ? data.lootInventory : {},
     };
   } catch {
     return fallback;
