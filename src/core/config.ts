@@ -1,0 +1,244 @@
+import classes from "../data/classes.json";
+import skills from "../data/skills.json";
+import monsters from "../data/monsters.json";
+import items from "../data/items.json";
+import quests from "../data/quests.json";
+import maps from "../data/maps.json";
+import shop from "../data/shop.json";
+import statusEffects from "../data/status_effects.json";
+import drops from "../data/drops.json";
+import formulas from "../data/formulas.json";
+import effects from "../data/effects.json";
+import characterCreation from "../data/character_creation.json";
+import cutscene from "../data/cutscene.json";
+
+type Dataset = { schemaVersion?: number; [key: string]: unknown };
+
+const datasets: Record<string, Dataset> = {
+  classes,
+  skills,
+  monsters,
+  items,
+  quests,
+  maps,
+  shop,
+  statusEffects,
+  drops,
+  formulas,
+  effects,
+  characterCreation,
+  cutscene,
+};
+
+function assertArray(name: string, value: unknown): asserts value is unknown[] {
+  if (!Array.isArray(value)) {
+    throw new Error(`Config "${name}" must be an array`);
+  }
+}
+
+function assertUniqueIds(name: string, values: unknown[]): void {
+  const seen = new Set<string>();
+  for (const entry of values) {
+    const id = (entry as { id?: unknown })?.id;
+    if (typeof id !== "string" || !id.trim()) {
+      throw new Error(`Config "${name}" contains an entry without a valid id`);
+    }
+    if (seen.has(id)) {
+      throw new Error(`Config "${name}" contains duplicate id "${id}"`);
+    }
+    seen.add(id);
+  }
+}
+
+export function validateGameConfig(): void {
+  for (const [name, dataset] of Object.entries(datasets)) {
+    if (dataset.schemaVersion !== 1) {
+      throw new Error(`Config "${name}" has unsupported schemaVersion ${String(dataset.schemaVersion)}`);
+    }
+  }
+
+  assertArray("classes.classes", classes.classes);
+  assertArray("skills.skills", skills.skills);
+  assertArray("monsters.monsters", monsters.monsters);
+  assertArray("items.items", items.items);
+  assertArray("quests.quests", quests.quests);
+  assertArray("maps.maps", maps.maps);
+  assertArray("shop.shops", shop.shops);
+  assertArray("status_effects.statuses", statusEffects.statuses);
+  assertArray("drops.dropTables", drops.dropTables);
+  assertArray("effects.effects", effects.effects);
+  assertArray("character_creation.genders", characterCreation.genders);
+  assertArray("character_creation.hairStyles", characterCreation.hairStyles);
+  assertArray("character_creation.hairColors", characterCreation.hairColors);
+  assertArray("character_creation.skinColors", characterCreation.skinColors);
+  assertArray("character_creation.outfits", characterCreation.outfits);
+  assertArray("cutscene.frames", cutscene.frames);
+  assertArray("classes.emotes", classes.emotes);
+  assertArray("classes.costumes", classes.costumes);
+  if (!Array.isArray(formulas.expTables?.base) || formulas.expTables.base.length !== 99) {
+    throw new Error('Config "formulas.expTables.base" must contain 99 entries');
+  }
+  if (!Array.isArray(formulas.expTables?.job) || formulas.expTables.job.length !== 50) {
+    throw new Error('Config "formulas.expTables.job" must contain 50 entries');
+  }
+  if (!formulas.combat?.elementMultipliers || !formulas.combat?.sizeMultipliers || !formulas.combat?.raceMultipliers) {
+    throw new Error('Config "formulas.combat" is missing multiplier tables');
+  }
+
+  assertUniqueIds("classes", classes.classes);
+  assertUniqueIds("skills", skills.skills);
+
+  const skillIds = new Set(skills.skills.map((skill) => skill.id));
+  const effectIds = new Set(effects.effects.map((effect) => effect.id));
+  const statusIds = new Set(statusEffects.statuses.map((status) => status.id));
+  for (const skill of skills.skills as any[]) {
+    if (!skill.classId || !classes.classes.some((entry) => entry.id === skill.classId)) {
+      throw new Error(`Skill "${skill.id}" references invalid classId`);
+    }
+    if (!Number.isInteger(skill.maxLv) || skill.maxLv < 1) {
+      throw new Error(`Skill "${skill.id}" has invalid maxLv`);
+    }
+    if (!Array.isArray(skill.spCost) || skill.spCost.length !== skill.maxLv) {
+      throw new Error(`Skill "${skill.id}" spCost must match maxLv`);
+    }
+    if (!Array.isArray(skill.powerPercent) || skill.powerPercent.length !== skill.maxLv) {
+      throw new Error(`Skill "${skill.id}" powerPercent must match maxLv`);
+    }
+    if (!Array.isArray(skill.healPercent) || skill.healPercent.length !== skill.maxLv) {
+      throw new Error(`Skill "${skill.id}" healPercent must match maxLv`);
+    }
+    if (!skill.formula || !skill.effectId || !skill.soundId || !skill.iconId) {
+      throw new Error(`Skill "${skill.id}" is missing formula/effect/sound/icon references`);
+    }
+    if (!effectIds.has(skill.effectId)) {
+      throw new Error(`Skill "${skill.id}" references missing effect "${skill.effectId}"`);
+    }
+    for (const prerequisite of skill.prerequisites ?? []) {
+      if (!skillIds.has(prerequisite.skillId)) {
+        throw new Error(`Skill "${skill.id}" references missing prerequisite "${prerequisite.skillId}"`);
+      }
+    }
+    if (skill.statusEffect?.id && !statusIds.has(skill.statusEffect.id)) {
+      throw new Error(`Skill "${skill.id}" references missing status "${skill.statusEffect.id}"`);
+    }
+  }
+  const noviceSkillCount = skills.skills.filter((skill) => skill.classId === "novice").length;
+  if (noviceSkillCount < 3) throw new Error("Novice requires at least 3 skills");
+  for (const classEntry of classes.classes.filter((entry) => entry.id !== "novice")) {
+    const count = skills.skills.filter((skill) => skill.classId === classEntry.id).length;
+    if (count < 8) throw new Error(`Class "${classEntry.id}" requires at least 8 skills`);
+  }
+  assertUniqueIds("monsters", monsters.monsters);
+  const monsterIds = new Set((monsters.monsters as any[]).map(entry => entry.id));
+  const dropTableIds = new Set((drops.dropTables as any[]).map(entry => entry.id));
+  const allowedAi = new Set(["passive", "aggressive", "assist", "ranged", "coward", "boss"]);
+  for (const monster of monsters.monsters as any[]) {
+    if (!Number.isFinite(Number(monster.level)) || Number(monster.level) < 1) {
+      throw new Error(`Monster "${monster.id}" has invalid level`);
+    }
+    for (const key of ["hp", "atk", "def", "mdef", "hit", "flee", "moveSpeed", "visionRange", "attackRange", "respawnMs"]) {
+      if (!Number.isFinite(Number(monster[key])) || Number(monster[key]) < 0) {
+        throw new Error(`Monster "${monster.id}" has invalid ${key}`);
+      }
+    }
+    if (!allowedAi.has(String(monster.ai))) throw new Error(`Monster "${monster.id}" has invalid AI type`);
+    if (!dropTableIds.has(monster.dropTableId)) throw new Error(`Monster "${monster.id}" references missing drop table "${monster.dropTableId}"`);
+    if (monster.basicAttack?.statusEffect?.id && !statusIds.has(monster.basicAttack.statusEffect.id)) {
+      throw new Error(`Monster "${monster.id}" references missing status "${monster.basicAttack.statusEffect.id}"`);
+    }
+    if (monster.boss?.phases) {
+      let previous = 1;
+      for (const phase of monster.boss.phases) {
+        const ratio = Number(phase.atHpRatio);
+        if (!(ratio > 0 && ratio < previous)) throw new Error(`Monster "${monster.id}" has invalid boss phase thresholds`);
+        previous = ratio;
+      }
+    }
+  }
+  for (const map of maps.maps as any[]) {
+    for (const zone of map.spawnZones ?? []) {
+      const maxAlive = Number(zone.maxAlive);
+      if (!Number.isInteger(maxAlive) || maxAlive < 1) throw new Error(`Map "${map.id}" spawn zone "${zone.id}" has invalid maxAlive`);
+      let requested = 0;
+      for (const entry of zone.entries ?? []) {
+        if (!monsterIds.has(entry.monsterId)) throw new Error(`Spawn zone "${zone.id}" references missing monster "${entry.monsterId}"`);
+        const count = Number(entry.count);
+        if (!Number.isInteger(count) || count < 1) throw new Error(`Spawn zone "${zone.id}" has invalid count for "${entry.monsterId}"`);
+        requested += count;
+      }
+      if (requested > maxAlive) throw new Error(`Spawn zone "${zone.id}" exceeds maxAlive`);
+    }
+  }
+  assertUniqueIds("items", items.items);
+  assertUniqueIds("quests", quests.quests);
+  assertUniqueIds("maps", maps.maps);
+  assertUniqueIds("shops", shop.shops);
+  assertUniqueIds("statuses", statusEffects.statuses);
+  for (const status of statusEffects.statuses as any[]) {
+    if (!status.category || !status.stacking || !Number.isFinite(Number(status.durationMs))) {
+      throw new Error(`Status "${status.id}" is missing runtime metadata`);
+    }
+  }
+  assertUniqueIds("dropTables", drops.dropTables);
+  const itemIds = new Set(items.items.map((item) => item.id));
+  for (const table of drops.dropTables as any[]) {
+    for (const entry of table.entries ?? []) {
+      if (!itemIds.has(entry.itemId)) throw new Error(`Drop table "${table.id}" references missing item "${entry.itemId}"`);
+      if (Number(entry.chance) < 0 || Number(entry.chance) > 1) throw new Error(`Drop table "${table.id}" has invalid chance`);
+    }
+  }
+  assertUniqueIds("effects", effects.effects);
+  const effectRuntime = (effects as any).runtime;
+  if (!effectRuntime?.combat || !effectRuntime?.elements || !effectRuntime?.audio || !effectRuntime?.environment) {
+    throw new Error('Config "effects.runtime" is missing combat/elements/audio/environment');
+  }
+  for (const [name, preset] of Object.entries(effectRuntime.combat as Record<string, any>)) {
+    if (!String((preset as any).kind || "").trim()) throw new Error(`Effect preset "${name}" is missing kind`);
+    if (!Number.isFinite(Number((preset as any).durationMs)) || Number((preset as any).durationMs) <= 0) {
+      throw new Error(`Effect preset "${name}" has invalid durationMs`);
+    }
+  }
+  for (const [name, cue] of Object.entries(effectRuntime.audio.cues || {}) as Array<[string, any]>) {
+    if (!Number.isFinite(Number(cue.frequency)) || !Number.isFinite(Number(cue.durationMs))) {
+      throw new Error(`Audio cue "${name}" is invalid`);
+    }
+  }
+  const phases = effectRuntime.environment.phases;
+  if (!Array.isArray(phases) || phases.length < 2) throw new Error("Environment requires at least two phases");
+  for (const phase of phases as any[]) {
+    if (!phase.id || !Number.isFinite(Number(phase.start)) || !Number.isFinite(Number(phase.end))) {
+      throw new Error("Environment phase is invalid");
+    }
+  }
+  assertUniqueIds("genders", characterCreation.genders);
+  assertUniqueIds("hairStyles", characterCreation.hairStyles);
+  assertUniqueIds("hairColors", characterCreation.hairColors);
+  assertUniqueIds("skinColors", characterCreation.skinColors);
+  assertUniqueIds("outfits", characterCreation.outfits);
+  assertUniqueIds("cutsceneFrames", cutscene.frames);
+  assertUniqueIds("emotes", classes.emotes);
+  assertUniqueIds("costumes", classes.costumes);
+}
+
+export const gameConfig = Object.freeze({
+  classes,
+  skills,
+  monsters,
+  items,
+  quests,
+  maps,
+  shop,
+  statusEffects,
+  drops,
+  formulas,
+  effects,
+  characterCreation,
+  cutscene,
+});
+
+export type GameConfig = typeof gameConfig;
+
+export function loadGameConfig(): GameConfig {
+  validateGameConfig();
+  return gameConfig;
+}

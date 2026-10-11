@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "effects": [
+    {
+      "id": "fx_survivor_strike",
+      "type": "placeholder",
+      "asset": "placeholder://survivor-strike"
+    },
+    {
+      "id": "fx_first_aid",
+      "type": "placeholder",
+      "asset": "placeholder://first-aid"
+    },
+    {
+      "id": "fx_rest",
+      "type": "placeholder",
+      "asset": "placeholder://rest"
+    },
+    {
+      "id": "fx_field_first_aid",
+      "type": "placeholder",
+      "asset": "placeholder://skill/field_first_aid",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_camp_rest",
+      "type": "placeholder",
+      "asset": "placeholder://skill/camp_rest",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_impact_cleave",
+      "type": "placeholder",
+      "asset": "placeholder://skill/impact_cleave",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_thorn_guard",
+      "type": "placeholder",
+      "asset": "placeholder://skill/thorn_guard",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_dread_shout",
+      "type": "placeholder",
+      "asset": "placeholder://skill/dread_shout",
+      "qualityCost": "medium"
+    },
+    {
+      "id": "fx_iron_pulse",
+      "type": "placeholder",
+      "asset": "placeholder://skill/iron_pulse",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_linebreaker",
+      "type": "placeholder",
+      "asset": "placeholder://skill/linebreaker",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_last_wall",
+      "type": "placeholder",
+      "asset": "placeholder://skill/last_wall",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_ground_quake",
+      "type": "placeholder",
+      "asset": "placeholder://skill/ground_quake",
+      "qualityCost": "medium"
+    },
+    {
+      "id": "fx_unyielding_oath",
+      "type": "placeholder",
+      "asset": "placeholder://skill/unyielding_oath",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_ember_orb",
+      "type": "placeholder",
+      "asset": "placeholder://skill/ember_orb",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_frost_pillar",
+      "type": "placeholder",
+      "asset": "placeholder://skill/frost_pillar",
+      "qualityCost": "medium"
+    },
+    {
+      "id": "fx_chain_voltage",
+      "type": "placeholder",
+      "asset": "placeholder://skill/chain_voltage",
+      "qualityCost": "medium"
+    },
+    {
+      "id": "fx_mana_lattice",
+      "type": "placeholder",
+      "asset": "placeholder://skill/mana_lattice",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_ash_meteor",
+      "type": "placeholder",
+      "asset": "placeholder://skill/ash_meteor",
+      "qualityCost": "medium"
+    },
+    {
+      "id": "fx_static_field",
+      "type": "placeholder",
+      "asset": "placeholder://skill/static_field",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_crystal_shell",
+      "type": "placeholder",
+      "asset": "placeholder://skill/crystal_shell",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_storm_memory",
+      "type": "placeholder",
+      "asset": "placeholder://skill/storm_memory",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_piercing_shot",
+      "type": "placeholder",
+      "asset": "placeholder://skill/piercing_shot",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_scatter_shot",
+      "type": "placeholder",
+      "asset": "placeholder://skill/scatter_shot",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_scrap_snare",
+      "type": "placeholder",
+      "asset": "placeholder://skill/scrap_snare",
+      "qualityCost": "medium"
+    },
+    {
+      "id": "fx_trail_sense",
+      "type": "placeholder",
+      "asset": "placeholder://skill/trail_sense",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_eagle_line",
+      "type": "placeholder",
+      "asset": "placeholder://skill/eagle_line",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_split_reed",
+      "type": "placeholder",
+      "asset": "placeholder://skill/split_reed",
+      "qualityCost": "medium"
+    },
+    {
+      "id": "fx_backstep_volley",
+      "type": "placeholder",
+      "asset": "placeholder://skill/backstep_volley",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_patient_hunter",
+      "type": "placeholder",
+      "asset": "placeholder://skill/patient_hunter",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_field_mend",
+      "type": "placeholder",
+      "asset": "placeholder://skill/field_mend",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_aegis_blessing",
+      "type": "placeholder",
+      "asset": "placeholder://skill/aegis_blessing",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_banish_hollow",
+      "type": "placeholder",
+      "asset": "placeholder://skill/banish_hollow",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_steady_hands",
+      "type": "placeholder",
+      "asset": "placeholder://skill/steady_hands",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_renewal_ring",
+      "type": "placeholder",
+      "asset": "placeholder://skill/renewal_ring",
+      "qualityCost": "medium"
+    },
+    {
+      "id": "fx_calm_mind",
+      "type": "placeholder",
+      "asset": "placeholder://skill/calm_mind",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_mercy_signal",
+      "type": "placeholder",
+      "asset": "placeholder://skill/mercy_signal",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_aftercare",
+      "type": "placeholder",
+      "asset": "placeholder://skill/aftercare",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_backcut",
+      "type": "placeholder",
+      "asset": "placeholder://skill/backcut",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_veil_step",
+      "type": "placeholder",
+      "asset": "placeholder://skill/veil_step",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_glass_knife",
+      "type": "placeholder",
+      "asset": "placeholder://skill/glass_knife",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_soft_foot",
+      "type": "placeholder",
+      "asset": "placeholder://skill/soft_foot",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_bleed_mark",
+      "type": "placeholder",
+      "asset": "placeholder://skill/bleed_mark",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_shadow_hold",
+      "type": "placeholder",
+      "asset": "placeholder://skill/shadow_hold",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_crossfade",
+      "type": "placeholder",
+      "asset": "placeholder://skill/crossfade",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_silent_finish",
+      "type": "placeholder",
+      "asset": "placeholder://skill/silent_finish",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_coin_burst",
+      "type": "placeholder",
+      "asset": "placeholder://skill/coin_burst",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_barter_edge",
+      "type": "placeholder",
+      "asset": "placeholder://skill/barter_edge",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_cart_rush",
+      "type": "placeholder",
+      "asset": "placeholder://skill/cart_rush",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_quick_haggle",
+      "type": "placeholder",
+      "asset": "placeholder://skill/quick_haggle",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_weighted_toss",
+      "type": "placeholder",
+      "asset": "placeholder://skill/weighted_toss",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_portable_stall",
+      "type": "placeholder",
+      "asset": "placeholder://skill/portable_stall",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_debt_marker",
+      "type": "placeholder",
+      "asset": "placeholder://skill/debt_marker",
+      "qualityCost": "low"
+    },
+    {
+      "id": "fx_surplus_instinct",
+      "type": "placeholder",
+      "asset": "placeholder://skill/surplus_instinct",
+      "qualityCost": "low"
+    }
+  ],
+  "runtime": {
+    "qualityDefault": "medium",
+    "combat": {
+      "basicHit": {
+        "kind": "slash",
+        "durationMs": 360,
+        "particles": 5,
+        "scale": 1
+      },
+      "crit": {
+        "kind": "burst",
+        "durationMs": 520,
+        "particles": 12,
+        "scale": 1.35
+      },
+      "block": {
+        "kind": "shield",
+        "durationMs": 430,
+        "particles": 7,
+        "scale": 1.1
+      },
+      "miss": {
+        "kind": "whiff",
+        "durationMs": 300,
+        "particles": 3,
+        "scale": 0.9
+      },
+      "perfectDodge": {
+        "kind": "afterimage",
+        "durationMs": 420,
+        "particles": 5,
+        "scale": 1.05
+      },
+      "heal": {
+        "kind": "heal-ring",
+        "durationMs": 720,
+        "particles": 10,
+        "scale": 1.15
+      },
+      "status": {
+        "kind": "status-pulse",
+        "durationMs": 500,
+        "particles": 8,
+        "scale": 1
+      },
+      "defeat": {
+        "kind": "ash-burst",
+        "durationMs": 760,
+        "particles": 14,
+        "scale": 1.25
+      },
+      "loot": {
+        "kind": "pickup",
+        "durationMs": 540,
+        "particles": 7,
+        "scale": 1
+      }
+    },
+    "elements": {
+      "neutral": {
+        "primary": "#e6d7b1",
+        "secondary": "#8fa398"
+      },
+      "fire": {
+        "primary": "#ffb066",
+        "secondary": "#cf4f36"
+      },
+      "water": {
+        "primary": "#92d7ff",
+        "secondary": "#4e84b8"
+      },
+      "wind": {
+        "primary": "#c4f2df",
+        "secondary": "#68bfa1"
+      },
+      "earth": {
+        "primary": "#d4bb7a",
+        "secondary": "#687451"
+      },
+      "light": {
+        "primary": "#fff2a8",
+        "secondary": "#d6b74a"
+      },
+      "dark": {
+        "primary": "#c8a6ff",
+        "secondary": "#6d4f93"
+      }
+    },
+    "audio": {
+      "enabled": true,
+      "masterGain": 0.09,
+      "cues": {
+        "attack": {
+          "wave": "triangle",
+          "frequency": 168,
+          "endFrequency": 112,
+          "durationMs": 95,
+          "gain": 0.7
+        },
+        "hit": {
+          "wave": "square",
+          "frequency": 118,
+          "endFrequency": 86,
+          "durationMs": 70,
+          "gain": 0.45
+        },
+        "crit": {
+          "wave": "sawtooth",
+          "frequency": 240,
+          "endFrequency": 420,
+          "durationMs": 145,
+          "gain": 0.65
+        },
+        "block": {
+          "wave": "triangle",
+          "frequency": 96,
+          "endFrequency": 72,
+          "durationMs": 125,
+          "gain": 0.5
+        },
+        "miss": {
+          "wave": "sine",
+          "frequency": 180,
+          "endFrequency": 150,
+          "durationMs": 80,
+          "gain": 0.28
+        },
+        "heal": {
+          "wave": "sine",
+          "frequency": 390,
+          "endFrequency": 610,
+          "durationMs": 260,
+          "gain": 0.42
+        },
+        "skill": {
+          "wave": "triangle",
+          "frequency": 260,
+          "endFrequency": 340,
+          "durationMs": 170,
+          "gain": 0.42
+        },
+        "status": {
+          "wave": "square",
+          "frequency": 132,
+          "endFrequency": 118,
+          "durationMs": 100,
+          "gain": 0.28
+        },
+        "loot": {
+          "wave": "sine",
+          "frequency": 520,
+          "endFrequency": 700,
+          "durationMs": 120,
+          "gain": 0.3
+        },
+        "defeat": {
+          "wave": "triangle",
+          "frequency": 150,
+          "endFrequency": 62,
+          "durationMs": 240,
+          "gain": 0.45
+        }
+      }
+    },
+    "environment": {
+      "cycleMs": 240000,
+      "startOffsetMs": 30000,
+      "phases": [
+        {
+          "id": "day",
+          "start": 0,
+          "end": 0.52,
+          "overlay": "rgba(239,224,174,0.03)"
+        },
+        {
+          "id": "dusk",
+          "start": 0.52,
+          "end": 0.7,
+          "overlay": "rgba(167,88,57,0.12)"
+        },
+        {
+          "id": "night",
+          "start": 0.7,
+          "end": 1,
+          "overlay": "rgba(15,31,48,0.30)"
+        }
+      ],
+      "rain": {
+        "enabled": true,
+        "initialDelayMs": 22000,
+        "intervalMs": 105000,
+        "durationMs": 26000,
+        "drops": 28,
+        "reducedMotionDrops": 8,
+        "opacity": 0.42
+      }
+    }
+  }
+}
