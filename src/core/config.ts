@@ -81,6 +81,9 @@ export function validateGameConfig(): void {
   if (!Array.isArray(formulas.expTables?.job) || formulas.expTables.job.length !== 50) {
     throw new Error('Config "formulas.expTables.job" must contain 50 entries');
   }
+  if (!formulas.combat?.elementMultipliers || !formulas.combat?.sizeMultipliers || !formulas.combat?.raceMultipliers) {
+    throw new Error('Config "formulas.combat" is missing multiplier tables');
+  }
 
   assertUniqueIds("classes", classes.classes);
   assertUniqueIds("skills", skills.skills);
@@ -131,7 +134,19 @@ export function validateGameConfig(): void {
   assertUniqueIds("maps", maps.maps);
   assertUniqueIds("shops", shop.shops);
   assertUniqueIds("statuses", statusEffects.statuses);
+  for (const status of statusEffects.statuses as any[]) {
+    if (!status.category || !status.stacking || !Number.isFinite(Number(status.durationMs))) {
+      throw new Error(`Status "${status.id}" is missing runtime metadata`);
+    }
+  }
   assertUniqueIds("dropTables", drops.dropTables);
+  const itemIds = new Set(items.items.map((item) => item.id));
+  for (const table of drops.dropTables as any[]) {
+    for (const entry of table.entries ?? []) {
+      if (!itemIds.has(entry.itemId)) throw new Error(`Drop table "${table.id}" references missing item "${entry.itemId}"`);
+      if (Number(entry.chance) < 0 || Number(entry.chance) > 1) throw new Error(`Drop table "${table.id}" has invalid chance`);
+    }
+  }
   assertUniqueIds("effects", effects.effects);
   assertUniqueIds("genders", characterCreation.genders);
   assertUniqueIds("hairStyles", characterCreation.hairStyles);
