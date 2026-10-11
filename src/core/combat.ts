@@ -1,5 +1,5 @@
-import formulasData from "../data/formulas.json";
-import statusData from "../data/status_effects.json";
+import formulasData from "../data/formulas.json" with { type: "json" };
+import statusData from "../data/status_effects.json" with { type: "json" };
 
 export type CombatElement = "neutral" | "fire" | "water" | "wind" | "earth" | "light" | "dark";
 export type CombatSize = "small" | "medium" | "large";
