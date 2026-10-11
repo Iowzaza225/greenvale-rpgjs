@@ -165,7 +165,7 @@ function updateBossBar(detail: any) {
   const maxHp = Math.max(1, Number(detail.maxHp) || 1);
   const hp = Math.max(0, Number(detail.hp) || 0);
   const ratio = Math.max(0, Math.min(1, hp / maxHp));
-  (boss.querySelector("[data-boss-name]") as HTMLElement).textContent = String(detail.name || monsterName(String(detail.monsterId || "")));
+  (boss.querySelector("[data-boss-name]") as HTMLElement).textContent = detail.nameKey ? t(String(detail.nameKey)) : String(detail.name || monsterName(String(detail.monsterId || "")));
   (boss.querySelector("[data-boss-phase]") as HTMLElement).textContent = detail.phase ? t("monster.phase", { phase: detail.phase }) : "";
   (boss.querySelector("[data-boss-hp]") as HTMLElement).textContent = `${Math.ceil(hp)} / ${Math.ceil(maxHp)}`;
   (boss.querySelector("[data-boss-fill]") as HTMLElement).style.width = `${Math.round(ratio * 100)}%`;
@@ -196,7 +196,8 @@ export function initMonsterSystem(): void {
   window.addEventListener("greenvale:boss-state", event => updateBossBar((event as CustomEvent).detail));
   window.addEventListener("greenvale:monster-announce", event => {
     const detail = (event as CustomEvent).detail || {};
-    showToast(t("monster.announce", { name: detail.name || monsterName(String(detail.monsterId || "")) }));
+    const name = detail.nameKey ? t(String(detail.nameKey)) : detail.name || monsterName(String(detail.monsterId || ""));
+    showToast(t("monster.announce", { name }));
   });
   window.addEventListener("greenvale:combat-state-request", () => renderBestiary());
 
