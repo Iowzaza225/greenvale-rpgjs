@@ -1192,6 +1192,11 @@ if (typeof window !== "undefined") {
     if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
     activePlayer.hp = 0;
   });
+  window.addEventListener("greenvale:debug-player-status", (event) => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    const detail = (event as CustomEvent).detail || {};
+    applyPlayerStatus(String(detail.id || "bleed"), Number(detail.durationMs) || 1200, Number(detail.sourceLevel) || 1);
+  });
 }
 
   window.setInterval(() => {
