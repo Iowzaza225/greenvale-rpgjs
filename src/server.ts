@@ -21,6 +21,16 @@ import {
 } from "@rpgjs/action-battle/server";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts";
 import skillsData from "./data/skills.json" with { type: "json" };
+import monstersData from "./data/monsters.json" with { type: "json" };
+import dropsData from "./data/drops.json" with { type: "json" };
+import statusData from "./data/status_effects.json" with { type: "json" };
+import {
+  basicAttackDelayMs,
+  randomQuantity,
+  resolveDamage,
+  rollDrop,
+  type CombatStats,
+} from "./core/combat.ts";
 
 const TrainingBlade = {
   id: "training-blade",
@@ -153,8 +163,17 @@ type Profile = {
     MDEF?: number;
     MaxHP?: number;
     MaxSP?: number;
+    HIT?: number;
+    FLEE?: number;
+    CRIT?: number;
+    critResistance?: number;
+    perfectDodge?: number;
+    ASPD?: number;
+    attackRange?: number;
   };
   learnedSkills?: Record<string, number>;
+  combatSettings?: { autoAttack?: boolean; autoLoot?: boolean; targetMode?: string };
+  lootBag?: Record<string, number>;
   updatedAt?: number;
 };
 
@@ -189,6 +208,61 @@ const STARTER_WEAPONS: Record<string, any> = {
   beastmaster: BeastSpear,
   engineer: EngineerCutter,
 };
+
+const WOLF_CONFIG = (monstersData.monsters as any[]).find((entry) => entry.id === "ashfang_wolf") || {
+  id: "ashfang_wolf", level: 3, hp: 90, atk: 13, def: 3, mdef: 1, hit: 12, flee: 8,
+  crit: 3, critResistance: 1, perfectDodge: 1, blockChance: 2, blockReduction: .35,
+  element: "neutral", size: "medium", race: "beast", attackRange: 58,
+};
+
+function classWeaponType(classId: string): string {
+  const map: Record<string, string> = {
+    novice: "blade", vanguard: "blade", arcanist: "staff", ranger: "bow",
+    mender: "mace", shade: "dagger", trader: "cart",
+  };
+  return map[classId] || "blade";
+}
+
+function profileCombatStats(profile: Profile): CombatStats {
+  const derived = profile.derived || {};
+  const fallback = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
+  return {
+    ATK: Math.max(1, Number(derived.ATK) || fallback.atk),
+    MATK: Math.max(1, Number(derived.MATK) || Math.max(1, fallback.atk * .8)),
+    DEF: Math.max(0, Number(derived.DEF) || fallback.pdef),
+    MDEF: Math.max(0, Number(derived.MDEF) || Math.max(0, fallback.pdef * .7)),
+    HIT: Math.max(1, Number(derived.HIT) || 8),
+    FLEE: Math.max(0, Number(derived.FLEE) || 5),
+    CRIT: Math.max(0, Number(derived.CRIT) || 1),
+    critResistance: Math.max(0, Number(derived.critResistance) || 0),
+    perfectDodge: Math.max(0, Number(derived.perfectDodge) || 0),
+    blockChance: profile.classId === "vanguard" ? 12 : 3,
+    blockReduction: profile.classId === "vanguard" ? .55 : .4,
+    element: "neutral",
+    size: "medium",
+    race: "human",
+  };
+}
+
+function wolfCombatStats(): CombatStats {
+  return {
+    ATK: Number(WOLF_CONFIG.atk) || 13,
+    MATK: Math.max(1, (Number(WOLF_CONFIG.atk) || 13) * .7),
+    DEF: Number(WOLF_CONFIG.def) || 3,
+    MDEF: Number(WOLF_CONFIG.mdef) || 1,
+    HIT: Number(WOLF_CONFIG.hit) || 12,
+    FLEE: Number(WOLF_CONFIG.flee) || 8,
+    CRIT: Number(WOLF_CONFIG.crit) || 3,
+    critResistance: Number(WOLF_CONFIG.critResistance) || 1,
+    perfectDodge: Number(WOLF_CONFIG.perfectDodge) || 1,
+    blockChance: Number(WOLF_CONFIG.blockChance) || 2,
+    blockReduction: Number(WOLF_CONFIG.blockReduction) || .35,
+    element: String(WOLF_CONFIG.element || "neutral") as any,
+    size: String(WOLF_CONFIG.size || "medium") as any,
+    race: String(WOLF_CONFIG.race || "beast") as any,
+  };
+}
+
 
 let activePlayer: RpgPlayer | null = null;
 const activeEnemies = new Set<any>();
@@ -688,6 +762,8 @@ function getProfile(): Profile {
       jobLevel: Math.max(1, Number(data.jobLevel) || 1),
       derived: data.derived && typeof data.derived === "object" ? data.derived : undefined,
       learnedSkills: data.learnedSkills && typeof data.learnedSkills === "object" ? data.learnedSkills : {},
+      combatSettings: data.combatSettings && typeof data.combatSettings === "object" ? data.combatSettings : { autoAttack: false, autoLoot: true, targetMode: "nearest" },
+      lootBag: data.lootBag && typeof data.lootBag === "object" ? data.lootBag : {},
     };
   } catch {
     return fallback;
