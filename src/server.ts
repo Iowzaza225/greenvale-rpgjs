@@ -1130,35 +1130,103 @@ export default createServer({
           beforeHit(context: any) {
             const attacker = context.attacker as any;
             const target = context.target as any;
-            if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
+            const monsterToPlayer = !!attacker?.battleAi && target === activePlayer;
+            const playerToMonster = attacker === activePlayer && !!target?.battleAi;
+            if (!monsterToPlayer && !playerToMonster) return;
+
             const hp = Number(target.hp);
             if (!Number.isFinite(hp) || hp <= 0) return false;
-            const defense = Number(target.param?.[PDEF]);
-            const safeDefense = Number.isFinite(defense) ? defense : 6;
-            const damage = Math.max(4, Math.min(12, Math.round(10 - safeDefense * 0.25)));
-            // Provide the damage object before RPGJS resolves damage; the engine's
-            // default resolveDamage must not write invalid/zero HP first.
-            context.damage = { damage, raw: damage, defeated: hp <= damage };
-            context.metadata = { ...context.metadata, greenvaleHpBefore: hp };
+
+            const profile = getProfile();
+            const skill = playerToMonster ? pendingPlayerAttackContext?.skill : null;
+            const level = Math.max(1, Number(pendingPlayerAttackContext?.level) || 1);
+            const powerPercent = skill ? skillArrayValue(skill.powerPercent, level) : 100;
+            const attackKind: AttackKind = monsterToPlayer
+              ? "melee"
+              : skill?.formula === "magical_basic"
+                ? "magic"
+                : Number(skill?.range || profile.derived?.attackRange || 64) >= 120
+                  ? "ranged"
+                  : "melee";
+
+            const result = resolveCombatHit({
+              attacker: monsterToPlayer ? monsterCombatStats(attacker) : profileCombatStats(profile),
+              defender: monsterToPlayer ? profileCombatStats(profile) : monsterCombatStats(target),
+              attackKind,
+              skillPowerPercent: powerPercent,
+              attackElement: monsterToPlayer
+                ? String(attacker.__greenvaleMonsterConfig?.attackElement || attacker.__greenvaleMonsterConfig?.element || "neutral") as any
+                : String(skill?.element || "neutral") as any,
+            });
+
+            context.damage = {
+              damage: result.damage,
+              raw: result.rawDamage,
+              defeated: result.damage > 0 && hp <= result.damage,
+            };
+            context.metadata = {
+              ...context.metadata,
+              greenvaleHpBefore: hp,
+              greenvaleCombatResult: result,
+              greenvaleDirection: monsterToPlayer ? "monster-player" : "player-monster",
+              greenvaleSkillId: skill?.id || null,
+              greenvaleSource: pendingPlayerAttackContext?.source || "basic",
+            };
             return context;
           },
           afterDamage(context: any) {
             const attacker = context.attacker as any;
             const target = context.target as any;
-            if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
+            const direction = String(context.metadata?.greenvaleDirection || "");
+            if (!direction) return;
+
             const hp = Number(context.metadata?.greenvaleHpBefore);
-            const damage = Number(context.damage?.damage);
-            if (!Number.isFinite(hp) || hp <= 0 || !Number.isFinite(damage)) return;
-            // Apply exactly one bounded hit, using the same number as the popup.
+            const damage = Math.max(0, Number(context.damage?.damage) || 0);
+            const result = context.metadata?.greenvaleCombatResult || {};
+            if (!Number.isFinite(hp) || hp <= 0) return;
+
+            // RPGJS may already resolve damage internally. Reset to the captured
+            // authoritative pre-hit HP and apply exactly one Greenvale result.
             target.hp = Math.max(0, hp - damage);
-            if (typeof window !== "undefined" && target === activePlayer) {
-              window.dispatchEvent(new CustomEvent("greenvale:player-hit", {
-                detail: {
-                  damage,
-                  hp: Number(target.hp) || 0,
-                  maxHp: Number(target.param?.[MAXHP]) || 0,
-                },
-              }));
+
+            if (direction === "monster-player") {
+              dispatchCombatEvent({
+                type: "damage",
+                source: "monster",
+                target: "player",
+                attackerName: String(attacker.name || "Enemy"),
+                damage,
+                hp: Number(target.hp) || 0,
+                maxHp: Number(target.param?.[MAXHP]) || 0,
+                ...result,
+              });
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("greenvale:player-hit", {
+                  detail: {
+                    damage,
+                    outcome: result.outcome || "hit",
+                    hp: Number(target.hp) || 0,
+                    maxHp: Number(target.param?.[MAXHP]) || 0,
+                  },
+                }));
+              }
+            } else {
+              const skillId = context.metadata?.greenvaleSkillId || null;
+              const threat = (enemyThreat.get(target) || 0) + calculateThreat(damage, 0, 1);
+              enemyThreat.set(target, threat);
+              dispatchCombatEvent({
+                type: "damage",
+                source: "player",
+                target: "monster",
+                skillId,
+                targetName: String(target.name || "Enemy"),
+                damage,
+                hp: Number(target.hp) || 0,
+                maxHp: Number(target.param?.[MAXHP]) || Number(target.__greenvaleMonsterConfig?.hp) || 1,
+                threat,
+                ...result,
+              });
+              setTargetHud(target);
             }
             return context;
           },
