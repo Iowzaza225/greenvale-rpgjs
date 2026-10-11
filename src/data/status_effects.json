@@ -93,6 +93,20 @@
       "blocksAction": false,
       "speedMultiplier": 1,
       "blockChanceBonus": 18
+    },
+    {
+      "id": "blind",
+      "nameKey": "status.blind.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "durationMs": 3200,
+      "tickMs": 0,
+      "tickKind": "none",
+      "tickValue": 0,
+      "blocksAction": false,
+      "speedMultiplier": 1,
+      "hitMultiplier": 0.72
     }
   ]
 }
