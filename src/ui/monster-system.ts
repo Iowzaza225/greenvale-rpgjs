@@ -1,5 +1,6 @@
 import { allMonsters, bestiaryProgress, getMonsterConfig } from "../core/monsters";
 import { t } from "../core/i18n";
+import { gameEvents } from "../core/event-bus";
 import "./monster-system.css";
 
 const STORAGE_KEY = "greenvale.bestiary.v1";
@@ -41,6 +42,7 @@ function ensureShell() {
     button.type = "button";
     button.textContent = "📖 " + t("bestiary.button");
     button.setAttribute("aria-label", t("bestiary.title"));
+    button.hidden = true;
     document.body.appendChild(button);
   }
 
@@ -135,6 +137,18 @@ function recordMonsterDefeat(monsterId: string) {
 
   const beforeProgress = bestiaryProgress(config, before);
   const nextProgress = bestiaryProgress(config, next);
+  if (nextProgress.rewardReady && nextProgress.rewardItemId && !save.rewardsSeen.includes(monsterId)) {
+    save.rewardsSeen.push(monsterId);
+    saveBestiary(save);
+    window.dispatchEvent(new CustomEvent("greenvale:loot-drop", {
+      detail: {
+        sourceId: "bestiary:" + monsterId,
+        sourceName: t("bestiary.title"),
+        drops: [{ itemId: nextProgress.rewardItemId, quantity: 1 }],
+        autoLootRadius: 9999,
+      },
+    }));
+  }
   if (!beforeProgress.revealed && nextProgress.revealed) {
     showToast(t("bestiary.newEntry", { name: monsterName(monsterId) }));
   }
@@ -165,6 +179,7 @@ export function initMonsterSystem(): void {
   initialized = true;
   const { button, panel } = ensureShell();
 
+  gameEvents.on("game:canvas-ready", () => { button.hidden = false; });
   button.addEventListener("click", () => {
     renderBestiary();
     panel.hidden = false;
