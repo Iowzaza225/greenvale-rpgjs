@@ -288,6 +288,7 @@ function wolfCombatStats(): CombatStats {
 
 
 let activePlayer: RpgPlayer | null = null;
+let activeMap: any | null = null;
 const activeEnemies = new Set<any>();
 const monsterEventPool = new Set<any>();
 const SKILL_RANGE_TOLERANCE = 8;
@@ -1265,7 +1266,7 @@ if (typeof window !== "undefined") {
     const detail = (event as CustomEvent).detail || {};
     const monsterId = String(detail.monsterId || "");
     const config = getMonsterConfig(monsterId);
-    const map = activePlayer.getCurrentMap?.();
+    const map = activeMap ?? activePlayer.getCurrentMap?.();
     if (!config || !map?.createDynamicEvent) {
       dispatchCombat("greenvale:debug-monster-spawn-result", { ok: false, monsterId });
       return;
@@ -1579,6 +1580,7 @@ function GreenvaleMonster(eventName: string, monsterId: string, x: number, y: nu
     name: eventName,
     onInit() {
       const entity = this as any;
+      activeMap = entity.getCurrentMap?.() ?? activeMap;
       monsterEventPool.add(entity);
       entity.greenvaleMonsterConfig = config;
       entity.greenvaleSpawn = { x, y, spawnIndex, eventName };
@@ -1620,6 +1622,7 @@ const PHASE5_SPAWNS = spawnEntriesForMap(CAMP_MAP_ID);
 const Mara: EventDefinition = {
   name: "Mara",
   onInit() {
+    activeMap = (this as any).getCurrentMap?.() ?? activeMap;
     this.setGraphic("hero");
     this.name = "Mara";
     this.through = false;
