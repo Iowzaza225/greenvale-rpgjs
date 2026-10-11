@@ -1238,6 +1238,7 @@ const player = {
   },
 
   onInput(player: RpgPlayer, { action }: any) {
+    if (player.getVariable("greenvale.dead")) return;
     if (["up", "down", "left", "right"].includes(String(action))) {
       stopSkillApproach();
     }
@@ -1255,22 +1256,39 @@ const player = {
   },
 
   onDead(player: RpgPlayer) {
-    // RPGJS v5 HP setter calls onDead BEFORE writing hpSignal=0.
-    // Healing synchronously here is overwritten by that final zero write.
+    // RPGJS v5 writes the final zero after onDead, so revive must remain async.
     if (player.getVariable("greenvale.respawning")) return;
     player.setVariable("greenvale.respawning", true);
+    player.setVariable("greenvale.dead", true);
+    stopSkillApproach();
+    try { player.stopMoveTo?.(); } catch {}
+
+    const delay = Math.max(1200, Number(combatConfig.death.reviveDelayMs) || 3500);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("greenvale:death", {
+        detail: { reviveAt: Date.now() + delay, delayMs: delay },
+      }));
+    }
+
     setTimeout(() => {
       try {
-        const maxHp = Number(player.param[MAXHP]);
-        const maxSp = Number(player.param[MAXSP]);
-        player.hp = Number.isFinite(maxHp) && maxHp > 0 ? maxHp : 165;
-        player.sp = Number.isFinite(maxSp) && maxSp > 0 ? maxSp : 85;
+        const maxHp = Math.max(1, Number(player.param[MAXHP]) || 165);
+        const maxSp = Math.max(0, Number(player.param[MAXSP]) || 85);
+        const hpRatio = Math.max(.1, Math.min(1, Number(combatConfig.death.reviveHpPercent) / 100 || .5));
+        const spRatio = Math.max(0, Math.min(1, Number(combatConfig.death.reviveSpPercent) / 100 || .5));
+        player.hp = Math.max(1, Math.round(maxHp * hpRatio));
+        player.sp = Math.max(0, Math.round(maxSp * spRatio));
         player.teleport({ x: 760, y: 720 });
-        void player.showText("คุณหมดสติและถูกพากลับ Greenvale Camp");
+        player.setVariable("greenvale.dead", false);
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("greenvale:revive", {
+            detail: { hp: player.hp, maxHp, sp: player.sp, maxSp },
+          }));
+        }
       } finally {
         player.setVariable("greenvale.respawning", false);
       }
-    }, 0);
+    }, delay);
   },
 };
 
