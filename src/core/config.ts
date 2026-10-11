@@ -129,6 +129,46 @@ export function validateGameConfig(): void {
     if (count < 8) throw new Error(`Class "${classEntry.id}" requires at least 8 skills`);
   }
   assertUniqueIds("monsters", monsters.monsters);
+  const monsterIds = new Set((monsters.monsters as any[]).map(entry => entry.id));
+  const dropTableIds = new Set((drops.dropTables as any[]).map(entry => entry.id));
+  const allowedAi = new Set(["passive", "aggressive", "assist", "ranged", "coward", "boss"]);
+  for (const monster of monsters.monsters as any[]) {
+    if (!Number.isFinite(Number(monster.level)) || Number(monster.level) < 1) {
+      throw new Error(`Monster "${monster.id}" has invalid level`);
+    }
+    for (const key of ["hp", "atk", "def", "mdef", "hit", "flee", "moveSpeed", "visionRange", "attackRange", "respawnMs"]) {
+      if (!Number.isFinite(Number(monster[key])) || Number(monster[key]) < 0) {
+        throw new Error(`Monster "${monster.id}" has invalid ${key}`);
+      }
+    }
+    if (!allowedAi.has(String(monster.ai))) throw new Error(`Monster "${monster.id}" has invalid AI type`);
+    if (!dropTableIds.has(monster.dropTableId)) throw new Error(`Monster "${monster.id}" references missing drop table "${monster.dropTableId}"`);
+    if (monster.basicAttack?.statusEffect?.id && !statusIds.has(monster.basicAttack.statusEffect.id)) {
+      throw new Error(`Monster "${monster.id}" references missing status "${monster.basicAttack.statusEffect.id}"`);
+    }
+    if (monster.boss?.phases) {
+      let previous = 1;
+      for (const phase of monster.boss.phases) {
+        const ratio = Number(phase.atHpRatio);
+        if (!(ratio > 0 && ratio < previous)) throw new Error(`Monster "${monster.id}" has invalid boss phase thresholds`);
+        previous = ratio;
+      }
+    }
+  }
+  for (const map of maps.maps as any[]) {
+    for (const zone of map.spawnZones ?? []) {
+      const maxAlive = Number(zone.maxAlive);
+      if (!Number.isInteger(maxAlive) || maxAlive < 1) throw new Error(`Map "${map.id}" spawn zone "${zone.id}" has invalid maxAlive`);
+      let requested = 0;
+      for (const entry of zone.entries ?? []) {
+        if (!monsterIds.has(entry.monsterId)) throw new Error(`Spawn zone "${zone.id}" references missing monster "${entry.monsterId}"`);
+        const count = Number(entry.count);
+        if (!Number.isInteger(count) || count < 1) throw new Error(`Spawn zone "${zone.id}" has invalid count for "${entry.monsterId}"`);
+        requested += count;
+      }
+      if (requested > maxAlive) throw new Error(`Spawn zone "${zone.id}" exceeds maxAlive`);
+    }
+  }
   assertUniqueIds("items", items.items);
   assertUniqueIds("quests", quests.quests);
   assertUniqueIds("maps", maps.maps);
