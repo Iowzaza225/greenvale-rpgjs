@@ -1095,6 +1095,17 @@ function autoCombatTick() {
     return;
   }
 
+  // When Auto Loot is disabled, a nearby drop is a deliberate player choice.
+  // Pause target acquisition until that drop is claimed/expired so multiple
+  // kills cannot replace the mobile pickup prompt while the user is tapping it.
+  if (profile.combatSettings?.autoLoot === false && pendingLoot.size > 0) {
+    try { activePlayer.stopMoveTo?.(); } catch {}
+    autoApproachTarget = null;
+    autoApproachMode = "moveTo";
+    setTargetHud(null, { waitingForLoot: true });
+    return;
+  }
+
   const nearest = enemyCandidates(activePlayer)[0];
   if (!nearest || nearest.distance > Number(combatConfig.autoAttack.maxAcquireDistance || 640)) {
     setTargetHud(null);
