@@ -683,28 +683,186 @@ function applySelfModifier(skill: any, level: number): boolean {
   return true;
 }
 
+type RuntimeStatus = {
+  id: string;
+  stacks: number;
+  expiresAt: number;
+  timer?: number;
+  restoreSpeed?: number;
+};
+
+const playerStatuses = new Map<string, RuntimeStatus>();
+const enemyStatuses = new WeakMap<any, Map<string, RuntimeStatus>>();
+
+function statusDefinition(id: string): any | null {
+  return (statusData.statuses as any[]).find((entry) => entry.id === id) || null;
+}
+
+function dispatchPlayerStatuses() {
+  dispatchCombat("greenvale:player-status", {
+    statuses: Array.from(playerStatuses.values()).map((entry) => ({
+      id: entry.id,
+      stacks: entry.stacks,
+      expiresAt: entry.expiresAt,
+    })),
+  });
+}
+
+function clearPlayerStatus(id: string) {
+  const state = playerStatuses.get(id);
+  if (!state) return;
+  if (state.timer) window.clearInterval(state.timer);
+  playerStatuses.delete(id);
+  dispatchPlayerStatuses();
+}
+
+function applyPlayerStatus(id: string, durationOverride?: number, sourceLevel = 1) {
+  if (!activePlayer) return;
+  const def = statusDefinition(id);
+  if (!def) return;
+  const now = Date.now();
+  const duration = Math.max(100, Number(durationOverride) || Number(def.durationMs) || 1000);
+  const existing = playerStatuses.get(id);
+  const stacks = def.stacking === "stack"
+    ? Math.min(Number(def.maxStacks) || 1, (existing?.stacks || 0) + 1)
+    : 1;
+
+  if (existing?.timer) window.clearInterval(existing.timer);
+  const state: RuntimeStatus = { id, stacks, expiresAt: now + duration };
+  playerStatuses.set(id, state);
+
+  const tickMs = Math.max(0, Number(def.tickMs) || 0);
+  if (tickMs > 0) {
+    state.timer = window.setInterval(() => {
+      if (!activePlayer || Date.now() >= state.expiresAt) {
+        clearPlayerStatus(id);
+        return;
+      }
+      let damage = 0;
+      if (def.tickKind === "percentMaxHp") {
+        damage = Math.max(1, Math.round((Number(activePlayer.param[MAXHP]) || 1) * Number(def.tickValue) / 100));
+      } else if (def.tickKind === "sourceLevel") {
+        damage = Math.max(1, Math.round(Number(def.tickValue) * sourceLevel * state.stacks));
+      } else if (def.tickKind === "flat") {
+        damage = Math.max(1, Math.round(Number(def.tickValue) * state.stacks));
+      }
+      if (damage > 0 && Number(activePlayer.hp) > 0) {
+        activePlayer.hp = Math.max(0, Number(activePlayer.hp) - damage);
+        dispatchCombat("greenvale:combat-result", {
+          direction: "incoming",
+          outcome: "hit",
+          damage,
+          attackType: "status",
+          statusId: id,
+          hp: Number(activePlayer.hp) || 0,
+          maxHp: Number(activePlayer.param[MAXHP]) || 0,
+        });
+        window.dispatchEvent(new CustomEvent("greenvale:player-hit", {
+          detail: { damage, hp: Number(activePlayer.hp) || 0, maxHp: Number(activePlayer.param[MAXHP]) || 0, statusId: id },
+        }));
+      }
+    }, tickMs);
+  }
+  window.setTimeout(() => {
+    const current = playerStatuses.get(id);
+    if (current && current.expiresAt <= Date.now()) clearPlayerStatus(id);
+  }, duration + 30);
+  dispatchPlayerStatuses();
+}
+
+function applyEnemyDotDamage(target: any, damage: number, statusId: string) {
+  if (!activePlayer || !target || damage <= 0 || entityNumber(target, "hp") <= 0) return;
+  const before = entityNumber(target, "hp");
+  const after = Math.max(0, before - damage);
+  target.hp = after;
+  try {
+    target.battleAi?.handleDamage?.(activePlayer, {
+      damage,
+      defeated: after <= 0,
+      raw: { damage, statusId },
+      metadata: { greenvaleCombat: true, statusId },
+    });
+  } catch {}
+  dispatchCombat("greenvale:combat-result", {
+    direction: "outgoing",
+    outcome: "hit",
+    damage,
+    attackType: "status",
+    statusId,
+    targetId: combatEventId(target),
+    targetName: String(target?.name || "Target"),
+    hp: after,
+    maxHp: Math.max(1, Number(target?.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90),
+  });
+}
+
 function applyStatus(target: any, skill: any, level: number) {
   const status = skill.statusEffect;
   if (!status || Math.random() > Number(status.chance ?? 1)) return;
-  const duration = Math.max(100, Number(status.durationMs) || 1000);
-  if (status.id === "slow") {
-    const speed = Number(target.speed) || 1;
-    target.speed = Math.max(.35, speed * .55);
-    window.setTimeout(() => { if (target) target.speed = speed; }, duration);
-  } else if (status.id === "stun") {
-    const speed = Number(target.speed) || 1;
-    target.speed = 0;
-    window.setTimeout(() => { if (target) target.speed = speed; }, duration);
-  } else if (status.id === "bleed") {
-    const ticks = Math.max(1, Math.floor(duration / 1000));
-    for (let tick = 1; tick <= ticks; tick++) {
-      window.setTimeout(() => {
-        if (!target || entityNumber(target, "hp") <= 0) return;
-        const damage = Math.max(1, level * 2);
-        target.hp = Math.max(0, entityNumber(target, "hp") - damage);
-      }, tick * 1000);
-    }
+  const def = statusDefinition(String(status.id));
+  if (!def) return;
+  const duration = Math.max(100, Number(status.durationMs) || Number(def.durationMs) || 1000);
+  let map = enemyStatuses.get(target);
+  if (!map) {
+    map = new Map();
+    enemyStatuses.set(target, map);
   }
+  const existing = map.get(def.id);
+  const stacks = def.stacking === "stack"
+    ? Math.min(Number(def.maxStacks) || 1, (existing?.stacks || 0) + 1)
+    : 1;
+  if (existing?.timer) window.clearInterval(existing.timer);
+  if (existing?.restoreSpeed !== undefined) target.speed = existing.restoreSpeed;
+
+  const state: RuntimeStatus = { id: def.id, stacks, expiresAt: Date.now() + duration };
+  map.set(def.id, state);
+
+  if (Number(def.speedMultiplier) !== 1) {
+    const originalSpeed = Number(target.speed) || Number(WOLF_CONFIG.moveSpeed) || 1.35;
+    state.restoreSpeed = originalSpeed;
+    target.speed = Math.max(0, originalSpeed * Number(def.speedMultiplier));
+  }
+  if (def.blocksAction && target.battleAi?.stagger) {
+    try { target.battleAi.stagger(duration, activePlayer); } catch {}
+  }
+
+  const tickMs = Math.max(0, Number(def.tickMs) || 0);
+  if (tickMs > 0) {
+    state.timer = window.setInterval(() => {
+      if (!map || Date.now() >= state.expiresAt || entityNumber(target, "hp") <= 0) {
+        if (state.timer) window.clearInterval(state.timer);
+        if (state.restoreSpeed !== undefined && target) target.speed = state.restoreSpeed;
+        map?.delete(def.id);
+        return;
+      }
+      let damage = 0;
+      if (def.tickKind === "percentMaxHp") {
+        damage = Math.max(1, Math.round((Number(target?.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90) * Number(def.tickValue) / 100));
+      } else if (def.tickKind === "sourceLevel") {
+        damage = Math.max(1, Math.round(Number(def.tickValue) * level * state.stacks));
+      } else if (def.tickKind === "flat") {
+        damage = Math.max(1, Math.round(Number(def.tickValue) * state.stacks));
+      }
+      applyEnemyDotDamage(target, damage, def.id);
+    }, tickMs);
+  }
+
+  window.setTimeout(() => {
+    const current = map?.get(def.id);
+    if (!current || current.expiresAt > Date.now()) return;
+    if (current.timer) window.clearInterval(current.timer);
+    if (current.restoreSpeed !== undefined && target) target.speed = current.restoreSpeed;
+    map?.delete(def.id);
+    dispatchCombat("greenvale:target-status", { targetId: combatEventId(target), statusId: def.id, active: false });
+  }, duration + 30);
+
+  dispatchCombat("greenvale:target-status", {
+    targetId: combatEventId(target),
+    statusId: def.id,
+    active: true,
+    stacks,
+    expiresAt: state.expiresAt,
+  });
 }
 
 const SKILL_ASSIST_MAX_DISTANCE = 900;
