@@ -251,3 +251,22 @@ The pure rules engine is `src/core/combat.ts`. Balance belongs in JSON rather th
 The iPhone HUD adds target cycling, manual basic attack, auto attack, auto loot, floating combat results, status chips, a small persistent loot bag and knockout/respawn feedback. Native RPGJS player attacks and Greenvale custom skills both route through the same combat-rule layer.
 
 Character save schema is version 5 and stores combat preferences and collected Phase 4 loot. See `docs/PHASE_4_QA.md`.
+
+## Phase 5 monsters
+
+Phase 5 expands the data-driven combat runtime to a full first monster roster. `src/data/monsters.json` now contains 14 Greenvale monsters from Lv 2–30, including field bosses and a scheduled mini-boss.
+
+Monster runtime rules live in `src/core/monsters.ts`. Spawn slots come from `maps.json > spawnZones`; the server creates fixed event slots from those records instead of hard-coding one wolf factory per spawn. Existing Phase 4 targeting, damage, statuses, loot and respawn are reused with each target's own monster stats.
+
+AI metadata supports:
+
+- `passive`: does not acquire a player before being engaged
+- `aggressive`: standard sight/chase/attack behavior
+- `assist`: alerts nearby active monsters through the threat hook
+- `ranged`: attacks from the configured extended range
+- `coward`: retreats from the player below its HP threshold
+- `boss`: field-boss presentation and HP phase tracking
+
+The Bestiary is persisted separately in `greenvale.bestiary.v1` so Phase 4 save schema v5 remains backward compatible. Bestiary reward thresholds feed into the existing loot event rather than inventing a second inventory path.
+
+See `docs/PHASE_5_QA.md`.
