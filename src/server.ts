@@ -1294,7 +1294,7 @@ function onWolfDefeated(attacker?: any) {
     attacker.equip(GreenvaleSaber.id);
     void attacker.showText("เควสสำเร็จ! รอยเขี้ยวในป่า\nได้รับ 25 Gold + Greenvale Saber\nกลับไปคุยกับ Mara ที่ค่าย");
   } else if (typeof attacker.showNotification === "function") {
-    void attacker.showNotification("ภารกิจแรก: กำจัด Mutant Wolf " + next + "/3");
+    void attacker.showNotification("ภารกิจแรก: กำจัด Ashfang Wolf " + next + "/3");
   }
   saveQuestProgress(next, done);
 }
@@ -1304,7 +1304,7 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
     name,
     onInit() {
       this.setGraphic("monster");
-      this.name = "Mutant Wolf";
+      this.name = "Ashfang Wolf";
       this.speed = 1.35;
       this.through = false;
       this.initializeDefaultStats();
@@ -1347,9 +1347,9 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         },
         presentation: {
           role: "enemy",
-          name: "Mutant Wolf",
+          name: "Ashfang Wolf",
           healthBar: {
-            text: "Mutant Wolf",
+            text: "Ashfang Wolf",
             style: { width: 68, height: 6, fontSize: 11 },
             layout: { width: 76, marginBottom: 10 },
           },
@@ -1374,7 +1374,7 @@ const Mara: EventDefinition = {
     await player.showText(
       done
         ? "Mara: เยี่ยมมาก! ค่ายปลอดภัยขึ้นแล้ว\nเส้นทางไป Forest Route จะเปิดในอัปเดตถัดไป"
-        : "Mara: ยินดีต้อนรับสู่ Greenvale Camp\nภารกิจแรก: กำจัด Mutant Wolf 3 ตัว (" + kills + "/3)",
+        : "Mara: ยินดีต้อนรับสู่ Greenvale Camp\nภารกิจแรก: กำจัด Ashfang Wolf 3 ตัว (" + kills + "/3)",
     );
   },
 };
