@@ -947,7 +947,162 @@ function saveQuestProgress(kills: number, completed: boolean) {
   }
 }
 
-function onWolfDefeated(attacker?: any) {
+function rollDropTable(table: any): { items: Array<{ itemId: string; quantity: number }>; gold: number } {
+  const items: Array<{ itemId: string; quantity: number }> = [];
+  const rolls = Math.max(1, Math.floor(Number(table?.rolls) || 1));
+  for (let roll = 0; roll < rolls; roll++) {
+    for (const entry of table?.entries || []) {
+      if (!rollChance(Number(entry.chance) || 0)) continue;
+      const quantity = randomInt(Number(entry.min) || 1, Number(entry.max) || Number(entry.min) || 1);
+      items.push({ itemId: String(entry.itemId), quantity });
+    }
+  }
+  let gold = 0;
+  const goldConfig = table?.currency?.gold;
+  if (goldConfig && rollChance(Number(goldConfig.chance ?? 1))) {
+    gold = randomInt(Number(goldConfig.min) || 0, Number(goldConfig.max) || Number(goldConfig.min) || 0);
+  }
+  return { items, gold };
+}
+
+function awardLoot(attacker: any, loot: { items: Array<{ itemId: string; quantity: number }>; gold: number }, source = "ashfang_wolf") {
+  if (!attacker) return;
+  for (const item of loot.items) {
+    const definition = DROP_ITEM_DEFINITIONS[item.itemId];
+    if (definition && typeof attacker.addItem === "function") attacker.addItem(definition, item.quantity);
+  }
+  if (loot.gold > 0) attacker.gold = Math.max(0, Number(attacker.gold) || 0) + loot.gold;
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("greenvale:loot-award", {
+      detail: { source, items: loot.items, gold: loot.gold },
+    }));
+  }
+}
+
+function createPendingLoot(attacker: any, sourceEvent: any, loot: { items: Array<{ itemId: string; quantity: number }>; gold: number }) {
+  const token = `loot-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  const pending: PendingLoot = {
+    token,
+    items: loot.items,
+    gold: loot.gold,
+    x: entityCoord(sourceEvent, "x"),
+    y: entityCoord(sourceEvent, "y"),
+    expiresAt: Date.now() + 20_000,
+  };
+  pendingLoot.set(token, pending);
+  window.setTimeout(() => pendingLoot.delete(token), 20_500);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("greenvale:loot-available", {
+      detail: { ...pending, source: "ashfang_wolf" },
+    }));
+  }
+}
+
+function processDefeatLoot(attacker: any, sourceEvent: any) {
+  if (!attacker || !ASHFANG_DROP_TABLE) return;
+  const loot = rollDropTable(ASHFANG_DROP_TABLE);
+  if (loot.items.length === 0 && loot.gold <= 0) return;
+  const profile = getProfile();
+  const autoLoot = profile.combatSettings?.autoLoot !== false;
+  const radius = Math.max(80, Number(profile.combatSettings?.autoLootRadius) || Number(combatConfig.autoLoot.radius) || 220);
+  const distance = combatDistance(attacker, sourceEvent);
+  if (autoLoot && distance <= radius) awardLoot(attacker, loot);
+  else createPendingLoot(attacker, sourceEvent, loot);
+}
+
+function stepPlayerToward(target: any, step = 22) {
+  if (!activePlayer || !target) return;
+  const px = entityCoord(activePlayer, "x");
+  const py = entityCoord(activePlayer, "y");
+  const tx = entityCoord(target, "x");
+  const ty = entityCoord(target, "y");
+  const dx = tx - px;
+  const dy = ty - py;
+  const distance = Math.hypot(dx, dy);
+  if (!Number.isFinite(distance) || distance <= .001) return;
+  const nextX = Math.max(24, Math.min(CAMP_WIDTH - 24, px + dx / distance * Math.min(step, distance)));
+  const nextY = Math.max(24, Math.min(CAMP_HEIGHT - 24, py + dy / distance * Math.min(step, distance)));
+  try { activePlayer.teleport({ x: nextX, y: nextY }); } catch {}
+}
+
+let autoApproachTarget: any = null;
+let autoApproachDistance = Number.POSITIVE_INFINITY;
+let autoApproachProgressAt = 0;
+
+function autoCombatTick() {
+  if (!activePlayer || activePlayer.getVariable("greenvale.dead")) return;
+  const profile = getProfile();
+  if (!profile.combatSettings?.autoAttack || pendingSkillApproach) {
+    autoApproachTarget = null;
+    return;
+  }
+
+  const nearest = enemyCandidates(activePlayer)[0];
+  if (!nearest || nearest.distance > Number(combatConfig.autoAttack.maxAcquireDistance || 640)) {
+    setTargetHud(null);
+    autoApproachTarget = null;
+    return;
+  }
+
+  const target = nearest.event;
+  setTargetHud(target, { autoAttack: true });
+  const range = Math.max(42, Number(profile.derived?.attackRange) || 64);
+  if (nearest.distance > range + SKILL_RANGE_TOLERANCE) {
+    const now = Date.now();
+    if (autoApproachTarget !== target) {
+      autoApproachTarget = target;
+      autoApproachDistance = nearest.distance;
+      autoApproachProgressAt = now;
+      try { activePlayer.moveTo(target); } catch { stepPlayerToward(target); }
+      return;
+    }
+    if (nearest.distance + 2 < autoApproachDistance) {
+      autoApproachDistance = nearest.distance;
+      autoApproachProgressAt = now;
+    } else if (now - autoApproachProgressAt > 900) {
+      try { activePlayer.stopMoveTo?.(); } catch {}
+      stepPlayerToward(target);
+      autoApproachProgressAt = now;
+      autoApproachDistance = nearest.distance;
+    }
+    return;
+  }
+
+  try { activePlayer.stopMoveTo?.(); } catch {}
+  autoApproachTarget = null;
+  const aspd = Math.max(.5, Number(profile.derived?.ASPD) || 1);
+  const interval = Math.max(350, Math.round(1000 / aspd));
+  const now = Date.now();
+  if (now - lastAutoAttackAt < interval) return;
+  lastAutoAttackAt = now;
+  pendingPlayerAttackContext = { source: "auto-basic" };
+  try {
+    target.battleAi?.takeDamage?.(activePlayer);
+  } finally {
+    pendingPlayerAttackContext = null;
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.setInterval(autoCombatTick, Math.max(200, Number(combatConfig.autoAttack.tickMs) || 350));
+  window.addEventListener("greenvale:loot-claim", (event) => {
+    if (!activePlayer) return;
+    const token = String((event as CustomEvent).detail?.token || "");
+    const loot = pendingLoot.get(token);
+    if (!loot || loot.expiresAt < Date.now()) return;
+    const distance = Math.max(0, Math.hypot(entityCoord(activePlayer, "x") - loot.x, entityCoord(activePlayer, "y") - loot.y));
+    const radius = Math.max(80, Number(getProfile().combatSettings?.autoLootRadius) || 220);
+    if (distance > radius) {
+      window.dispatchEvent(new CustomEvent("greenvale:loot-claim-result", { detail: { ok: false, token, reason: "too-far" } }));
+      return;
+    }
+    pendingLoot.delete(token);
+    awardLoot(activePlayer, loot);
+    window.dispatchEvent(new CustomEvent("greenvale:loot-claim-result", { detail: { ok: true, token } }));
+  });
+}
+
+function onWolfDefeated(attacker?: any, sourceEvent?: any) {
   if (!attacker || typeof attacker.getVariable !== "function") return;
 
   // EXP progression is independent from the first quest. In standalone mode the
@@ -955,9 +1110,10 @@ function onWolfDefeated(attacker?: any) {
   // a narrow event that the versioned character save consumes.
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("greenvale:experience", {
-      detail: { baseExp: 18, jobExp: 8, source: "ashfang_wolf" },
+      detail: { baseExp: Number(ASHFANG_CONFIG.baseExp) || 18, jobExp: Number(ASHFANG_CONFIG.jobExp) || 8, source: "ashfang_wolf" },
     }));
   }
+  if (sourceEvent) processDefeatLoot(attacker, sourceEvent);
 
   if (attacker.getVariable("greenvale.quest.main") !== "first-hunt") return;
   const next = Math.min(3, Number(attacker.getVariable("greenvale.quest.kills") || 0) + 1);
@@ -1019,7 +1175,7 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         onDefeated: ({ attacker, reward }: any) => {
           if (attacker && typeof attacker.getVariable === "function") {
             reward.giveTo(attacker);
-            onWolfDefeated(attacker);
+            onWolfDefeated(attacker, this);
           }
         },
         presentation: {
