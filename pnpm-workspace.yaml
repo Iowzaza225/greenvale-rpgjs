@@ -1,0 +1,5 @@
+packages:
+  - "."
+
+overrides:
+  "@signe/sync": "3.1.1"
