@@ -322,7 +322,7 @@ function setTargetHud(target: any | null, extra: Record<string, any> = {}) {
       id: String(target.id || config.id || "enemy"),
       name: String(target.name || "Enemy"),
       hp: Math.max(0, entityNumber(target, "hp")),
-      maxHp: Math.max(1, entityNumber(target, "param") ? Number(target.param?.[MAXHP]) || Number(config.hp) : Number(config.hp)),
+      maxHp: Math.max(1, Number(target.param?.[MAXHP]) || Number(config.hp) || 1),
       level: Number(config.level) || 1,
       element: String(config.element || "neutral"),
       race: String(config.race || "beast"),
@@ -768,6 +768,7 @@ function executeGreenvaleSkill(detail: any) {
   const level = Math.min(Number(skill?.maxLv) || 1, learnedLevel, requestedLevel);
   const fail = (reason: string) => dispatchSkillState("greenvale:skill-result", { ok: false, reason, skillId, source });
 
+  if (activePlayer.getVariable("greenvale.dead")) return fail("locked");
   if (!skill || level <= 0 || skill.type === "passive") return fail("locked");
   if (skill.classId !== "novice" && skill.classId !== profile.classId) return fail("locked");
 
@@ -1120,6 +1121,7 @@ function onWolfDefeated(attacker?: any, sourceEvent?: any) {
     }));
   }
   if (sourceEvent) processDefeatLoot(attacker, sourceEvent);
+  setTargetHud(null, { defeated: true });
 
   if (attacker.getVariable("greenvale.quest.main") !== "first-hunt") return;
   const next = Math.min(3, Number(attacker.getVariable("greenvale.quest.kills") || 0) + 1);
@@ -1168,7 +1170,9 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         visionRange: Number(ASHFANG_CONFIG.visionRange) || 230,
         attackRange: Number(ASHFANG_CONFIG.attackRange) || 58,
         attackCooldown: 1650,
-        dodgeChance: Math.max(0, Math.min(.35, Number(ASHFANG_CONFIG.perfectDodge || 0) / 100)),
+        // Greenvale's resolver owns MISS / Perfect Dodge; disable the engine's
+        // extra random dodge so avoidance is rolled exactly once.
+        dodgeChance: 0,
         attackPatterns: [AttackPattern.Melee],
         simpleBehavior: {
           when: [
