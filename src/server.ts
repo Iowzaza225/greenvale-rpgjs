@@ -376,6 +376,255 @@ function enemyEvents(player: RpgPlayer, range: number): any[] {
     .map(({ event }) => event);
 }
 
+
+let lockedTarget: any | null = null;
+let lastBasicAttackAt = 0;
+let basicApproach: { token: number; target: any; timer?: number; mode: "moveTo" | "step"; lastDistance: number; lastProgressAt: number; startedAt: number } | null = null;
+let basicApproachToken = 0;
+
+function combatEventId(entity: any): string {
+  return String(entity?.id || entity?.name || "target");
+}
+
+function dispatchCombat(type: string, detail: Record<string, any> = {}) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(type, { detail }));
+}
+
+function currentTarget(maxDistance = 760): any | null {
+  if (!activePlayer) return null;
+  if (
+    lockedTarget &&
+    activeEnemies.has(lockedTarget) &&
+    entityNumber(lockedTarget, "hp") > 0 &&
+    combatDistance(activePlayer, lockedTarget) <= maxDistance
+  ) {
+    return lockedTarget;
+  }
+  const nearest = enemyCandidates(activePlayer).find(({ distance }) => distance <= maxDistance)?.event ?? null;
+  lockedTarget = nearest;
+  return nearest;
+}
+
+function dispatchTargetState(target: any | null = currentTarget()) {
+  if (!activePlayer) return;
+  if (!target || entityNumber(target, "hp") <= 0) {
+    lockedTarget = null;
+    dispatchCombat("greenvale:target-state", { target: null });
+    return;
+  }
+  dispatchCombat("greenvale:target-state", {
+    target: {
+      id: combatEventId(target),
+      name: String(target?.name || "Target"),
+      hp: entityNumber(target, "hp"),
+      maxHp: Math.max(1, Number(target?.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90),
+      distance: Math.round(combatDistance(activePlayer, target)),
+      element: WOLF_CONFIG.element || "neutral",
+      size: WOLF_CONFIG.size || "medium",
+      race: WOLF_CONFIG.race || "beast",
+    },
+  });
+}
+
+function cycleCombatTarget() {
+  if (!activePlayer) return;
+  const candidates = enemyCandidates(activePlayer).filter(({ distance }) => distance <= 760);
+  if (!candidates.length) {
+    lockedTarget = null;
+    dispatchTargetState(null);
+    return;
+  }
+  const currentIndex = candidates.findIndex(({ event }) => event === lockedTarget);
+  lockedTarget = candidates[(currentIndex + 1 + candidates.length) % candidates.length]!.event;
+  dispatchTargetState(lockedTarget);
+}
+
+function applyEnemyCombatDamage(
+  target: any,
+  result: ReturnType<typeof resolveDamage>,
+  metadata: Record<string, any>,
+) {
+  if (!activePlayer || !target) return;
+  const before = entityNumber(target, "hp");
+  const damage = Math.max(0, Number(result.damage) || 0);
+  const after = Math.max(0, before - damage);
+
+  if (damage > 0) {
+    target.hp = after;
+    try {
+      target.battleAi?.handleDamage?.(activePlayer, {
+        damage,
+        defeated: after <= 0,
+        raw: { damage, outcome: result.outcome },
+        metadata: { ...metadata, greenvaleCombat: true, outcome: result.outcome },
+      });
+    } catch (error) {
+      console.warn("[Greenvale] custom combat AI damage hook failed", error);
+    }
+  }
+
+  dispatchCombat("greenvale:combat-result", {
+    direction: "outgoing",
+    outcome: result.outcome,
+    damage,
+    targetId: combatEventId(target),
+    targetName: String(target?.name || "Target"),
+    hp: after,
+    maxHp: Math.max(1, Number(target?.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90),
+    elementMultiplier: result.elementMultiplier,
+    sizeMultiplier: result.sizeMultiplier,
+    raceMultiplier: result.raceMultiplier,
+    ...metadata,
+  });
+
+  if (after <= 0) {
+    lockedTarget = null;
+    dispatchTargetState(null);
+  } else {
+    lockedTarget = target;
+    dispatchTargetState(target);
+  }
+}
+
+function stopBasicApproach() {
+  if (!basicApproach) return;
+  if (basicApproach.timer) window.clearTimeout(basicApproach.timer);
+  try { activePlayer?.stopMoveTo?.(); } catch {}
+  basicApproach = null;
+}
+
+function startBasicApproach(target: any) {
+  if (!activePlayer || !target) return;
+  if (basicApproach?.target === target) return;
+  stopBasicApproach();
+
+  const profile = getProfile();
+  const targetRange = Math.max(60, Number(profile.derived?.attackRange) || 64);
+  const token = ++basicApproachToken;
+  const startedAt = Date.now();
+  const initialDistance = combatDistance(activePlayer, target);
+  basicApproach = {
+    token,
+    target,
+    mode: "moveTo",
+    lastDistance: initialDistance,
+    lastProgressAt: startedAt,
+    startedAt,
+  };
+
+  try {
+    activePlayer.moveTo(target);
+  } catch {
+    if (basicApproach) basicApproach.mode = "step";
+  }
+
+  dispatchCombat("greenvale:combat-approach", {
+    targetId: combatEventId(target),
+    targetName: String(target?.name || "Target"),
+    distance: Math.round(initialDistance),
+    range: targetRange,
+  });
+
+  const tick = () => {
+    if (!activePlayer || !basicApproach || basicApproach.token !== token) return;
+    if (entityNumber(target, "hp") <= 0) {
+      stopBasicApproach();
+      lockedTarget = null;
+      return;
+    }
+
+    const now = Date.now();
+    const distance = combatDistance(activePlayer, target);
+    if (distance <= targetRange + SKILL_RANGE_TOLERANCE) {
+      stopBasicApproach();
+      executeBasicAttack("auto", true);
+      return;
+    }
+
+    if (distance + 2 < basicApproach.lastDistance) {
+      basicApproach.lastDistance = distance;
+      basicApproach.lastProgressAt = now;
+    } else if (now - basicApproach.lastProgressAt > 900) {
+      basicApproach.mode = "step";
+      try { activePlayer.stopMoveTo?.(); } catch {}
+    }
+
+    if (basicApproach.mode === "step") {
+      const px = entityCoord(activePlayer, "x");
+      const py = entityCoord(activePlayer, "y");
+      const tx = entityCoord(target, "x");
+      const ty = entityCoord(target, "y");
+      const dx = tx - px;
+      const dy = ty - py;
+      const center = Math.max(.001, Math.hypot(dx, dy));
+      const desired = targetRange + entityCombatRadius(activePlayer) + entityCombatRadius(target) - 4;
+      const remaining = Math.max(0, center - desired);
+      if (remaining > 0) {
+        const step = Math.min(14, remaining);
+        try {
+          activePlayer.teleport({
+            x: Math.max(24, Math.min(CAMP_WIDTH - 24, px + dx / center * step)),
+            y: Math.max(24, Math.min(CAMP_HEIGHT - 24, py + dy / center * step)),
+          });
+        } catch {}
+      }
+    }
+
+    if (now - startedAt > 9000 || distance > 920) {
+      stopBasicApproach();
+      dispatchCombat("greenvale:combat-result", {
+        direction: "outgoing",
+        outcome: "miss",
+        damage: 0,
+        reason: "out-of-range",
+        targetId: combatEventId(target),
+        targetName: String(target?.name || "Target"),
+      });
+      return;
+    }
+    basicApproach.timer = window.setTimeout(tick, basicApproach.mode === "step" ? 65 : 90);
+  };
+
+  basicApproach.timer = window.setTimeout(tick, 90);
+}
+
+function executeBasicAttack(source: "manual" | "auto" = "manual", approached = false) {
+  if (!activePlayer) return;
+  const profile = getProfile();
+  const target = currentTarget();
+  if (!target) {
+    dispatchCombat("greenvale:combat-result", { direction: "outgoing", outcome: "miss", damage: 0, reason: "no-target", source });
+    return;
+  }
+
+  const range = Math.max(60, Number(profile.derived?.attackRange) || 64);
+  const distance = combatDistance(activePlayer, target);
+  if (distance > range + SKILL_RANGE_TOLERANCE) {
+    if (!approached) startBasicApproach(target);
+    return;
+  }
+
+  const delay = basicAttackDelayMs(Number(profile.derived?.ASPD) || 1);
+  const now = Date.now();
+  if (now - lastBasicAttackAt < delay) return;
+  lastBasicAttackAt = now;
+
+  const result = resolveDamage(
+    profileCombatStats(profile),
+    wolfCombatStats(),
+    {
+      kind: "physical",
+      powerPercent: 100,
+      element: "neutral",
+      weaponType: classWeaponType(profile.classId),
+      targetSize: String(WOLF_CONFIG.size || "medium") as any,
+      targetRace: String(WOLF_CONFIG.race || "beast") as any,
+    },
+  );
+  applyEnemyCombatDamage(target, result, { source, attackType: "basic" });
+}
+
 function dispatchSkillState(type = "greenvale:skill-state", extra: Record<string, any> = {}) {
   if (typeof window === "undefined" || !activePlayer) return;
   window.dispatchEvent(new CustomEvent(type, {
