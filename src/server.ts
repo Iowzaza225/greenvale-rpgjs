@@ -500,28 +500,100 @@ function applySelfModifier(skill: any, level: number): boolean {
   return true;
 }
 
+function clearCombatStatus(target: any, statusId: string) {
+  const map = activeStatuses.get(target);
+  const current = map?.get(statusId);
+  if (!current) return;
+  if (current.interval) window.clearInterval(current.interval);
+  if (current.timeout) window.clearTimeout(current.timeout);
+  if (current.originalSpeed !== undefined && target) target.speed = current.originalSpeed;
+  map?.delete(statusId);
+  setTargetHud(target);
+  dispatchCombatEvent({ type: "status-end", targetName: String(target?.name || "Target"), statusId });
+}
+
 function applyStatus(target: any, skill: any, level: number) {
-  const status = skill.statusEffect;
-  if (!status || Math.random() > Number(status.chance ?? 1)) return;
-  const duration = Math.max(100, Number(status.durationMs) || 1000);
-  if (status.id === "slow") {
-    const speed = Number(target.speed) || 1;
-    target.speed = Math.max(.35, speed * .55);
-    window.setTimeout(() => { if (target) target.speed = speed; }, duration);
-  } else if (status.id === "stun") {
-    const speed = Number(target.speed) || 1;
-    target.speed = 0;
-    window.setTimeout(() => { if (target) target.speed = speed; }, duration);
-  } else if (status.id === "bleed") {
-    const ticks = Math.max(1, Math.floor(duration / 1000));
-    for (let tick = 1; tick <= ticks; tick++) {
-      window.setTimeout(() => {
-        if (!target || entityNumber(target, "hp") <= 0) return;
-        const damage = Math.max(1, level * 2);
-        target.hp = Math.max(0, entityNumber(target, "hp") - damage);
-      }, tick * 1000);
-    }
+  const ref = skill.statusEffect;
+  if (!ref) return;
+  const config = STATUS_CONFIG.get(String(ref.id)) as any;
+  if (!config) return;
+
+  const targetConfig = target?.__greenvaleMonsterConfig || {};
+  const resist = Math.max(0, Math.min(.9, Number(targetConfig.statusResist?.[config.id]) || 0));
+  const chance = Math.max(0, Math.min(1, Number(ref.chance ?? 1) * (1 - resist)));
+  if (!rollChance(chance)) return;
+
+  let map = activeStatuses.get(target);
+  if (!map) {
+    map = new Map();
+    activeStatuses.set(target, map);
   }
+
+  const existing = map.get(config.id);
+  const maxStacks = Math.max(1, Number(config.maxStacks) || 1);
+  const stacks = config.stacking === "stack"
+    ? Math.min(maxStacks, (existing?.stacks || 0) + 1)
+    : 1;
+  if (existing) clearCombatStatus(target, config.id);
+
+  const duration = Math.max(100, Number(ref.durationMs) || Number(config.durationMs) || 1000);
+  const state: any = {
+    id: config.id,
+    stacks,
+    expiresAt: Date.now() + duration,
+  };
+
+  const effect = config.effect || {};
+  if (effect.kind === "speed_multiplier" || effect.kind === "stun") {
+    const speed = Math.max(.1, Number(target.speed) || 1);
+    state.originalSpeed = speed;
+    target.speed = effect.kind === "stun" ? 0 : Math.max(.25, speed * Number(effect.value || .55));
+  }
+
+  const tickMs = Math.max(0, Number(config.tickMs) || 0);
+  if (tickMs > 0 && ["dot_max_hp", "dot_source_atk", "dot_source_matk", "hot_max_hp"].includes(String(effect.kind))) {
+    state.interval = window.setInterval(() => {
+      if (!target || entityNumber(target, "hp") <= 0) return;
+      const source = profileCombatStats();
+      const maxHp = target === activePlayer
+        ? Math.max(1, Number(activePlayer?.param[MAXHP]) || source.MaxHP || 1)
+        : Math.max(1, Number(target.param?.[MAXHP]) || Number(targetConfig.hp) || 1);
+      let amount = 1;
+      if (effect.kind === "dot_max_hp") amount = Math.max(1, Math.round(maxHp * Number(effect.value || .01) * stacks));
+      if (effect.kind === "dot_source_atk") amount = Math.max(1, Math.round(source.ATK * Number(effect.value || .08) * stacks));
+      if (effect.kind === "dot_source_matk") amount = Math.max(1, Math.round(source.MATK * Number(effect.value || .1) * stacks));
+      if (effect.kind === "hot_max_hp") {
+        amount = Math.max(1, Math.round(maxHp * Number(effect.value || .02) * stacks));
+        target.hp = Math.min(maxHp, entityNumber(target, "hp") + amount);
+        dispatchCombatEvent({ type: "status-heal", statusId: config.id, amount, targetName: String(target.name || "Target") });
+        setTargetHud(target);
+        return;
+      }
+      const before = entityNumber(target, "hp");
+      target.hp = Math.max(0, before - amount);
+      dispatchCombatEvent({
+        type: "status-damage",
+        statusId: config.id,
+        damage: amount,
+        outcome: "dot",
+        targetName: String(target.name || "Target"),
+        hp: entityNumber(target, "hp"),
+        maxHp,
+      });
+      setTargetHud(target);
+    }, tickMs);
+  }
+
+  state.timeout = window.setTimeout(() => clearCombatStatus(target, config.id), duration);
+  map.set(config.id, state);
+  setTargetHud(target);
+  dispatchCombatEvent({
+    type: "status-start",
+    statusId: config.id,
+    stacks,
+    durationMs: duration,
+    targetName: String(target?.name || "Target"),
+  });
 }
 
 const SKILL_ASSIST_MAX_DISTANCE = 900;
