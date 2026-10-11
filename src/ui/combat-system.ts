@@ -1,5 +1,6 @@
 import itemsData from "../data/items.json";
 import { t } from "../core/i18n";
+import { gameEvents } from "../core/event-bus";
 import {
   addSelectedLoot,
   getSelectedCharacter,
@@ -154,6 +155,12 @@ export function openCombatSystem():void{
 export function initCombatSystem():void{
   if(initialized)return;initialized=true;
   document.getElementById("gv-combat-btn")?.addEventListener("click",openCombatSystem);
+  gameEvents.on("game:canvas-ready",()=>{
+    const controls=document.getElementById("gv-combat-controls");
+    if(controls)controls.hidden=false;
+    renderControls();
+    window.dispatchEvent(new Event("greenvale:combat-state-request"));
+  });
   renderControls();
   window.addEventListener("greenvale:target-state",(event)=>{targetState=((event as CustomEvent).detail||{}).target||null;renderTarget();});
   window.addEventListener("greenvale:target-status",(event)=>{
