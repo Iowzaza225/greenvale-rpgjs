@@ -1260,6 +1260,31 @@ if (typeof window !== "undefined") {
       hp: entityNumber(target, "hp"),
     });
   });
+  window.addEventListener("greenvale:debug-spawn-monster", (event) => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    const detail = (event as CustomEvent).detail || {};
+    const monsterId = String(detail.monsterId || "");
+    const config = getMonsterConfig(monsterId);
+    const map = activePlayer.getCurrentMap?.();
+    if (!config || !map?.createDynamicEvent) {
+      dispatchCombat("greenvale:debug-monster-spawn-result", { ok: false, monsterId });
+      return;
+    }
+    const x = Number.isFinite(Number(detail.x)) ? Number(detail.x) : entityCoord(activePlayer, "x") + 90;
+    const y = Number.isFinite(Number(detail.y)) ? Number(detail.y) : entityCoord(activePlayer, "y");
+    const id = `qa-${monsterId}-${Date.now()}`;
+    void Promise.resolve(map.createDynamicEvent({
+      id,
+      x,
+      y,
+      event: GreenvaleMonster(id, monsterId, x, y, 0),
+    })).then(() => {
+      dispatchCombat("greenvale:debug-monster-spawn-result", { ok: true, monsterId, id });
+    }).catch((error: unknown) => {
+      console.warn("[Greenvale] debug monster spawn failed", monsterId, error);
+      dispatchCombat("greenvale:debug-monster-spawn-result", { ok: false, monsterId, error: String(error) });
+    });
+  });
   window.addEventListener("greenvale:debug-activate-miniboss", (event) => {
     if (!new URLSearchParams(window.location.search).has("debug")) return;
     const monsterId = String((event as CustomEvent).detail?.monsterId || "marrowtusk");
@@ -1391,25 +1416,50 @@ function rollMonsterLoot(config: MonsterConfig) {
 
 function scheduleMonsterRespawn(entity: any, config: MonsterConfig) {
   const spawn = entity?.greenvaleSpawn;
-  if (!spawn || config.miniBoss) return;
+  if (!spawn) return;
+
+  // BattleAi removes defeated RPGJS events after the death presentation.
+  // Never resurrect that same synchronized object: on iPhone Safari it can
+  // become a stale proxy after map.removeEvent(), which surfaced as JS ERROR
+  // "removeEvent". Re-create the fixed spawn slot instead.
+  const map = entity?.getCurrentMap?.() ?? activePlayer?.getCurrentMap?.();
   activeEnemies.delete(entity);
-  window.setTimeout(() => {
+  monsterEventPool.delete(entity);
+  const miniPool = (globalThis as any).__GV_MINIBOSSES__ as Set<any> | undefined;
+  miniPool?.delete(entity);
+
+  if (!map?.createDynamicEvent) return;
+
+  const delay = config.miniBoss
+    ? 2200
+    : Math.max(1000, Number(config.respawnMs) || 8000);
+
+  const recreate = async (attempt = 0) => {
     try {
-      entity.hp = Math.max(1, Number(config.hp) || 1);
-      entity.sp = 20;
-      entity.through = false;
-      entity.teleport({ x: spawn.x, y: spawn.y });
-      activeEnemies.add(entity);
-      attachMonsterAi(entity, config);
+      // A delayed death transition can keep the old id alive briefly.
+      // Retry instead of touching the removed event instance.
+      if (map.getEvent?.(spawn.eventName)) {
+        if (attempt < 4) window.setTimeout(() => void recreate(attempt + 1), 750);
+        return;
+      }
+      await map.createDynamicEvent({
+        id: spawn.eventName,
+        x: spawn.x,
+        y: spawn.y,
+        event: GreenvaleMonster(spawn.eventName, config.id, spawn.x, spawn.y, spawn.spawnIndex),
+      });
     } catch (error) {
-      console.warn("[Greenvale] monster respawn failed", config.id, error);
+      console.warn("[Greenvale] monster respawn recreate failed", config.id, error);
     }
-  }, Math.max(1000, Number(config.respawnMs) || 8000));
+  };
+
+  window.setTimeout(() => void recreate(), delay);
 }
 
 function onMonsterDefeated(entity: any, attacker?: any) {
   const config = monsterConfigForEntity(entity);
   activeEnemies.delete(entity);
+  monsterEventPool.delete(entity);
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("greenvale:experience", {
       detail: { baseExp: Number(config.baseExp) || 0, jobExp: Number(config.jobExp) || 0, source: config.id },
