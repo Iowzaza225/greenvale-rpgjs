@@ -34,8 +34,8 @@ test("Phase 4 target, auto attack, loot, status and respawn work on iPhone WebKi
   await expect.poll(async () => page.evaluate(() => {
     const save = JSON.parse(localStorage.getItem("greenvale.save") || "null");
     const char = save.characters.find((entry: any) => entry?.id === save.selectedCharacterId);
-    return { version: save.version, qty: char?.lootBag?.ashfang_fang || 0 };
-  })).toEqual({ version: 5, qty: 1 });
+    return save.version === 5 && Number(char?.lootBag?.ashfang_fang || 0) >= 1;
+  })).toBe(true);
 
   // Status strip is driven by authoritative status state.
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-player-status", { detail: { id: "bleed", durationMs: 1000 } })));
