@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills, phase/4-combat, phase/5-monsters ]
+    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills, phase/4-combat, phase/5-monsters, phase/6-effects ]
   pull_request:
     branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills ]
   workflow_dispatch:
@@ -62,6 +62,9 @@ jobs:
 
       - name: Phase 5 iPhone WebKit monsters
         run: pnpm run test:phase5
+
+      - name: Phase 6 iPhone WebKit effects
+        run: pnpm run test:phase6
 
       - name: Upload Playwright traces on failure
         if: failure()
