@@ -905,6 +905,12 @@ if (typeof window !== "undefined") {
     if (!Number.isFinite(x) || !Number.isFinite(y)) return;
     activePlayer.teleport({ x, y });
   });
+  window.addEventListener("greenvale:debug-player-hp", (event) => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    const hp = Number((event as CustomEvent).detail?.hp);
+    if (!Number.isFinite(hp)) return;
+    activePlayer.hp = Math.max(0, Math.min(Number(activePlayer.param[MAXHP]) || 1, hp));
+  });
 }
 
 function getProfile(): Profile {
