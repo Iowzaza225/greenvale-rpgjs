@@ -36,7 +36,16 @@ test("Phase 5 monster roster, Bestiary, field boss and mini-boss work on iPhone 
   // This also covers engines that only hydrate distant event instances when the player approaches.
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-player-position", { detail: { x: 1320, y: 830 } })));
   await page.waitForTimeout(450);
-  await page.evaluate(() => window.dispatchEvent(new Event("greenvale:target-cycle")));
+  const bossTarget = await page.evaluate(() => new Promise<any>(resolve => {
+    const timer = window.setTimeout(() => resolve(null), 1200);
+    window.addEventListener("greenvale:debug-monster-target-result", (event: Event) => {
+      window.clearTimeout(timer);
+      resolve((event as CustomEvent).detail || null);
+    }, { once: true });
+    window.dispatchEvent(new CustomEvent("greenvale:debug-target-monster", { detail: { monsterId: "ashfang_alpha" } }));
+  }));
+  expect(bossTarget?.ok).toBe(true);
+  expect(bossTarget?.boss).toBe(true);
   await expect(page.locator("#gv-boss-bar")).toBeVisible();
   await expect(page.locator("#gv-boss-bar")).toContainText(/Ashfang Alpha|อัลฟาเขี้ยวเถ้า/);
 
@@ -45,7 +54,15 @@ test("Phase 5 monster roster, Bestiary, field boss and mini-boss work on iPhone 
   await expect(page.locator("#gv-monster-toast")).toBeVisible();
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-player-position", { detail: { x: 750, y: 190 } })));
   await page.waitForTimeout(350);
-  await page.evaluate(() => window.dispatchEvent(new Event("greenvale:target-cycle")));
+  const miniTarget = await page.evaluate(() => new Promise<any>(resolve => {
+    const timer = window.setTimeout(() => resolve(null), 1200);
+    window.addEventListener("greenvale:debug-monster-target-result", (event: Event) => {
+      window.clearTimeout(timer);
+      resolve((event as CustomEvent).detail || null);
+    }, { once: true });
+    window.dispatchEvent(new CustomEvent("greenvale:debug-target-monster", { detail: { monsterId: "marrowtusk" } }));
+  }));
+  expect(miniTarget?.ok).toBe(true);
   await expect(page.locator("#gv-combat-target")).toContainText(/Marrowtusk|หมูป่าเขี้ยวกระดูก/);
 
   await expect(page.locator("#runtime-error")).toBeHidden();
