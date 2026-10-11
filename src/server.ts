@@ -1170,6 +1170,28 @@ if (typeof window !== "undefined") {
     if (!Number.isFinite(x) || !Number.isFinite(y)) return;
     activePlayer.teleport({ x, y });
   });
+  window.addEventListener("greenvale:debug-nearest-enemy-hp", (event) => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    const target = enemyCandidates(activePlayer)[0]?.event;
+    if (!target) return;
+    const hp = Math.max(1, Math.floor(Number((event as CustomEvent).detail?.hp) || 1));
+    target.hp = hp;
+    lockedTarget = target;
+    dispatchTargetState(target);
+  });
+  window.addEventListener("greenvale:debug-force-loot", () => {
+    if (!new URLSearchParams(window.location.search).has("debug")) return;
+    dispatchCombat("greenvale:loot-drop", {
+      sourceId: "debug",
+      sourceName: "QA",
+      drops: [{ itemId: "ashfang_fang", quantity: 1 }],
+      autoLootRadius: 120,
+    });
+  });
+  window.addEventListener("greenvale:debug-player-kill", () => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    activePlayer.hp = 0;
+  });
 }
 
   window.setInterval(() => {
