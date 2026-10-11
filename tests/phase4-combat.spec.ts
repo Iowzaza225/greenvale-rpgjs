@@ -25,7 +25,7 @@ test("Phase 4 target, auto attack, loot, status and respawn work on iPhone WebKi
   await page.locator("[data-combat='auto']").click();
 
   await expect.poll(async () => page.evaluate(() => {
-    const result = (window as any).__GV_COMBAT_LAST__;
+    const result = (window as any).__GV_COMBAT_LAST_OUTGOING__;
     return result?.direction === "outgoing" && Number(result.damage) > 0;
   }), { timeout: 14_000 }).toBe(true);
 
