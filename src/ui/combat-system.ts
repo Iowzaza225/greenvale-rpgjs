@@ -46,8 +46,9 @@ function renderTarget():void{
   const statuses=Array.from(targetStatuses.entries()).map(([id,state])=>
     `<span data-status="${safe(id)}">${safe(t(`status.${id}.name`))}${state.stacks>1?` ×${state.stacks}`:""}</span>`
   ).join("");
+  const displayName=targetState.nameKey?t(String(targetState.nameKey)):String(targetState.name||"Target");
   el.innerHTML=`<div class="gv4-target-card">
-    <div class="gv4-target-head"><b style="color:${safe(targetState.difficultyColor||"#fff4d6")}">${safe(targetState.name)}${targetState.level?` · Lv ${Math.round(targetState.level)}`:""}</b><small>${safe(t("combat.distance",{value:targetState.distance}))}</small></div>
+    <div class="gv4-target-head"><b style="color:${safe(targetState.difficultyColor||"#fff4d6")}">${safe(displayName)}${targetState.level?` · Lv ${Math.round(targetState.level)}`:""}</b><small>${safe(t("combat.distance",{value:targetState.distance}))}</small></div>
     <i><em style="width:${pct}%"></em></i>
     <div class="gv4-target-meta"><span>${Math.max(0,Math.round(targetState.hp))}/${Math.round(targetState.maxHp)}</span><span>${safe(t(`element.${targetState.element||"neutral"}`))}</span><span>${safe(t(`race.${targetState.race||"beast"}`))}</span></div>
     <div class="gv4-target-statuses">${statuses}</div>
