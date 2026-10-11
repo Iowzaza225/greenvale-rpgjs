@@ -32,15 +32,20 @@ test("Phase 5 monster roster, Bestiary, field boss and mini-boss work on iPhone 
   await expect(page.locator(".gv5-bestiary-entry")).toHaveCount(14);
   await page.locator("[data-best-close]").click();
 
-  // Field boss targeting drives the dedicated boss HP bar and phase metadata.
-  await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-target-monster", { detail: { monsterId: "ashfang_alpha" } })));
+  // Move into the real field-boss spawn area and acquire it through the normal target-cycle path.
+  // This also covers engines that only hydrate distant event instances when the player approaches.
+  await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-player-position", { detail: { x: 1320, y: 830 } })));
+  await page.waitForTimeout(450);
+  await page.evaluate(() => window.dispatchEvent(new Event("greenvale:target-cycle")));
   await expect(page.locator("#gv-boss-bar")).toBeVisible();
   await expect(page.locator("#gv-boss-bar")).toContainText(/Ashfang Alpha|อัลฟาเขี้ยวเถ้า/);
 
-  // Mini-bosses normally wait 30-60 minutes; debug mode can activate the same pooled slot immediately.
+  // Mini-bosses normally wait 30-60 minutes; debug mode activates the same pooled slot immediately.
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-activate-miniboss", { detail: { monsterId: "marrowtusk" } })));
   await expect(page.locator("#gv-monster-toast")).toBeVisible();
-  await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-target-monster", { detail: { monsterId: "marrowtusk" } })));
+  await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-player-position", { detail: { x: 750, y: 190 } })));
+  await page.waitForTimeout(350);
+  await page.evaluate(() => window.dispatchEvent(new Event("greenvale:target-cycle")));
   await expect(page.locator("#gv-combat-target")).toContainText(/Marrowtusk|หมูป่าเขี้ยวกระดูก/);
 
   await expect(page.locator("#runtime-error")).toBeHidden();
