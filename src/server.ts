@@ -1291,6 +1291,19 @@ if (typeof window !== "undefined") {
     const target = Array.from((globalThis as any).__GV_MINIBOSSES__ || []).find((entry: any) => monsterConfigForEntity(entry).id === monsterId);
     target?.greenvaleActivate?.();
   });
+  window.addEventListener("greenvale:debug-monster-count", () => {
+    if (!new URLSearchParams(window.location.search).has("debug")) return;
+    const counts: Record<string, number> = {};
+    for (const enemy of activeEnemies) {
+      if (entityNumber(enemy, "hp") <= 0) continue;
+      const id = monsterConfigForEntity(enemy).id;
+      counts[id] = (counts[id] || 0) + 1;
+    }
+    dispatchCombat("greenvale:debug-monster-count-result", {
+      total: Object.values(counts).reduce((sum, value) => sum + value, 0),
+      counts,
+    });
+  });
   window.addEventListener("greenvale:debug-force-loot", () => {
     if (!new URLSearchParams(window.location.search).has("debug")) return;
     dispatchCombat("greenvale:loot-drop", {
