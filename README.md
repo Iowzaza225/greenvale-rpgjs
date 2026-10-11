@@ -235,3 +235,19 @@ No TypeScript edit is required for a normal damage/heal/buff/debuff/toggle/passi
 Save schema version 4 stores learned levels, 10 hotbar slots, auto-battle settings and the reset-item count. Old Phase 1/2/3 saves migrate automatically. The mobile hotbar is separate from RPGJS synchronized built-in skill state so iPhone Safari does not reintroduce the earlier async hydration failure.
 
 See `docs/PHASE_3_QA.md`.
+
+
+## Phase 4 combat
+
+Combat now runs through Greenvale's own data-driven rules while keeping the RPGJS action-battle runtime stable.
+
+The pure rules engine is `src/core/combat.ts`. Balance belongs in JSON rather than hard-coded UI:
+
+- `formulas.json > combat`: accuracy, criticals, block, damage variance, element matrix, weapon-vs-size and element-vs-race multipliers
+- `status_effects.json`: Bleed, Poison, Stun, Slow, Burn, Silence and Guard runtime behavior
+- `monsters.json`: enemy HIT/FLEE/crit/block, aggro/leash metadata and attack status procs
+- `drops.json`: drop tables plus auto-loot defaults
+
+The iPhone HUD adds target cycling, manual basic attack, auto attack, auto loot, floating combat results, status chips, a small persistent loot bag and knockout/respawn feedback. Native RPGJS player attacks and Greenvale custom skills both route through the same combat-rule layer.
+
+Character save schema is version 5 and stores combat preferences and collected Phase 4 loot. See `docs/PHASE_4_QA.md`.
