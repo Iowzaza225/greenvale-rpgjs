@@ -188,6 +188,28 @@ export function validateGameConfig(): void {
     }
   }
   assertUniqueIds("effects", effects.effects);
+  const effectRuntime = (effects as any).runtime;
+  if (!effectRuntime?.combat || !effectRuntime?.elements || !effectRuntime?.audio || !effectRuntime?.environment) {
+    throw new Error('Config "effects.runtime" is missing combat/elements/audio/environment');
+  }
+  for (const [name, preset] of Object.entries(effectRuntime.combat as Record<string, any>)) {
+    if (!String((preset as any).kind || "").trim()) throw new Error(`Effect preset "${name}" is missing kind`);
+    if (!Number.isFinite(Number((preset as any).durationMs)) || Number((preset as any).durationMs) <= 0) {
+      throw new Error(`Effect preset "${name}" has invalid durationMs`);
+    }
+  }
+  for (const [name, cue] of Object.entries(effectRuntime.audio.cues || {}) as Array<[string, any]>) {
+    if (!Number.isFinite(Number(cue.frequency)) || !Number.isFinite(Number(cue.durationMs))) {
+      throw new Error(`Audio cue "${name}" is invalid`);
+    }
+  }
+  const phases = effectRuntime.environment.phases;
+  if (!Array.isArray(phases) || phases.length < 2) throw new Error("Environment requires at least two phases");
+  for (const phase of phases as any[]) {
+    if (!phase.id || !Number.isFinite(Number(phase.start)) || !Number.isFinite(Number(phase.end))) {
+      throw new Error("Environment phase is invalid");
+    }
+  }
   assertUniqueIds("genders", characterCreation.genders);
   assertUniqueIds("hairStyles", characterCreation.hairStyles);
   assertUniqueIds("hairColors", characterCreation.hairColors);
