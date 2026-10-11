@@ -445,6 +445,7 @@ function dispatchTargetState(target: any | null = currentTarget()) {
       id: combatEventId(target),
       monsterId: config.id,
       name: String(config.name || target?.name || "Target"),
+      nameKey: config.nameKey,
       level: Number(config.level) || 1,
       hp,
       maxHp,
@@ -463,6 +464,7 @@ function dispatchTargetState(target: any | null = currentTarget()) {
       active: true,
       monsterId: config.id,
       name: String(config.name || target?.name || config.id),
+      nameKey: config.nameKey,
       hp,
       maxHp,
       phase,
@@ -1302,6 +1304,7 @@ if (typeof window !== "undefined") {
           active: true,
           monsterId: config.id,
           name: String(config.name || config.id),
+          nameKey: config.nameKey,
           hp,
           maxHp,
           phase: bossPhaseIndex(config, hp, maxHp),
@@ -1483,7 +1486,7 @@ function activateMiniBoss(entity: any, config: MonsterConfig) {
   entity.teleport({ x: spawn.x, y: spawn.y });
   activeEnemies.add(entity);
   attachMonsterAi(entity, config);
-  dispatchCombat("greenvale:monster-announce", { monsterId: config.id, name: String(config.name || config.id) });
+  dispatchCombat("greenvale:monster-announce", { monsterId: config.id, name: String(config.name || config.id), nameKey: config.nameKey });
 }
 
 function scheduleMiniBoss(entity: any, config: MonsterConfig) {
