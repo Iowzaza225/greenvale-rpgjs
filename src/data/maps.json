@@ -20,11 +20,11 @@
       "spawnZones": [
         {
           "id": "camp-training-west",
-          "maxAlive": 5,
+          "maxAlive": 3,
           "entries": [
             {
               "monsterId": "ashfang_wolf",
-              "count": 2,
+              "count": 3,
               "points": [
                 [
                   980,
@@ -33,145 +33,19 @@
                 [
                   1100,
                   690
-                ]
-              ]
-            },
-            {
-              "monsterId": "mossling",
-              "count": 2,
-              "points": [
-                [
-                  330,
-                  720
                 ],
                 [
-                  420,
-                  790
-                ]
-              ]
-            },
-            {
-              "monsterId": "rustpipe_rat",
-              "count": 1,
-              "points": [
-                [
-                  520,
-                  820
+                  930,
+                  560
                 ]
               ]
             }
           ]
         },
         {
-          "id": "camp-wild-east",
-          "maxAlive": 6,
+          "id": "camp-miniboss-hidden",
+          "maxAlive": 1,
           "entries": [
-            {
-              "monsterId": "walking_sporecap",
-              "count": 1,
-              "points": [
-                [
-                  1240,
-                  350
-                ]
-              ]
-            },
-            {
-              "monsterId": "ironspine_boar",
-              "count": 1,
-              "points": [
-                [
-                  1340,
-                  520
-                ]
-              ]
-            },
-            {
-              "monsterId": "ragcrow",
-              "count": 1,
-              "points": [
-                [
-                  1180,
-                  250
-                ]
-              ]
-            },
-            {
-              "monsterId": "cinder_bat",
-              "count": 1,
-              "points": [
-                [
-                  1410,
-                  260
-                ]
-              ]
-            },
-            {
-              "monsterId": "mire_crab",
-              "count": 1,
-              "points": [
-                [
-                  260,
-                  430
-                ]
-              ]
-            },
-            {
-              "monsterId": "hivewing",
-              "count": 1,
-              "points": [
-                [
-                  1450,
-                  720
-                ]
-              ]
-            }
-          ]
-        },
-        {
-          "id": "camp-phase5-test",
-          "maxAlive": 5,
-          "entries": [
-            {
-              "monsterId": "shale_golem",
-              "count": 1,
-              "points": [
-                [
-                  860,
-                  210
-                ]
-              ]
-            },
-            {
-              "monsterId": "hollow_raider",
-              "count": 1,
-              "points": [
-                [
-                  970,
-                  220
-                ]
-              ]
-            },
-            {
-              "monsterId": "ashfang_alpha",
-              "count": 1,
-              "points": [
-                [
-                  1370,
-                  850
-                ]
-              ]
-            },
-            {
-              "monsterId": "verdant_rotroot",
-              "count": 1,
-              "points": [
-                [
-                  170,
-                  820
-                ]
-              ]
-            },
             {
               "monsterId": "marrowtusk",
               "count": 1,
