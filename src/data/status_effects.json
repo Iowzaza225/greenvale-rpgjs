@@ -6,28 +6,93 @@
       "nameKey": "status.poison.name",
       "category": "debuff",
       "stacking": "refresh",
-      "maxStacks": 1
+      "maxStacks": 1,
+      "durationMs": 6000,
+      "tickMs": 1000,
+      "tickKind": "percentMaxHp",
+      "tickValue": 1.5,
+      "blocksAction": false,
+      "speedMultiplier": 1
     },
     {
       "id": "bleed",
       "nameKey": "status.bleed.name",
       "category": "debuff",
       "stacking": "stack",
-      "maxStacks": 5
+      "maxStacks": 5,
+      "durationMs": 5000,
+      "tickMs": 1000,
+      "tickKind": "sourceLevel",
+      "tickValue": 2,
+      "blocksAction": false,
+      "speedMultiplier": 1
     },
     {
       "id": "stun",
       "nameKey": "status.stun.name",
       "category": "debuff",
       "stacking": "refresh",
-      "maxStacks": 1
+      "maxStacks": 1,
+      "durationMs": 900,
+      "tickMs": 0,
+      "tickKind": "none",
+      "tickValue": 0,
+      "blocksAction": true,
+      "speedMultiplier": 0
     },
     {
       "id": "slow",
       "nameKey": "status.slow.name",
       "category": "debuff",
       "stacking": "strongest",
-      "maxStacks": 1
+      "maxStacks": 1,
+      "durationMs": 3500,
+      "tickMs": 0,
+      "tickKind": "none",
+      "tickValue": 0,
+      "blocksAction": false,
+      "speedMultiplier": 0.55
+    },
+    {
+      "id": "burn",
+      "nameKey": "status.burn.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "durationMs": 5000,
+      "tickMs": 1000,
+      "tickKind": "flat",
+      "tickValue": 4,
+      "blocksAction": false,
+      "speedMultiplier": 1
+    },
+    {
+      "id": "silence",
+      "nameKey": "status.silence.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "durationMs": 3000,
+      "tickMs": 0,
+      "tickKind": "none",
+      "tickValue": 0,
+      "blocksAction": false,
+      "blocksSkill": true,
+      "speedMultiplier": 1
+    },
+    {
+      "id": "guard",
+      "nameKey": "status.guard.name",
+      "category": "buff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "durationMs": 5000,
+      "tickMs": 0,
+      "tickKind": "none",
+      "tickValue": 0,
+      "blocksAction": false,
+      "speedMultiplier": 1,
+      "blockChanceBonus": 18
     }
   ]
 }
