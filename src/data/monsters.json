@@ -1,0 +1,784 @@
+{
+  "schemaVersion": 1,
+  "monsters": [
+    {
+      "id": "mossling",
+      "nameKey": "monster.mossling.name",
+      "level": 2,
+      "hp": 58,
+      "atk": 8,
+      "def": 2,
+      "mdef": 2,
+      "hit": 8,
+      "flee": 6,
+      "moveSpeed": 1.05,
+      "element": "earth",
+      "size": "small",
+      "race": "plant",
+      "baseExp": 10,
+      "jobExp": 5,
+      "visionRange": 120,
+      "attackRange": 46,
+      "ai": "passive",
+      "skills": [],
+      "dropTableId": "mossling",
+      "sprite": "placeholder_mossling",
+      "sound": "placeholder_mossling",
+      "respawnMs": 6500,
+      "crit": 1,
+      "critResistance": 0,
+      "perfectDodge": 1,
+      "blockChance": 0,
+      "blockReduction": 0,
+      "aggro": {
+        "memoryMs": 3500,
+        "leashRange": 260,
+        "assistRadius": 0
+      },
+      "basicAttack": {
+        "element": "earth"
+      },
+      "autoLootRadius": 120,
+      "bestiary": {
+        "revealKills": 3,
+        "rewardKills": 20,
+        "rewardItemId": "moss_core"
+      },
+      "name": "Mossling"
+    },
+    {
+      "id": "rustpipe_rat",
+      "nameKey": "monster.rustpipe_rat.name",
+      "level": 4,
+      "hp": 72,
+      "atk": 11,
+      "def": 2,
+      "mdef": 1,
+      "hit": 11,
+      "flee": 11,
+      "moveSpeed": 1.65,
+      "element": "neutral",
+      "size": "small",
+      "race": "beast",
+      "baseExp": 15,
+      "jobExp": 7,
+      "visionRange": 185,
+      "attackRange": 44,
+      "ai": "aggressive",
+      "skills": [],
+      "dropTableId": "rustpipe_rat",
+      "sprite": "placeholder_rustpipe_rat",
+      "sound": "placeholder_rat",
+      "respawnMs": 7000,
+      "crit": 4,
+      "critResistance": 0,
+      "perfectDodge": 4,
+      "blockChance": 0,
+      "blockReduction": 0,
+      "aggro": {
+        "memoryMs": 4500,
+        "leashRange": 330,
+        "assistRadius": 45
+      },
+      "basicAttack": {
+        "element": "neutral",
+        "statusEffect": {
+          "id": "bleed",
+          "chance": 0.06,
+          "durationMs": 2600
+        }
+      },
+      "autoLootRadius": 120,
+      "bestiary": {
+        "revealKills": 3,
+        "rewardKills": 20,
+        "rewardItemId": "rust_tail"
+      },
+      "name": "Rustpipe Rat"
+    },
+    {
+      "id": "ashfang_wolf",
+      "nameKey": "monster.ashfang_wolf.name",
+      "level": 3,
+      "hp": 90,
+      "atk": 13,
+      "def": 3,
+      "mdef": 1,
+      "hit": 12,
+      "flee": 8,
+      "moveSpeed": 1.35,
+      "element": "neutral",
+      "size": "medium",
+      "race": "beast",
+      "baseExp": 18,
+      "jobExp": 8,
+      "visionRange": 230,
+      "attackRange": 58,
+      "ai": "aggressive",
+      "skills": [],
+      "dropTableId": "ashfang_wolf",
+      "sprite": "placeholder_wolf",
+      "sound": "placeholder_wolf",
+      "respawnMs": 8000,
+      "crit": 3,
+      "critResistance": 1,
+      "perfectDodge": 1,
+      "blockChance": 2,
+      "blockReduction": 0.35,
+      "aggro": {
+        "memoryMs": 5000,
+        "leashRange": 420,
+        "assistRadius": 90
+      },
+      "basicAttack": {
+        "element": "neutral",
+        "statusEffect": {
+          "id": "bleed",
+          "chance": 0.12,
+          "durationMs": 4000
+        }
+      },
+      "autoLootRadius": 120,
+      "bestiary": {
+        "revealKills": 3,
+        "rewardKills": 25,
+        "rewardItemId": "ashfang_fang"
+      },
+      "name": "Ashfang Wolf"
+    },
+    {
+      "id": "walking_sporecap",
+      "nameKey": "monster.walking_sporecap.name",
+      "level": 7,
+      "hp": 132,
+      "atk": 17,
+      "def": 4,
+      "mdef": 6,
+      "hit": 16,
+      "flee": 8,
+      "moveSpeed": 0.95,
+      "element": "earth",
+      "size": "medium",
+      "race": "plant",
+      "baseExp": 31,
+      "jobExp": 15,
+      "visionRange": 170,
+      "attackRange": 62,
+      "ai": "assist",
+      "skills": [
+        "spore_cloud"
+      ],
+      "dropTableId": "walking_sporecap",
+      "sprite": "placeholder_sporecap",
+      "sound": "placeholder_spore",
+      "respawnMs": 9500,
+      "crit": 2,
+      "critResistance": 2,
+      "perfectDodge": 0,
+      "blockChance": 3,
+      "blockReduction": 0.3,
+      "aggro": {
+        "memoryMs": 5500,
+        "leashRange": 360,
+        "assistRadius": 135
+      },
+      "basicAttack": {
+        "element": "earth",
+        "statusEffect": {
+          "id": "poison",
+          "chance": 0.14,
+          "durationMs": 5000
+        }
+      },
+      "autoLootRadius": 125,
+      "bestiary": {
+        "revealKills": 5,
+        "rewardKills": 25,
+        "rewardItemId": "toxic_cap"
+      },
+      "name": "Wandering Sporecap"
+    },
+    {
+      "id": "ironspine_boar",
+      "nameKey": "monster.ironspine_boar.name",
+      "level": 9,
+      "hp": 210,
+      "atk": 24,
+      "def": 11,
+      "mdef": 3,
+      "hit": 19,
+      "flee": 6,
+      "moveSpeed": 1.45,
+      "element": "earth",
+      "size": "large",
+      "race": "beast",
+      "baseExp": 49,
+      "jobExp": 23,
+      "visionRange": 210,
+      "attackRange": 58,
+      "ai": "aggressive",
+      "skills": [
+        "iron_charge"
+      ],
+      "dropTableId": "ironspine_boar",
+      "sprite": "placeholder_ironspine_boar",
+      "sound": "placeholder_boar",
+      "respawnMs": 11000,
+      "crit": 4,
+      "critResistance": 4,
+      "perfectDodge": 0,
+      "blockChance": 9,
+      "blockReduction": 0.42,
+      "aggro": {
+        "memoryMs": 6000,
+        "leashRange": 430,
+        "assistRadius": 80
+      },
+      "basicAttack": {
+        "element": "earth",
+        "statusEffect": {
+          "id": "stun",
+          "chance": 0.05,
+          "durationMs": 800
+        }
+      },
+      "autoLootRadius": 130,
+      "bestiary": {
+        "revealKills": 5,
+        "rewardKills": 30,
+        "rewardItemId": "iron_quill"
+      },
+      "name": "Ironspine Boar"
+    },
+    {
+      "id": "ragcrow",
+      "nameKey": "monster.ragcrow.name",
+      "level": 11,
+      "hp": 168,
+      "atk": 27,
+      "def": 5,
+      "mdef": 8,
+      "hit": 24,
+      "flee": 15,
+      "moveSpeed": 1.35,
+      "element": "dark",
+      "size": "medium",
+      "race": "demon",
+      "baseExp": 62,
+      "jobExp": 31,
+      "visionRange": 245,
+      "attackRange": 150,
+      "ai": "ranged",
+      "skills": [
+        "scrap_bolt"
+      ],
+      "dropTableId": "ragcrow",
+      "sprite": "placeholder_ragcrow",
+      "sound": "placeholder_ragcrow",
+      "respawnMs": 11500,
+      "crit": 7,
+      "critResistance": 2,
+      "perfectDodge": 4,
+      "blockChance": 1,
+      "blockReduction": 0.25,
+      "aggro": {
+        "memoryMs": 6000,
+        "leashRange": 470,
+        "assistRadius": 60
+      },
+      "basicAttack": {
+        "element": "dark",
+        "statusEffect": {
+          "id": "blind",
+          "chance": 0.08,
+          "durationMs": 2600
+        }
+      },
+      "autoLootRadius": 130,
+      "bestiary": {
+        "revealKills": 5,
+        "rewardKills": 30,
+        "rewardItemId": "rag_thread"
+      },
+      "name": "Ragcrow"
+    },
+    {
+      "id": "cinder_bat",
+      "nameKey": "monster.cinder_bat.name",
+      "level": 12,
+      "hp": 142,
+      "atk": 29,
+      "def": 4,
+      "mdef": 7,
+      "hit": 26,
+      "flee": 20,
+      "moveSpeed": 1.9,
+      "element": "fire",
+      "size": "small",
+      "race": "beast",
+      "baseExp": 71,
+      "jobExp": 36,
+      "visionRange": 275,
+      "attackRange": 52,
+      "ai": "coward",
+      "skills": [
+        "cinder_screech"
+      ],
+      "dropTableId": "cinder_bat",
+      "sprite": "placeholder_cinder_bat",
+      "sound": "placeholder_bat",
+      "respawnMs": 10500,
+      "crit": 9,
+      "critResistance": 1,
+      "perfectDodge": 7,
+      "blockChance": 0,
+      "blockReduction": 0,
+      "aggro": {
+        "memoryMs": 4200,
+        "leashRange": 520,
+        "assistRadius": 35
+      },
+      "basicAttack": {
+        "element": "fire",
+        "statusEffect": {
+          "id": "burn",
+          "chance": 0.1,
+          "durationMs": 3800
+        }
+      },
+      "cowardThreshold": 0.24,
+      "autoLootRadius": 130,
+      "bestiary": {
+        "revealKills": 5,
+        "rewardKills": 30,
+        "rewardItemId": "cinder_membrane"
+      },
+      "name": "Cinder Bat"
+    },
+    {
+      "id": "mire_crab",
+      "nameKey": "monster.mire_crab.name",
+      "level": 15,
+      "hp": 330,
+      "atk": 35,
+      "def": 18,
+      "mdef": 8,
+      "hit": 29,
+      "flee": 7,
+      "moveSpeed": 0.85,
+      "element": "water",
+      "size": "large",
+      "race": "beast",
+      "baseExp": 102,
+      "jobExp": 52,
+      "visionRange": 185,
+      "attackRange": 54,
+      "ai": "passive",
+      "skills": [
+        "shell_guard"
+      ],
+      "dropTableId": "mire_crab",
+      "sprite": "placeholder_mire_crab",
+      "sound": "placeholder_crab",
+      "respawnMs": 13500,
+      "crit": 2,
+      "critResistance": 7,
+      "perfectDodge": 0,
+      "blockChance": 18,
+      "blockReduction": 0.55,
+      "aggro": {
+        "memoryMs": 6000,
+        "leashRange": 320,
+        "assistRadius": 0
+      },
+      "basicAttack": {
+        "element": "water",
+        "statusEffect": {
+          "id": "slow",
+          "chance": 0.12,
+          "durationMs": 3000
+        }
+      },
+      "autoLootRadius": 135,
+      "bestiary": {
+        "revealKills": 7,
+        "rewardKills": 35,
+        "rewardItemId": "mire_shell"
+      },
+      "name": "Mire Crab"
+    },
+    {
+      "id": "hivewing",
+      "nameKey": "monster.hivewing.name",
+      "level": 18,
+      "hp": 245,
+      "atk": 43,
+      "def": 8,
+      "mdef": 10,
+      "hit": 36,
+      "flee": 25,
+      "moveSpeed": 2.05,
+      "element": "wind",
+      "size": "small",
+      "race": "beast",
+      "baseExp": 138,
+      "jobExp": 70,
+      "visionRange": 295,
+      "attackRange": 68,
+      "ai": "assist",
+      "skills": [
+        "venom_dive"
+      ],
+      "dropTableId": "hivewing",
+      "sprite": "placeholder_hivewing",
+      "sound": "placeholder_hivewing",
+      "respawnMs": 12500,
+      "crit": 11,
+      "critResistance": 2,
+      "perfectDodge": 8,
+      "blockChance": 0,
+      "blockReduction": 0,
+      "aggro": {
+        "memoryMs": 5800,
+        "leashRange": 540,
+        "assistRadius": 160
+      },
+      "basicAttack": {
+        "element": "wind",
+        "statusEffect": {
+          "id": "poison",
+          "chance": 0.18,
+          "durationMs": 5200
+        }
+      },
+      "autoLootRadius": 140,
+      "bestiary": {
+        "revealKills": 7,
+        "rewardKills": 40,
+        "rewardItemId": "hive_resin"
+      },
+      "name": "Hivewing"
+    },
+    {
+      "id": "shale_golem",
+      "nameKey": "monster.shale_golem.name",
+      "level": 21,
+      "hp": 620,
+      "atk": 51,
+      "def": 28,
+      "mdef": 15,
+      "hit": 38,
+      "flee": 5,
+      "moveSpeed": 0.72,
+      "element": "earth",
+      "size": "large",
+      "race": "demon",
+      "baseExp": 190,
+      "jobExp": 94,
+      "visionRange": 210,
+      "attackRange": 62,
+      "ai": "aggressive",
+      "skills": [
+        "stone_slam"
+      ],
+      "dropTableId": "shale_golem",
+      "sprite": "placeholder_shale_golem",
+      "sound": "placeholder_golem",
+      "respawnMs": 17000,
+      "crit": 3,
+      "critResistance": 12,
+      "perfectDodge": 0,
+      "blockChance": 20,
+      "blockReduction": 0.6,
+      "aggro": {
+        "memoryMs": 7000,
+        "leashRange": 380,
+        "assistRadius": 70
+      },
+      "basicAttack": {
+        "element": "earth",
+        "statusEffect": {
+          "id": "stun",
+          "chance": 0.08,
+          "durationMs": 900
+        }
+      },
+      "autoLootRadius": 145,
+      "bestiary": {
+        "revealKills": 8,
+        "rewardKills": 40,
+        "rewardItemId": "shale_core"
+      },
+      "name": "Shale Golem"
+    },
+    {
+      "id": "hollow_raider",
+      "nameKey": "monster.hollow_raider.name",
+      "level": 24,
+      "hp": 510,
+      "atk": 59,
+      "def": 20,
+      "mdef": 18,
+      "hit": 47,
+      "flee": 22,
+      "moveSpeed": 1.38,
+      "element": "dark",
+      "size": "medium",
+      "race": "undead",
+      "baseExp": 236,
+      "jobExp": 118,
+      "visionRange": 280,
+      "attackRange": 72,
+      "ai": "ranged",
+      "skills": [
+        "hollow_lance",
+        "grave_mark"
+      ],
+      "dropTableId": "hollow_raider",
+      "sprite": "placeholder_hollow_raider",
+      "sound": "placeholder_hollow",
+      "respawnMs": 18000,
+      "crit": 10,
+      "critResistance": 8,
+      "perfectDodge": 5,
+      "blockChance": 8,
+      "blockReduction": 0.38,
+      "aggro": {
+        "memoryMs": 7500,
+        "leashRange": 520,
+        "assistRadius": 100
+      },
+      "basicAttack": {
+        "element": "dark",
+        "statusEffect": {
+          "id": "silence",
+          "chance": 0.08,
+          "durationMs": 2200
+        }
+      },
+      "autoLootRadius": 150,
+      "bestiary": {
+        "revealKills": 8,
+        "rewardKills": 45,
+        "rewardItemId": "hollow_token"
+      },
+      "name": "Hollow Raider"
+    },
+    {
+      "id": "ashfang_alpha",
+      "nameKey": "monster.ashfang_alpha.name",
+      "level": 15,
+      "hp": 2600,
+      "atk": 52,
+      "def": 21,
+      "mdef": 12,
+      "hit": 42,
+      "flee": 18,
+      "moveSpeed": 1.55,
+      "element": "neutral",
+      "size": "large",
+      "race": "beast",
+      "baseExp": 920,
+      "jobExp": 430,
+      "visionRange": 360,
+      "attackRange": 70,
+      "ai": "boss",
+      "skills": [
+        "alpha_howl",
+        "rending_arc",
+        "pack_call"
+      ],
+      "dropTableId": "ashfang_alpha",
+      "sprite": "placeholder_ashfang_alpha",
+      "sound": "placeholder_alpha",
+      "respawnMs": 300000,
+      "crit": 14,
+      "critResistance": 14,
+      "perfectDodge": 4,
+      "blockChance": 10,
+      "blockReduction": 0.45,
+      "aggro": {
+        "memoryMs": 12000,
+        "leashRange": 720,
+        "assistRadius": 220
+      },
+      "basicAttack": {
+        "element": "neutral",
+        "statusEffect": {
+          "id": "bleed",
+          "chance": 0.22,
+          "durationMs": 5200
+        }
+      },
+      "autoLootRadius": 180,
+      "boss": {
+        "fieldBoss": true,
+        "bar": true,
+        "phases": [
+          {
+            "atHpRatio": 0.65,
+            "skills": [
+              "alpha_howl",
+              "pack_call"
+            ]
+          },
+          {
+            "atHpRatio": 0.3,
+            "skills": [
+              "rending_arc",
+              "pack_call"
+            ],
+            "enrage": 1.25
+          }
+        ]
+      },
+      "bestiary": {
+        "revealKills": 1,
+        "rewardKills": 5,
+        "rewardItemId": "alpha_fang"
+      },
+      "name": "Ashfang Alpha"
+    },
+    {
+      "id": "verdant_rotroot",
+      "nameKey": "monster.verdant_rotroot.name",
+      "level": 30,
+      "hp": 6200,
+      "atk": 78,
+      "def": 34,
+      "mdef": 31,
+      "hit": 58,
+      "flee": 12,
+      "moveSpeed": 0.7,
+      "element": "earth",
+      "size": "large",
+      "race": "plant",
+      "baseExp": 1880,
+      "jobExp": 910,
+      "visionRange": 390,
+      "attackRange": 165,
+      "ai": "boss",
+      "skills": [
+        "root_sweep",
+        "spore_rain",
+        "green_decay",
+        "seedling_call"
+      ],
+      "dropTableId": "verdant_rotroot",
+      "sprite": "placeholder_rotroot",
+      "sound": "placeholder_rotroot",
+      "respawnMs": 600000,
+      "crit": 9,
+      "critResistance": 18,
+      "perfectDodge": 0,
+      "blockChance": 16,
+      "blockReduction": 0.52,
+      "aggro": {
+        "memoryMs": 15000,
+        "leashRange": 760,
+        "assistRadius": 260
+      },
+      "basicAttack": {
+        "element": "earth",
+        "statusEffect": {
+          "id": "poison",
+          "chance": 0.2,
+          "durationMs": 6000
+        }
+      },
+      "autoLootRadius": 200,
+      "boss": {
+        "fieldBoss": true,
+        "bar": true,
+        "phases": [
+          {
+            "atHpRatio": 0.7,
+            "skills": [
+              "spore_rain",
+              "seedling_call"
+            ]
+          },
+          {
+            "atHpRatio": 0.4,
+            "skills": [
+              "root_sweep",
+              "green_decay"
+            ]
+          },
+          {
+            "atHpRatio": 0.18,
+            "skills": [
+              "root_sweep",
+              "spore_rain",
+              "seedling_call"
+            ],
+            "enrage": 1.35
+          }
+        ]
+      },
+      "bestiary": {
+        "revealKills": 1,
+        "rewardKills": 3,
+        "rewardItemId": "rotroot_heart"
+      },
+      "name": "Verdant Rotroot"
+    },
+    {
+      "id": "marrowtusk",
+      "nameKey": "monster.marrowtusk.name",
+      "level": 19,
+      "hp": 1250,
+      "atk": 48,
+      "def": 22,
+      "mdef": 9,
+      "hit": 38,
+      "flee": 10,
+      "moveSpeed": 1.25,
+      "element": "earth",
+      "size": "large",
+      "race": "beast",
+      "baseExp": 480,
+      "jobExp": 240,
+      "visionRange": 280,
+      "attackRange": 62,
+      "ai": "boss",
+      "skills": [
+        "bone_charge"
+      ],
+      "dropTableId": "marrowtusk",
+      "sprite": "placeholder_marrowtusk",
+      "sound": "placeholder_marrowtusk",
+      "respawnMs": 1800000,
+      "crit": 8,
+      "critResistance": 8,
+      "perfectDodge": 1,
+      "blockChance": 12,
+      "blockReduction": 0.46,
+      "aggro": {
+        "memoryMs": 9000,
+        "leashRange": 600,
+        "assistRadius": 120
+      },
+      "basicAttack": {
+        "element": "earth",
+        "statusEffect": {
+          "id": "stun",
+          "chance": 0.1,
+          "durationMs": 850
+        }
+      },
+      "autoLootRadius": 160,
+      "miniBoss": {
+        "randomSpawnMinMs": 1800000,
+        "randomSpawnMaxMs": 3600000,
+        "announce": true
+      },
+      "bestiary": {
+        "revealKills": 1,
+        "rewardKills": 5,
+        "rewardItemId": "marrow_tusk"
+      },
+      "name": "Marrowtusk"
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "camp_blade",
+      "nameKey": "item.camp_blade.name",
+      "descriptionKey": "item.camp_blade.description",
+      "type": "weapon",
+      "weaponType": "blade",
+      "rarity": "common",
+      "atk": 14,
+      "weight": 40,
+      "price": 20,
+      "icon": "placeholder_blade"
+    },
+    {
+      "id": "field_patch",
+      "nameKey": "item.field_patch.name",
+      "descriptionKey": "item.field_patch.description",
+      "type": "consumable",
+      "rarity": "common",
+      "healHp": 45,
+      "weight": 2,
+      "price": 18,
+      "icon": "placeholder_field_patch"
+    },
+    {
+      "id": "ashfang_fang",
+      "nameKey": "item.ashfang_fang.name",
+      "descriptionKey": "item.ashfang_fang.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 7,
+      "icon": "placeholder_fang"
+    },
+    {
+      "id": "memory_respec_chip",
+      "nameKey": "item.memory_respec_chip.name",
+      "descriptionKey": "item.memory_respec_chip.description",
+      "type": "consumable",
+      "rarity": "uncommon",
+      "skillReset": true,
+      "weight": 1,
+      "price": 0,
+      "icon": "placeholder_respec_chip"
+    },
+    {
+      "id": "moss_core",
+      "nameKey": "item.moss_core.name",
+      "descriptionKey": "item.moss_core.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 4,
+      "icon": "placeholder_moss_core"
+    },
+    {
+      "id": "rust_tail",
+      "nameKey": "item.rust_tail.name",
+      "descriptionKey": "item.rust_tail.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 5,
+      "icon": "placeholder_rust_tail"
+    },
+    {
+      "id": "toxic_cap",
+      "nameKey": "item.toxic_cap.name",
+      "descriptionKey": "item.toxic_cap.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 8,
+      "icon": "placeholder_toxic_cap"
+    },
+    {
+      "id": "iron_quill",
+      "nameKey": "item.iron_quill.name",
+      "descriptionKey": "item.iron_quill.description",
+      "type": "material",
+      "rarity": "uncommon",
+      "weight": 1,
+      "price": 13,
+      "icon": "placeholder_iron_quill"
+    },
+    {
+      "id": "rag_thread",
+      "nameKey": "item.rag_thread.name",
+      "descriptionKey": "item.rag_thread.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 9,
+      "icon": "placeholder_rag_thread"
+    },
+    {
+      "id": "cinder_membrane",
+      "nameKey": "item.cinder_membrane.name",
+      "descriptionKey": "item.cinder_membrane.description",
+      "type": "material",
+      "rarity": "uncommon",
+      "weight": 1,
+      "price": 14,
+      "icon": "placeholder_cinder_membrane"
+    },
+    {
+      "id": "mire_shell",
+      "nameKey": "item.mire_shell.name",
+      "descriptionKey": "item.mire_shell.description",
+      "type": "material",
+      "rarity": "uncommon",
+      "weight": 1,
+      "price": 18,
+      "icon": "placeholder_mire_shell"
+    },
+    {
+      "id": "hive_resin",
+      "nameKey": "item.hive_resin.name",
+      "descriptionKey": "item.hive_resin.description",
+      "type": "material",
+      "rarity": "uncommon",
+      "weight": 1,
+      "price": 21,
+      "icon": "placeholder_hive_resin"
+    },
+    {
+      "id": "shale_core",
+      "nameKey": "item.shale_core.name",
+      "descriptionKey": "item.shale_core.description",
+      "type": "material",
+      "rarity": "rare",
+      "weight": 1,
+      "price": 34,
+      "icon": "placeholder_shale_core"
+    },
+    {
+      "id": "hollow_token",
+      "nameKey": "item.hollow_token.name",
+      "descriptionKey": "item.hollow_token.description",
+      "type": "material",
+      "rarity": "rare",
+      "weight": 1,
+      "price": 38,
+      "icon": "placeholder_hollow_token"
+    },
+    {
+      "id": "alpha_fang",
+      "nameKey": "item.alpha_fang.name",
+      "descriptionKey": "item.alpha_fang.description",
+      "type": "material",
+      "rarity": "epic",
+      "weight": 1,
+      "price": 120,
+      "icon": "placeholder_alpha_fang"
+    },
+    {
+      "id": "rotroot_heart",
+      "nameKey": "item.rotroot_heart.name",
+      "descriptionKey": "item.rotroot_heart.description",
+      "type": "material",
+      "rarity": "epic",
+      "weight": 1,
+      "price": 220,
+      "icon": "placeholder_rotroot_heart"
+    },
+    {
+      "id": "marrow_tusk",
+      "nameKey": "item.marrow_tusk.name",
+      "descriptionKey": "item.marrow_tusk.description",
+      "type": "material",
+      "rarity": "rare",
+      "weight": 1,
+      "price": 75,
+      "icon": "placeholder_marrow_tusk"
+    }
+  ]
+}
