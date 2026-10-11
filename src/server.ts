@@ -289,6 +289,7 @@ function wolfCombatStats(): CombatStats {
 
 let activePlayer: RpgPlayer | null = null;
 const activeEnemies = new Set<any>();
+const monsterEventPool = new Set<any>();
 const SKILL_RANGE_TOLERANCE = 8;
 
 function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
@@ -1241,10 +1242,23 @@ if (typeof window !== "undefined") {
   window.addEventListener("greenvale:debug-target-monster", (event) => {
     if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
     const monsterId = String((event as CustomEvent).detail?.monsterId || "");
-    const target = Array.from(activeEnemies).find((entry: any) => monsterConfigForEntity(entry).id === monsterId);
-    if (!target) return;
+    const target = Array.from(monsterEventPool).find((entry: any) =>
+      monsterConfigForEntity(entry).id === monsterId && entityNumber(entry, "hp") > 0
+    );
+    if (!target) {
+      dispatchCombat("greenvale:debug-monster-target-result", { ok: false, monsterId, poolSize: monsterEventPool.size });
+      return;
+    }
+    const config = monsterConfigForEntity(target);
+    if (config.miniBoss && !(target as any).greenvaleSpawnActive) (target as any).greenvaleActivate?.();
     lockedTarget = target;
     dispatchTargetState(target);
+    dispatchCombat("greenvale:debug-monster-target-result", {
+      ok: true,
+      monsterId: config.id,
+      boss: !!config.boss,
+      hp: entityNumber(target, "hp"),
+    });
   });
   window.addEventListener("greenvale:debug-activate-miniboss", (event) => {
     if (!new URLSearchParams(window.location.search).has("debug")) return;
@@ -1502,6 +1516,7 @@ function GreenvaleMonster(eventName: string, monsterId: string, x: number, y: nu
     name: eventName,
     onInit() {
       const entity = this as any;
+      monsterEventPool.add(entity);
       entity.greenvaleMonsterConfig = config;
       entity.greenvaleSpawn = { x, y, spawnIndex, eventName };
       entity.greenvaleSpawnActive = !config.miniBoss;
