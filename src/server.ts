@@ -1872,7 +1872,6 @@ export default createServer({
                   attackerMonsterId: attackerConfig.id,
                 },
               }));
-              const attackerConfig = monsterConfigForEntity(attacker);
               const status = attackerConfig.basicAttack?.statusEffect;
               if (status?.id && Math.random() < Number(status.chance || 0)) {
                 applyPlayerStatus(String(status.id), Number(status.durationMs) || undefined, Number(attackerConfig.level) || 1);
