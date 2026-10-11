@@ -14,9 +14,23 @@ test("Phase 5 monster roster, Bestiary, field boss and mini-boss work on iPhone 
   await expect(page.locator("#rpg canvas")).toBeVisible({ timeout: 30_000 });
   await expect(page.locator("#gv-bestiary-button")).toBeVisible({ timeout: 10_000 });
 
+  const monsterCount = async () => page.evaluate(() => new Promise<any>(resolve => {
+    const timer = window.setTimeout(() => resolve(null), 1200);
+    window.addEventListener("greenvale:debug-monster-count-result", (event: Event) => {
+      window.clearTimeout(timer);
+      resolve((event as CustomEvent).detail || null);
+    }, { once: true });
+    window.dispatchEvent(new Event("greenvale:debug-monster-count"));
+  }));
+
   // The nearest Phase 5 spawn must still be a real combat target.
   await page.evaluate(() => window.dispatchEvent(new Event("greenvale:combat-state-request")));
   await expect(page.locator("#gv-combat-target")).toBeVisible();
+
+  // Greenvale Camp should stay sparse: only the three quest wolves are live.
+  const initialCount = await monsterCount();
+  expect(initialCount?.counts?.ashfang_wolf).toBe(3);
+  expect(initialCount?.total).toBe(3);
 
   // Defeat one live monster through the real combat path and verify the Bestiary records it.
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-nearest-enemy-hp", { detail: { hp: 1 } })));
@@ -27,15 +41,32 @@ test("Phase 5 monster roster, Bestiary, field boss and mini-boss work on iPhone 
   }), { timeout: 15_000 }).toBe(true);
   await page.locator("[data-combat='auto']").click();
 
+  // Action Battle removes defeated events. Phase 5 must recreate the spawn slot
+  // rather than mutating the removed synchronized object (Safari "removeEvent").
+  await expect.poll(async () => (await monsterCount())?.counts?.ashfang_wolf ?? 0, {
+    timeout: 12_000,
+    intervals: [1000],
+  }).toBe(3);
+  await expect(page.locator("#runtime-error")).toBeHidden();
+
   await page.locator("#gv-bestiary-button").click();
   await expect(page.locator("#gv-bestiary-panel")).toBeVisible();
   await expect(page.locator(".gv5-bestiary-entry")).toHaveCount(14);
   await page.locator("[data-best-close]").click();
 
-  // Move into the real field-boss spawn area and acquire it through the normal target-cycle path.
-  // This also covers engines that only hydrate distant event instances when the player approaches.
-  await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:debug-player-position", { detail: { x: 1320, y: 830 } })));
-  await page.waitForTimeout(450);
+  // Field bosses are not permanently packed into Greenvale Camp. Spawn one
+  // explicitly in QA mode, then acquire it through the normal target state.
+  const bossSpawn = await page.evaluate(() => new Promise<any>(resolve => {
+    const timer = window.setTimeout(() => resolve(null), 1600);
+    window.addEventListener("greenvale:debug-monster-spawn-result", (event: Event) => {
+      window.clearTimeout(timer);
+      resolve((event as CustomEvent).detail || null);
+    }, { once: true });
+    window.dispatchEvent(new CustomEvent("greenvale:debug-spawn-monster", {
+      detail: { monsterId: "ashfang_alpha", x: 870, y: 720 },
+    }));
+  }));
+  expect(bossSpawn?.ok).toBe(true);
   const bossTarget = await page.evaluate(() => new Promise<any>(resolve => {
     const timer = window.setTimeout(() => resolve(null), 1200);
     window.addEventListener("greenvale:debug-monster-target-result", (event: Event) => {
