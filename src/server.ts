@@ -903,12 +903,18 @@ function executeGreenvaleSkill(detail: any) {
     applySelfModifier(skill, level);
   } else {
     const targetRange = Math.max(40, Number(skill.range) || 80);
-    const targets = enemyEvents(activePlayer, targetRange);
+    let targets = enemyEvents(activePlayer, targetRange);
+    if (lockedTarget && targets.includes(lockedTarget)) {
+      targets = [lockedTarget, ...targets.filter((entry) => entry !== lockedTarget)];
+    }
     if (targets.length === 0) {
       // Mobile MMORPG assist: pressing an offensive skill without a selected
       // target acquires the nearest visible enemy and walks into legal range.
       // Damage is still applied only after the authoritative range check passes.
-      const nearest = enemyCandidates(activePlayer)[0];
+      const lockedCandidate = lockedTarget && entityNumber(lockedTarget, "hp") > 0
+        ? { event: lockedTarget, distance: combatDistance(activePlayer, lockedTarget) }
+        : null;
+      const nearest = lockedCandidate ?? enemyCandidates(activePlayer)[0];
       const assistRange = Math.max(SKILL_ASSIST_MAX_DISTANCE, targetRange + 220);
       if (!detail?._approachRetry && nearest && nearest.distance <= assistRange) {
         startSkillApproach(detail, skill, level, nearest.event, targetRange);
@@ -938,28 +944,35 @@ function executeGreenvaleSkill(detail: any) {
     const shape = String(skill.area?.shape || "single");
     const limit = shape === "single" ? 1 : shape === "chain" ? 3 : 6;
     const selected = targets.slice(0, limit);
-    const profilePower = skill.formula === "magical_basic"
-      ? Number(profile.derived?.MATK) || Number(profile.derived?.ATK) || Number(activePlayer.param[ATK]) || 10
-      : Number(activePlayer.param[ATK]) || Number(profile.derived?.ATK) || 10;
     const percent = skillArrayValue(skill.powerPercent, level);
-    const originalAtk = Number(activePlayer.param[ATK]) || 1;
-    const scaledAtk = Math.max(1, Math.round(profilePower * Math.max(0, percent) / 100));
-
     for (const target of selected) {
       targetName ||= String(target.name || "Target");
+      let landed = true;
       if (percent > 0) {
-        const before = entityNumber(target, "hp");
-        activePlayer.param[ATK] = scaledAtk;
-        if (target.battleAi?.takeDamage) {
-          target.battleAi.takeDamage(activePlayer);
-        } else {
-          target.hp = Math.max(0, before - Math.max(1, scaledAtk));
-        }
-        damageTotal += Math.max(0, before - entityNumber(target, "hp"));
+        const result = resolveDamage(
+          profileCombatStats(profile),
+          wolfCombatStats(),
+          {
+            kind: skill.formula === "magical_basic" ? "magical" : "physical",
+            powerPercent: percent,
+            element: String(skill.element || "neutral") as any,
+            weaponType: classWeaponType(profile.classId),
+            targetSize: String(WOLF_CONFIG.size || "medium") as any,
+            targetRace: String(WOLF_CONFIG.race || "beast") as any,
+          },
+        );
+        landed = result.outcome !== "miss" && result.outcome !== "perfect-dodge";
+        applyEnemyCombatDamage(target, result, {
+          source,
+          attackType: "skill",
+          skillId,
+          skillLevel: level,
+          element: skill.element || "neutral",
+        });
+        damageTotal += Math.max(0, result.damage);
       }
-      applyStatus(target, skill, level);
+      if (landed || percent <= 0) applyStatus(target, skill, level);
     }
-    activePlayer.param[ATK] = originalAtk;
   }
 
   activePlayer.sp = Math.max(0, Number(activePlayer.sp) - spCost);
