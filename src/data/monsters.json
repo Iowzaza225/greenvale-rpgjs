@@ -43,7 +43,8 @@
         "revealKills": 3,
         "rewardKills": 20,
         "rewardItemId": "moss_core"
-      }
+      },
+      "name": "Mossling"
     },
     {
       "id": "rustpipe_rat",
@@ -92,7 +93,8 @@
         "revealKills": 3,
         "rewardKills": 20,
         "rewardItemId": "rust_tail"
-      }
+      },
+      "name": "Rustpipe Rat"
     },
     {
       "id": "ashfang_wolf",
@@ -141,7 +143,8 @@
         "revealKills": 3,
         "rewardKills": 25,
         "rewardItemId": "ashfang_fang"
-      }
+      },
+      "name": "Ashfang Wolf"
     },
     {
       "id": "walking_sporecap",
@@ -192,7 +195,8 @@
         "revealKills": 5,
         "rewardKills": 25,
         "rewardItemId": "toxic_cap"
-      }
+      },
+      "name": "Wandering Sporecap"
     },
     {
       "id": "ironspine_boar",
@@ -243,7 +247,8 @@
         "revealKills": 5,
         "rewardKills": 30,
         "rewardItemId": "iron_quill"
-      }
+      },
+      "name": "Ironspine Boar"
     },
     {
       "id": "ragcrow",
@@ -294,7 +299,8 @@
         "revealKills": 5,
         "rewardKills": 30,
         "rewardItemId": "rag_thread"
-      }
+      },
+      "name": "Ragcrow"
     },
     {
       "id": "cinder_bat",
@@ -346,7 +352,8 @@
         "revealKills": 5,
         "rewardKills": 30,
         "rewardItemId": "cinder_membrane"
-      }
+      },
+      "name": "Cinder Bat"
     },
     {
       "id": "mire_crab",
@@ -397,7 +404,8 @@
         "revealKills": 7,
         "rewardKills": 35,
         "rewardItemId": "mire_shell"
-      }
+      },
+      "name": "Mire Crab"
     },
     {
       "id": "hivewing",
@@ -448,7 +456,8 @@
         "revealKills": 7,
         "rewardKills": 40,
         "rewardItemId": "hive_resin"
-      }
+      },
+      "name": "Hivewing"
     },
     {
       "id": "shale_golem",
@@ -499,7 +508,8 @@
         "revealKills": 8,
         "rewardKills": 40,
         "rewardItemId": "shale_core"
-      }
+      },
+      "name": "Shale Golem"
     },
     {
       "id": "hollow_raider",
@@ -551,7 +561,8 @@
         "revealKills": 8,
         "rewardKills": 45,
         "rewardItemId": "hollow_token"
-      }
+      },
+      "name": "Hollow Raider"
     },
     {
       "id": "ashfang_alpha",
@@ -625,7 +636,8 @@
         "revealKills": 1,
         "rewardKills": 5,
         "rewardItemId": "alpha_fang"
-      }
+      },
+      "name": "Ashfang Alpha"
     },
     {
       "id": "verdant_rotroot",
@@ -708,7 +720,8 @@
         "revealKills": 1,
         "rewardKills": 3,
         "rewardItemId": "rotroot_heart"
-      }
+      },
+      "name": "Verdant Rotroot"
     },
     {
       "id": "marrowtusk",
@@ -764,7 +777,8 @@
         "revealKills": 1,
         "rewardKills": 5,
         "rewardItemId": "marrow_tusk"
-      }
+      },
+      "name": "Marrowtusk"
     }
   ]
 }
