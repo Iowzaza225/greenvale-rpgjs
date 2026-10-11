@@ -1,5 +1,5 @@
-import monstersData from "../data/monsters.json";
-import mapsData from "../data/maps.json";
+import monstersData from "../data/monsters.json" with { type: "json" };
+import mapsData from "../data/maps.json" with { type: "json" };
 
 export type MonsterAiType = "passive" | "aggressive" | "assist" | "ranged" | "coward" | "boss";
 
