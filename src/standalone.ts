@@ -8,6 +8,7 @@ import { buildInfo, renderBuildStamp } from "./core/build-info";
 import { initOnboarding } from "./ui/onboarding";
 import { initCharacterSystem } from "./ui/character-system";
 import { initSkillSystem } from "./ui/skill-system";
+import { initCombatSystem } from "./ui/combat-system";
 import "./styles.css";
 
 declare global {
@@ -66,6 +67,7 @@ function mountOnboarding(): void {
     initOnboarding();
     initCharacterSystem();
     initSkillSystem();
+    initCombatSystem();
     onboardingReady = true;
     gameEvents.emit("onboarding:ready", { build: buildInfo.id });
   } catch (error) {
