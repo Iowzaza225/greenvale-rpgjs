@@ -19,5 +19,10 @@
         }
       ]
     }
-  ]
+  ],
+  "settings": {
+    "autoLootDefault": true,
+    "autoLootRadius": 120,
+    "maxGroundLifetimeMs": 30000
+  }
 }
