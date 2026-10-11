@@ -25,6 +25,8 @@ export type DerivedStats = {
   perfectDodge: number;
   CRIT: number;
   critResistance: number;
+  BLOCK: number;
+  blockReduction: number;
   ASPD: number;
   MaxHP: number;
   MaxSP: number;
@@ -183,6 +185,8 @@ export function calculateDerivedStats(
     perfectDodge: Math.max(0, Math.floor(stats.LUK / 10) + Math.floor(Number(passive.fleeFlat ?? 0) / 4)),
     CRIT: Math.max(0, Number((1 + stats.LUK * 0.3 + Number(passive.critFlat ?? 0)).toFixed(1))),
     critResistance: Math.max(0, Math.floor(stats.VIT / 5) + Math.floor(stats.LUK / 10)),
+    BLOCK: Math.min(30, Math.max(0, Math.floor(stats.VIT * 0.15) + Math.floor(Number((passive as any).blockFlat ?? 0)))),
+    blockReduction: 0.45,
     ASPD: Math.max(0.5, Number((Number(cls.aspd ?? 1) + stats.AGI * 0.0025).toFixed(3))),
     MaxHP: maxHp,
     MaxSP: maxSp,
