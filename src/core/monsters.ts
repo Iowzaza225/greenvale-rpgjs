@@ -6,6 +6,7 @@ export type MonsterAiType = "passive" | "aggressive" | "assist" | "ranged" | "co
 export type MonsterConfig = {
   id: string;
   nameKey: string;
+  name?: string;
   level: number;
   hp: number;
   atk: number;
