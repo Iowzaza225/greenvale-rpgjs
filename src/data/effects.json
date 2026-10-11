@@ -316,5 +316,203 @@
       "asset": "placeholder://skill/surplus_instinct",
       "qualityCost": "low"
     }
-  ]
+  ],
+  "runtime": {
+    "qualityDefault": "medium",
+    "combat": {
+      "basicHit": {
+        "kind": "slash",
+        "durationMs": 360,
+        "particles": 5,
+        "scale": 1
+      },
+      "crit": {
+        "kind": "burst",
+        "durationMs": 520,
+        "particles": 12,
+        "scale": 1.35
+      },
+      "block": {
+        "kind": "shield",
+        "durationMs": 430,
+        "particles": 7,
+        "scale": 1.1
+      },
+      "miss": {
+        "kind": "whiff",
+        "durationMs": 300,
+        "particles": 3,
+        "scale": 0.9
+      },
+      "perfectDodge": {
+        "kind": "afterimage",
+        "durationMs": 420,
+        "particles": 5,
+        "scale": 1.05
+      },
+      "heal": {
+        "kind": "heal-ring",
+        "durationMs": 720,
+        "particles": 10,
+        "scale": 1.15
+      },
+      "status": {
+        "kind": "status-pulse",
+        "durationMs": 500,
+        "particles": 8,
+        "scale": 1
+      },
+      "defeat": {
+        "kind": "ash-burst",
+        "durationMs": 760,
+        "particles": 14,
+        "scale": 1.25
+      },
+      "loot": {
+        "kind": "pickup",
+        "durationMs": 540,
+        "particles": 7,
+        "scale": 1
+      }
+    },
+    "elements": {
+      "neutral": {
+        "primary": "#e6d7b1",
+        "secondary": "#8fa398"
+      },
+      "fire": {
+        "primary": "#ffb066",
+        "secondary": "#cf4f36"
+      },
+      "water": {
+        "primary": "#92d7ff",
+        "secondary": "#4e84b8"
+      },
+      "wind": {
+        "primary": "#c4f2df",
+        "secondary": "#68bfa1"
+      },
+      "earth": {
+        "primary": "#d4bb7a",
+        "secondary": "#687451"
+      },
+      "light": {
+        "primary": "#fff2a8",
+        "secondary": "#d6b74a"
+      },
+      "dark": {
+        "primary": "#c8a6ff",
+        "secondary": "#6d4f93"
+      }
+    },
+    "audio": {
+      "enabled": true,
+      "masterGain": 0.09,
+      "cues": {
+        "attack": {
+          "wave": "triangle",
+          "frequency": 168,
+          "endFrequency": 112,
+          "durationMs": 95,
+          "gain": 0.7
+        },
+        "hit": {
+          "wave": "square",
+          "frequency": 118,
+          "endFrequency": 86,
+          "durationMs": 70,
+          "gain": 0.45
+        },
+        "crit": {
+          "wave": "sawtooth",
+          "frequency": 240,
+          "endFrequency": 420,
+          "durationMs": 145,
+          "gain": 0.65
+        },
+        "block": {
+          "wave": "triangle",
+          "frequency": 96,
+          "endFrequency": 72,
+          "durationMs": 125,
+          "gain": 0.5
+        },
+        "miss": {
+          "wave": "sine",
+          "frequency": 180,
+          "endFrequency": 150,
+          "durationMs": 80,
+          "gain": 0.28
+        },
+        "heal": {
+          "wave": "sine",
+          "frequency": 390,
+          "endFrequency": 610,
+          "durationMs": 260,
+          "gain": 0.42
+        },
+        "skill": {
+          "wave": "triangle",
+          "frequency": 260,
+          "endFrequency": 340,
+          "durationMs": 170,
+          "gain": 0.42
+        },
+        "status": {
+          "wave": "square",
+          "frequency": 132,
+          "endFrequency": 118,
+          "durationMs": 100,
+          "gain": 0.28
+        },
+        "loot": {
+          "wave": "sine",
+          "frequency": 520,
+          "endFrequency": 700,
+          "durationMs": 120,
+          "gain": 0.3
+        },
+        "defeat": {
+          "wave": "triangle",
+          "frequency": 150,
+          "endFrequency": 62,
+          "durationMs": 240,
+          "gain": 0.45
+        }
+      }
+    },
+    "environment": {
+      "cycleMs": 240000,
+      "startOffsetMs": 30000,
+      "phases": [
+        {
+          "id": "day",
+          "start": 0,
+          "end": 0.52,
+          "overlay": "rgba(239,224,174,0.03)"
+        },
+        {
+          "id": "dusk",
+          "start": 0.52,
+          "end": 0.7,
+          "overlay": "rgba(167,88,57,0.12)"
+        },
+        {
+          "id": "night",
+          "start": 0.7,
+          "end": 1,
+          "overlay": "rgba(15,31,48,0.30)"
+        }
+      ],
+      "rain": {
+        "enabled": true,
+        "initialDelayMs": 22000,
+        "intervalMs": 105000,
+        "durationMs": 26000,
+        "drops": 28,
+        "reducedMotionDrops": 8,
+        "opacity": 0.42
+      }
+    }
+  }
 }
