@@ -1,0 +1,28 @@
+#gv-effects-layer[hidden],#gv-environment-layer[hidden]{display:none!important}
+#gv-environment-layer{position:fixed;inset:0;z-index:120000;pointer-events:none;overflow:hidden}
+#gv-environment-layer .gv6-light{position:absolute;inset:0;transition:background 3s ease;mix-blend-mode:multiply}
+#gv-environment-layer[data-phase="dusk"] .gv6-vignette{opacity:.18}
+#gv-environment-layer[data-phase="night"] .gv6-vignette{opacity:.32}
+.gv6-vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 44%,transparent 35%,rgba(4,10,13,.54) 100%);opacity:.08;transition:opacity 2.5s ease}
+.gv6-rain{position:absolute;inset:-12vh -8vw 0;overflow:hidden;opacity:var(--gv6-rain-opacity,.42)}
+#gv-environment-layer[data-rain="false"] .gv6-rain{display:none}
+.gv6-rain i{position:absolute;left:var(--gv6-left);top:-64px;width:1px;height:var(--gv6-rain-length);background:linear-gradient(transparent,rgba(199,225,234,.9));transform:rotate(11deg);animation:gv6rain var(--gv6-rain-speed) linear infinite;animation-delay:var(--gv6-rain-delay)}
+@keyframes gv6rain{to{transform:translate3d(-36px,118vh,0) rotate(11deg)}}
+
+#gv-effects-layer{position:fixed;inset:0;z-index:159000;pointer-events:none;overflow:hidden}
+.gv6-fx{--gv6-primary:#e6d7b1;--gv6-secondary:#8fa398;--gv6-duration:420ms;--gv6-scale:1;position:absolute;left:50%;top:43%;width:70px;height:70px;transform:translate(-50%,-50%) scale(var(--gv6-scale));animation:gv6fade var(--gv6-duration) ease-out forwards}
+.gv6-fx--incoming{top:58%}.gv6-fx-core{position:absolute;left:50%;top:50%;width:24px;height:24px;border:2px solid var(--gv6-primary);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 16px var(--gv6-primary),inset 0 0 12px var(--gv6-secondary);animation:gv6core var(--gv6-duration) ease-out forwards}
+.gv6-particle{position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:var(--gv6-primary);box-shadow:0 0 7px var(--gv6-secondary);transform:translate(-50%,-50%) rotate(var(--gv6-angle)) translateX(5px);animation:gv6particle var(--gv6-duration) ease-out var(--gv6-delay) forwards}
+.gv6-fx--slash .gv6-fx-core{width:54px;height:8px;border-width:0 0 3px;border-radius:50%;transform:translate(-50%,-50%) rotate(-24deg);box-shadow:0 8px 10px -7px var(--gv6-primary)}
+.gv6-fx--burst .gv6-fx-core{border-width:3px;box-shadow:0 0 28px var(--gv6-primary)}
+.gv6-fx--shield .gv6-fx-core{width:34px;height:42px;border-radius:16px 16px 20px 20px;border-color:var(--gv6-primary)}
+.gv6-fx--whiff .gv6-fx-core{width:46px;height:46px;border-style:dashed;opacity:.55}
+.gv6-fx--afterimage .gv6-fx-core{width:18px;height:48px;border-radius:50%;transform:translate(-50%,-50%) skewX(-18deg);opacity:.6}
+.gv6-fx--heal-ring .gv6-fx-core{width:42px;height:42px;border-color:#bff0b4;box-shadow:0 0 24px #87d79c}
+.gv6-fx--status-pulse .gv6-fx-core{width:50px;height:50px;border-style:dotted}
+.gv6-fx--ash-burst .gv6-fx-core{width:52px;height:30px;border-color:#b19a7a;filter:blur(.2px)}
+.gv6-fx--pickup .gv6-fx-core{width:18px;height:18px;border-color:#f0d483;box-shadow:0 0 22px #f0d483}
+@keyframes gv6core{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.85)}}
+@keyframes gv6particle{0%{opacity:0}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--gv6-angle)) translateX(var(--gv6-distance)) scale(.35)}}
+@keyframes gv6fade{0%{opacity:.1}12%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.gv6-fx,.gv6-fx-core,.gv6-particle{animation-duration:120ms!important}.gv6-rain i{animation-duration:1.35s!important}}
