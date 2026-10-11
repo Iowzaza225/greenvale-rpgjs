@@ -9,6 +9,7 @@ import { initOnboarding } from "./ui/onboarding";
 import { initCharacterSystem } from "./ui/character-system";
 import { initSkillSystem } from "./ui/skill-system";
 import { initCombatSystem } from "./ui/combat-system";
+import { initMonsterSystem } from "./ui/monster-system";
 import "./styles.css";
 
 declare global {
@@ -68,6 +69,7 @@ function mountOnboarding(): void {
     initCharacterSystem();
     initSkillSystem();
     initCombatSystem();
+    initMonsterSystem();
     onboardingReady = true;
     gameEvents.emit("onboarding:ready", { build: buildInfo.id });
   } catch (error) {
