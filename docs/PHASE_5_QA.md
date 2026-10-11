@@ -8,11 +8,11 @@ Implemented in this phase:
 
 - 14 original Greenvale monsters covering Lv 2–30
 - AI metadata for passive, aggressive, assist, ranged, coward and boss types
-- fixed spawn-slot pools from map spawn zones with per-zone `maxAlive`
+- sparse fixed spawn-slot pools from map spawn zones with per-zone `maxAlive`
 - leash/vision/assist metadata, ranged attack distance, coward low-HP retreat
 - field bosses with top-screen HP bar and HP phase tracking
 - mini-boss schedule metadata of 30–60 minutes plus world-style announcement
-- respawn of fixed event slots rather than continuously allocating new event definitions
+- Safari-safe respawn: Action Battle removes defeated events, then Phase 5 recreates the fixed spawn slot as a fresh RPGJS event
 - difficulty-colored target names based on player level
 - persistent Bestiary kill counts, reveal thresholds and one-time collection rewards
 - data-driven EXP and drop dispatch for every monster
@@ -35,6 +35,8 @@ The Phase 5 iPhone WebKit test verifies:
 - the RPGJS canvas still boots
 - the Bestiary control is mounted only after gameplay starts
 - a real spawned monster can be defeated through the Phase 4 auto-attack path
+- Greenvale Camp keeps only 3 live quest wolves during normal play
+- the defeated wolf slot respawns as a fresh RPGJS event without a `removeEvent` runtime error
 - a defeat is persisted to `greenvale.bestiary.v1`
 - all 14 Bestiary entries render
 - Ashfang Alpha drives the field-boss bar
@@ -59,4 +61,4 @@ The Phase 5 iPhone WebKit test verifies:
 - All Phase 5 monsters currently share the temporary RPGJS sample monster sheet; original sprites are tracked in `ASSET_TODO.md`.
 - Monster special-skill ids and boss phase skill sets are configured now; bespoke VFX/animations are deferred to Phase 6.
 - The ranged AI uses the stable RPGJS action-battle attack pattern at an extended attack range until original projectile VFX lands in Phase 6.
-- Spawn zones are currently demonstrated inside Greenvale Camp. Phase 9 moves level bands into their final maps without changing monster JSON.
+- The full 14-monster roster remains in data/Bestiary, but Greenvale Camp now spawns only the 3 Ashfang Wolves needed for the opening quest. Other species are reserved for their later maps; field bosses are spawned explicitly in QA instead of crowding the camp.
