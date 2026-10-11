@@ -173,6 +173,7 @@ export function initCombatSystem():void{
   window.addEventListener("greenvale:combat-result",(event)=>{
     const detail=(event as CustomEvent).detail||{};
     (window as any).__GV_COMBAT_LAST__=detail;
+    if(detail.direction==="outgoing")(window as any).__GV_COMBAT_LAST_OUTGOING__=detail;
     showCombatFloat(detail);
   });
   window.addEventListener("greenvale:loot-drop",(event)=>{
