@@ -28,7 +28,7 @@ import {
 } from "./skills";
 
 export const SAVE_KEY = "greenvale.save";
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 const LEGACY_PROFILE_KEY = "greenvale.profile.v1";
 
 export type GenderId = "female" | "male";
@@ -49,6 +49,35 @@ export type TutorialState = {
   trainingPotionUsed: boolean;
 };
 
+export type CombatSettings = {
+  autoAttack: boolean;
+  autoLoot: boolean;
+  autoLootRadius: number;
+};
+
+function defaultCombatSettings(): CombatSettings {
+  return { autoAttack: false, autoLoot: true, autoLootRadius: 220 };
+}
+
+function normalizeCombatSettings(raw: any): CombatSettings {
+  const fallback = defaultCombatSettings();
+  return {
+    autoAttack: raw?.autoAttack === true,
+    autoLoot: raw?.autoLoot !== false,
+    autoLootRadius: Math.min(420, Math.max(80, Math.floor(Number(raw?.autoLootRadius) || fallback.autoLootRadius))),
+  };
+}
+
+function normalizeLootInventory(raw: any): Record<string, number> {
+  if (!raw || typeof raw !== "object") return {};
+  const result: Record<string, number> = {};
+  for (const [id, value] of Object.entries(raw)) {
+    const quantity = Math.max(0, Math.floor(Number(value) || 0));
+    if (quantity > 0) result[String(id)] = quantity;
+  }
+  return result;
+}
+
 export type CharacterSave = {
   id: string;
   slot: number;
@@ -66,6 +95,8 @@ export type CharacterSave = {
   learnedSkills: LearnedSkills;
   hotbar: HotbarSlot[];
   autoBattle: AutoBattleSettings;
+  combatSettings: CombatSettings;
+  lootInventory: Record<string, number>;
   skillResetItems: number;
   renameCredits: number;
   cutsceneSeen: boolean;
@@ -180,6 +211,8 @@ function normalizeCharacter(raw: any, slot: number): CharacterSave | null {
     learnedSkills,
     hotbar,
     autoBattle: normalizeAutoBattle(raw.autoBattle),
+    combatSettings: normalizeCombatSettings(raw.combatSettings),
+    lootInventory: normalizeLootInventory(raw.lootInventory),
     skillResetItems: Math.max(0, Math.floor(Number(raw.skillResetItems ?? 1) || 0)),
     renameCredits: Math.max(0, Number(raw.renameCredits ?? creation.freeRenames) || 0),
     cutsceneSeen: raw.cutsceneSeen === true,
@@ -221,6 +254,8 @@ function migrateLegacy(): GreenvaleSave {
     learnedSkills: normalizeLearnedSkills(null),
     hotbar: normalizeHotbar(null),
     autoBattle: defaultAutoBattle(),
+    combatSettings: defaultCombatSettings(),
+    lootInventory: {},
     skillResetItems: 1,
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: true,
@@ -341,6 +376,8 @@ export function createCharacter(
     learnedSkills: normalizeLearnedSkills(null),
     hotbar: normalizeHotbar(null),
     autoBattle: defaultAutoBattle(),
+    combatSettings: defaultCombatSettings(),
+    lootInventory: {},
     skillResetItems: 1,
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: false,
@@ -504,6 +541,30 @@ export function updateSelectedAutoBattle(next: Partial<AutoBattleSettings>): Cha
   return updated;
 }
 
+export function updateSelectedCombatSettings(next: Partial<CombatSettings>): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const updated = updateCharacter(selected.id, (character) => {
+    character.combatSettings = normalizeCombatSettings({ ...character.combatSettings, ...next });
+    return character;
+  });
+  gameEvents.emit("character:combat-settings", { characterId: updated.id, settings: updated.combatSettings });
+  return updated;
+}
+
+export function addSelectedLoot(itemId: string, quantity: number): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const safeQuantity = Math.max(0, Math.floor(quantity));
+  if (safeQuantity <= 0) return selected;
+  const updated = updateCharacter(selected.id, (character) => {
+    character.lootInventory[itemId] = Math.max(0, Math.floor(Number(character.lootInventory[itemId]) || 0)) + safeQuantity;
+    return character;
+  });
+  gameEvents.emit("character:loot", { characterId: updated.id, itemId, quantity: safeQuantity, total: updated.lootInventory[itemId] });
+  return updated;
+}
+
 export function equipSelectedCostume(costumeId: string): CharacterSave | null {
   if (!validCostumeIds.has(costumeId)) throw new Error("Invalid costume");
   const selected = getSelectedCharacter();
@@ -547,6 +608,8 @@ export function writeLegacyBridge(character: CharacterSave): void {
     learnedSkills: character.learnedSkills,
     hotbar: character.hotbar,
     autoBattle: character.autoBattle,
+    combatSettings: character.combatSettings,
+    lootInventory: character.lootInventory,
     updatedAt: now(),
   };
   localStorage.setItem(LEGACY_PROFILE_KEY, JSON.stringify(legacy));
