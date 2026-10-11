@@ -334,6 +334,71 @@ function setTargetHud(target: any | null, extra: Record<string, any> = {}) {
   }));
 }
 
+function resolvePlayerHitAgainstEnemy(
+  target: any,
+  options: {
+    skill?: any;
+    level?: number;
+    source?: string;
+    powerPercent?: number;
+    attackKind?: AttackKind;
+    attackElement?: string;
+  } = {},
+) {
+  if (!activePlayer || !target || entityNumber(target, "hp") <= 0) return null;
+  const profile = getProfile();
+  const skill = options.skill;
+  const level = Math.max(1, Number(options.level) || 1);
+  const powerPercent = options.powerPercent ?? (skill ? skillArrayValue(skill.powerPercent, level) : 100);
+  const range = Number(skill?.range || profile.derived?.attackRange || 64);
+  const attackKind: AttackKind = options.attackKind
+    ?? (skill?.formula === "magical_basic" ? "magic" : range >= 120 ? "ranged" : "melee");
+
+  const result = resolveCombatHit({
+    attacker: profileCombatStats(profile),
+    defender: monsterCombatStats(target),
+    attackKind,
+    skillPowerPercent: powerPercent,
+    attackElement: String(options.attackElement || skill?.element || "neutral") as any,
+  });
+
+  const before = entityNumber(target, "hp");
+  const after = Math.max(0, before - result.damage);
+  if (result.damage > 0) {
+    target.hp = after;
+    if (target.battleAi?.handleDamage) {
+      target.battleAi.handleDamage(activePlayer, {
+        damage: result.damage,
+        defeated: after <= 0,
+        raw: { ...result },
+        skill,
+        metadata: {
+          greenvale: true,
+          source: options.source || "basic",
+        },
+      });
+    }
+  }
+
+  const threat = (enemyThreat.get(target) || 0) + calculateThreat(result.damage, 0, 1);
+  enemyThreat.set(target, threat);
+  dispatchCombatEvent({
+    type: "damage",
+    source: "player",
+    target: "monster",
+    skillId: skill?.id || null,
+    targetName: String(target.name || "Enemy"),
+    damage: result.damage,
+    hp: after,
+    maxHp: Number(target.param?.[MAXHP]) || Number(target.__greenvaleMonsterConfig?.hp) || 1,
+    threat,
+    ...result,
+  });
+
+  if (after > 0) setTargetHud(target);
+  return { result, before, after };
+}
+
 function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
   const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
   const derived = profile.derived || {};
@@ -833,45 +898,29 @@ function executeGreenvaleSkill(detail: any) {
     for (const target of selected) {
       targetName ||= String(target.name || "Target");
       const before = entityNumber(target, "hp");
+      let dealt = 0;
       if (percent > 0) {
-        if (target.battleAi?.takeDamage) {
-          pendingPlayerAttackContext = { skill, level, source };
-          try {
-            target.battleAi.takeDamage(activePlayer);
-          } finally {
-            pendingPlayerAttackContext = null;
-          }
-        } else {
-          const attackKind: AttackKind = skill.formula === "magical_basic"
+        const resolved = resolvePlayerHitAgainstEnemy(target, {
+          skill,
+          level,
+          source,
+          powerPercent: percent,
+          attackKind: skill.formula === "magical_basic"
             ? "magic"
-            : Number(skill.range) >= 120 ? "ranged" : "melee";
-          const result = resolveCombatHit({
-            attacker: profileCombatStats(profile),
-            defender: monsterCombatStats(target),
-            attackKind,
-            skillPowerPercent: percent,
-            attackElement: String(skill.element || "neutral") as any,
-          });
-          target.hp = Math.max(0, before - result.damage);
-          dispatchCombatEvent({
-            type: "damage",
-            source: "player",
-            skillId,
-            targetName: String(target.name || "Target"),
-            ...result,
-            hp: entityNumber(target, "hp"),
-            maxHp: Number(target.param?.[MAXHP]) || Number(target.__greenvaleMonsterConfig?.hp) || 1,
-          });
-        }
+            : Number(skill.range) >= 120 ? "ranged" : "melee",
+          attackElement: String(skill.element || "neutral"),
+        });
+        dealt = resolved ? Math.max(0, resolved.before - resolved.after) : 0;
       }
-      const dealt = Math.max(0, before - entityNumber(target, "hp"));
       damageTotal += dealt;
       if (dealt > 0 || percent <= 0) {
         applyStatus(target, skill, level);
-        const threat = (enemyThreat.get(target) || 0) + calculateThreat(dealt, 0, 1);
-        enemyThreat.set(target, threat);
+        if (percent <= 0) {
+          const threat = (enemyThreat.get(target) || 0) + calculateThreat(0, 0, 1);
+          enemyThreat.set(target, threat);
+          setTargetHud(target);
+        }
       }
-      setTargetHud(target);
     }
   }
 
@@ -1105,12 +1154,12 @@ function autoCombatTick() {
   const now = Date.now();
   if (now - lastAutoAttackAt < interval) return;
   lastAutoAttackAt = now;
-  pendingPlayerAttackContext = { source: "auto-basic" };
-  try {
-    target.battleAi?.takeDamage?.(activePlayer);
-  } finally {
-    pendingPlayerAttackContext = null;
-  }
+  resolvePlayerHitAgainstEnemy(target, {
+    source: "auto-basic",
+    powerPercent: 100,
+    attackKind: range >= 120 ? "ranged" : "melee",
+    attackElement: "neutral",
+  });
 }
 
 if (typeof window !== "undefined") {
