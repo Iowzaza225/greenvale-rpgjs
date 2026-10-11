@@ -1137,22 +1137,21 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
     name,
     onInit() {
       this.setGraphic("monster");
-      this.name = "Mutant Wolf";
-      this.speed = 1.35;
+      this.name = "Ashfang Wolf";
+      (this as any).__greenvaleMonsterConfig = ASHFANG_CONFIG;
+      this.speed = Number(ASHFANG_CONFIG.moveSpeed) || 1.35;
       this.through = false;
       this.initializeDefaultStats();
-      this.param[MAXHP] = 90;
+      this.param[MAXHP] = Number(ASHFANG_CONFIG.hp) || 90;
       this.param[MAXSP] = 20;
-      this.param[ATK] = 13;
-      this.param[PDEF] = 3;
-      this.hp = 90;
+      this.param[ATK] = Number(ASHFANG_CONFIG.atk) || 13;
+      this.param[PDEF] = Number(ASHFANG_CONFIG.def) || 3;
+      this.hp = Number(ASHFANG_CONFIG.hp) || 90;
       this.sp = 20;
       this.addItem(WolfClaw, 1);
       this.equip(WolfClaw.id);
       this.setHitbox(34, 36);
       this.teleport({ x, y });
-      // BattleAi owns the wolf nameplate and HP bar; avoid duplicate overlays.
-
       activeEnemies.add(this);
 
       (this as any).battleAi = new BattleAi(this, {
@@ -1160,10 +1159,10 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         enemyType: EnemyType.Aggressive,
         faction: "mutants",
         targets: "players",
-        visionRange: 230,
-        attackRange: 58,
+        visionRange: Number(ASHFANG_CONFIG.visionRange) || 230,
+        attackRange: Number(ASHFANG_CONFIG.attackRange) || 58,
         attackCooldown: 1650,
-        dodgeChance: 0.08,
+        dodgeChance: Math.max(0, Math.min(.35, Number(ASHFANG_CONFIG.perfectDodge || 0) / 100)),
         attackPatterns: [AttackPattern.Melee],
         simpleBehavior: {
           when: [
@@ -1171,7 +1170,7 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
           ],
           otherwise: chase(),
         },
-        rewards: { exp: 18, gold: 4 },
+        rewards: { exp: 0, gold: 0 },
         onDefeated: ({ attacker, reward }: any) => {
           if (attacker && typeof attacker.getVariable === "function") {
             reward.giveTo(attacker);
@@ -1180,9 +1179,9 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         },
         presentation: {
           role: "enemy",
-          name: "Mutant Wolf",
+          name: "Ashfang Wolf",
           healthBar: {
-            text: "Mutant Wolf",
+            text: "Ashfang Wolf",
             style: { width: 68, height: 6, fontSize: 11 },
             layout: { width: 76, marginBottom: 10 },
           },
