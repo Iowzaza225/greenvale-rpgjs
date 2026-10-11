@@ -113,7 +113,11 @@ function showLoot(detail:any):void{
   setTimeout(()=>{if(host)host.hidden=true;},19500);
 }
 
-export function openCombatSystem():void{const host=qs<HTMLElement>("gv-combat-system");if(!host)return;renderWindow();host.hidden=false;}
+export function openCombatSystem():void{
+  const host=qs<HTMLElement>("gv-combat-system");if(!host)return;
+  const parentMenu=qs<HTMLElement>("gv-panel");if(parentMenu)parentMenu.hidden=true;
+  renderWindow();host.hidden=false;
+}
 
 export function initCombatSystem():void{
   if(initialized)return;initialized=true;
