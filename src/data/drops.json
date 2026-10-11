@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "dropTables": [
+    {
+      "id": "mossling",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "moss_core",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.05,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "rustpipe_rat",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "rust_tail",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "ashfang_wolf",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "ashfang_fang",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "walking_sporecap",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "toxic_cap",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.05,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "ironspine_boar",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "iron_quill",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "ragcrow",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "rag_thread",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "cinder_bat",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "cinder_membrane",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.05,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "mire_crab",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "mire_shell",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "hivewing",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "hive_resin",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "shale_golem",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "shale_core",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.05,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "hollow_raider",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "hollow_token",
+          "chance": 0.45,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "ashfang_alpha",
+      "rolls": 2,
+      "entries": [
+        {
+          "itemId": "alpha_fang",
+          "chance": 0.75,
+          "min": 1,
+          "max": 2
+        }
+      ]
+    },
+    {
+      "id": "verdant_rotroot",
+      "rolls": 2,
+      "entries": [
+        {
+          "itemId": "rotroot_heart",
+          "chance": 0.75,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.05,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "marrowtusk",
+      "rolls": 2,
+      "entries": [
+        {
+          "itemId": "marrow_tusk",
+          "chance": 0.75,
+          "min": 1,
+          "max": 2
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "autoLootDefault": true,
+    "autoLootRadius": 130,
+    "maxGroundLifetimeMs": 30000,
+    "ownerLockMs": 10000
+  }
+}

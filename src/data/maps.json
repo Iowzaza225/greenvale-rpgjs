@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "maps": [
+    {
+      "id": "greenvale-camp",
+      "nameKey": "map.greenvale_camp.name",
+      "width": 1600,
+      "height": 1000,
+      "bgm": "placeholder_camp_bgm",
+      "channels": [
+        1,
+        2,
+        3
+      ],
+      "safeZone": true,
+      "spawn": {
+        "x": 760,
+        "y": 720
+      },
+      "spawnZones": [
+        {
+          "id": "camp-training-west",
+          "maxAlive": 3,
+          "entries": [
+            {
+              "monsterId": "ashfang_wolf",
+              "count": 3,
+              "points": [
+                [
+                  980,
+                  710
+                ],
+                [
+                  1100,
+                  690
+                ],
+                [
+                  930,
+                  560
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "camp-miniboss-hidden",
+          "maxAlive": 1,
+          "entries": [
+            {
+              "monsterId": "marrowtusk",
+              "count": 1,
+              "points": [
+                [
+                  720,
+                  160
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
