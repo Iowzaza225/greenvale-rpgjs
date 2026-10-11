@@ -1466,55 +1466,114 @@ export default createServer({
           beforeHit(context: any) {
             const attacker = context.attacker as any;
             const target = context.target as any;
-            if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
-            if (target.getVariable("greenvale.invulnerable")) return false;
-            const hp = Number(target.hp);
+            const hp = Number(target?.hp);
             if (!Number.isFinite(hp) || hp <= 0) return false;
 
-            const result = resolveDamage(
-              wolfCombatStats(),
-              profileCombatStats(getProfile()),
-              {
-                kind: "physical",
-                powerPercent: 100,
-                element: String(WOLF_CONFIG.basicAttack?.element || WOLF_CONFIG.element || "neutral") as any,
-                targetSize: "medium",
-                targetRace: "human",
-              },
-            );
-
-            if (result.outcome === "miss" || result.outcome === "perfect-dodge") {
-              dispatchCombat("greenvale:combat-result", {
-                direction: "incoming",
-                outcome: result.outcome,
-                damage: 0,
-                attackType: "basic",
-                attackerName: "Ashfang Wolf",
-                hp,
-                maxHp: Number(target.param?.[MAXHP]) || 0,
-              });
-              return false;
+            if (attacker === activePlayer && target?.battleAi) {
+              const profile = getProfile();
+              const result = resolveDamage(
+                profileCombatStats(profile),
+                wolfCombatStats(),
+                {
+                  kind: "physical",
+                  powerPercent: 100,
+                  element: "neutral",
+                  weaponType: classWeaponType(profile.classId),
+                  targetSize: String(WOLF_CONFIG.size || "medium") as any,
+                  targetRace: String(WOLF_CONFIG.race || "beast") as any,
+                },
+              );
+              lockedTarget = target;
+              if (result.outcome === "miss" || result.outcome === "perfect-dodge") {
+                dispatchCombat("greenvale:combat-result", {
+                  direction: "outgoing",
+                  outcome: result.outcome,
+                  damage: 0,
+                  attackType: "basic",
+                  targetId: combatEventId(target),
+                  targetName: String(target?.name || "Ashfang Wolf"),
+                  hp,
+                  maxHp: Number(target.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90,
+                });
+                dispatchTargetState(target);
+                return false;
+              }
+              context.damage = { damage: result.damage, raw: result.raw, defeated: hp <= result.damage };
+              context.metadata = {
+                ...context.metadata,
+                greenvaleDirection: "outgoing",
+                greenvaleHpBefore: hp,
+                greenvaleCombatResult: result,
+              };
+              return context;
             }
 
-            context.damage = { damage: result.damage, raw: result.raw, defeated: hp <= result.damage };
-            context.metadata = {
-              ...context.metadata,
-              greenvaleHpBefore: hp,
-              greenvaleCombatResult: result,
-            };
-            return context;
+            if (attacker?.battleAi && typeof target?.getVariable === "function") {
+              if (target.getVariable("greenvale.invulnerable")) return false;
+              const result = resolveDamage(
+                wolfCombatStats(),
+                profileCombatStats(getProfile()),
+                {
+                  kind: "physical",
+                  powerPercent: 100,
+                  element: String(WOLF_CONFIG.basicAttack?.element || WOLF_CONFIG.element || "neutral") as any,
+                  targetSize: "medium",
+                  targetRace: "human",
+                },
+              );
+              if (result.outcome === "miss" || result.outcome === "perfect-dodge") {
+                dispatchCombat("greenvale:combat-result", {
+                  direction: "incoming",
+                  outcome: result.outcome,
+                  damage: 0,
+                  attackType: "basic",
+                  attackerName: "Ashfang Wolf",
+                  hp,
+                  maxHp: Number(target.param?.[MAXHP]) || 0,
+                });
+                return false;
+              }
+              context.damage = { damage: result.damage, raw: result.raw, defeated: hp <= result.damage };
+              context.metadata = {
+                ...context.metadata,
+                greenvaleDirection: "incoming",
+                greenvaleHpBefore: hp,
+                greenvaleCombatResult: result,
+              };
+              return context;
+            }
           },
           afterDamage(context: any) {
             const attacker = context.attacker as any;
             const target = context.target as any;
-            if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
             const hp = Number(context.metadata?.greenvaleHpBefore);
             const result = context.metadata?.greenvaleCombatResult;
+            const direction = context.metadata?.greenvaleDirection;
             const damage = Number(context.damage?.damage);
-            if (!Number.isFinite(hp) || hp <= 0 || !Number.isFinite(damage)) return;
+            if (!direction || !Number.isFinite(hp) || hp <= 0 || !Number.isFinite(damage)) return;
 
             target.hp = Math.max(0, hp - damage);
-            if (typeof window !== "undefined" && target === activePlayer) {
+
+            if (direction === "outgoing" && attacker === activePlayer && target?.battleAi) {
+              lockedTarget = target;
+              dispatchCombat("greenvale:combat-result", {
+                direction: "outgoing",
+                outcome: result?.outcome || "hit",
+                damage,
+                attackType: "basic",
+                targetId: combatEventId(target),
+                targetName: String(target?.name || "Ashfang Wolf"),
+                hp: Number(target.hp) || 0,
+                maxHp: Number(target.param?.[MAXHP]) || Number(WOLF_CONFIG.hp) || 90,
+                elementMultiplier: result?.elementMultiplier ?? 1,
+                sizeMultiplier: result?.sizeMultiplier ?? 1,
+                raceMultiplier: result?.raceMultiplier ?? 1,
+              });
+              dispatchTargetState(Number(target.hp) > 0 ? target : null);
+              return context;
+            }
+
+            if (direction === "incoming" && target === activePlayer) {
               dispatchCombat("greenvale:combat-result", {
                 direction: "incoming",
                 outcome: result?.outcome || "hit",
@@ -1532,13 +1591,12 @@ export default createServer({
                   outcome: result?.outcome || "hit",
                 },
               }));
-
               const status = WOLF_CONFIG.basicAttack?.statusEffect;
               if (status?.id && Math.random() < Number(status.chance || 0)) {
                 applyPlayerStatus(String(status.id), Number(status.durationMs) || undefined, Number(WOLF_CONFIG.level) || 1);
               }
+              return context;
             }
-            return context;
           },
         },
         player: {
