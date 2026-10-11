@@ -292,6 +292,7 @@ let activeMap: any | null = null;
 const activeEnemies = new Set<any>();
 const monsterEventPool = new Set<any>();
 const SKILL_RANGE_TOLERANCE = 8;
+const BASIC_ATTACK_RANGE_TOLERANCE = 3;
 
 function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
   const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
@@ -561,7 +562,7 @@ function startBasicApproach(target: any) {
   stopBasicApproach();
 
   const profile = getProfile();
-  const targetRange = Math.max(60, Number(profile.derived?.attackRange) || 64);
+  const targetRange = Math.max(12, Number(profile.derived?.attackRange) || 18);
   const token = ++basicApproachToken;
   const startedAt = Date.now();
   const initialDistance = combatDistance(activePlayer, target);
@@ -597,7 +598,7 @@ function startBasicApproach(target: any) {
 
     const now = Date.now();
     const distance = combatDistance(activePlayer, target);
-    if (distance <= targetRange + SKILL_RANGE_TOLERANCE) {
+    if (distance <= targetRange + BASIC_ATTACK_RANGE_TOLERANCE) {
       stopBasicApproach();
       executeBasicAttack("auto", true);
       return;
@@ -659,9 +660,9 @@ function executeBasicAttack(source: "manual" | "auto" = "manual", approached = f
     return;
   }
 
-  const range = Math.max(60, Number(profile.derived?.attackRange) || 64);
+  const range = Math.max(12, Number(profile.derived?.attackRange) || 18);
   const distance = combatDistance(activePlayer, target);
-  if (distance > range + SKILL_RANGE_TOLERANCE) {
+  if (distance > range + BASIC_ATTACK_RANGE_TOLERANCE) {
     if (!approached) startBasicApproach(target);
     return;
   }
@@ -683,7 +684,7 @@ function executeBasicAttack(source: "manual" | "auto" = "manual", approached = f
       targetRace: String(monsterConfigForEntity(target).race || "beast") as any,
     },
   );
-  applyEnemyCombatDamage(target, result, { source, attackType: "basic" });
+  applyEnemyCombatDamage(target, result, { source, attackType: "basic", distance: Math.round(distance), range });
 }
 
 function dispatchSkillState(type = "greenvale:skill-state", extra: Record<string, any> = {}) {
