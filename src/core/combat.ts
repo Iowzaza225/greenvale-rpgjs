@@ -7,6 +7,12 @@ export type CombatRace = "beast" | "plant" | "undead" | "human" | "demon";
 export type DamageKind = "physical" | "magical";
 export type CombatOutcome = "miss" | "perfect-dodge" | "block" | "hit" | "crit";
 
+export type CombatSettings = {
+  autoAttack: boolean;
+  autoLoot: boolean;
+  targetMode: "nearest";
+};
+
 export type CombatStats = {
   ATK: number;
   MATK: number;
@@ -54,6 +60,19 @@ export type DamageResult = {
 export type StatusDefinition = (typeof statusData.statuses)[number];
 
 const combat = formulasData.combat;
+
+export function defaultCombatSettings(): CombatSettings {
+  return { autoAttack: false, autoLoot: true, targetMode: "nearest" };
+}
+
+export function normalizeCombatSettings(raw: any): CombatSettings {
+  const fallback = defaultCombatSettings();
+  return {
+    autoAttack: raw?.autoAttack === true,
+    autoLoot: raw?.autoLoot !== false,
+    targetMode: "nearest",
+  };
+}
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
