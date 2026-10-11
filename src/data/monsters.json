@@ -24,7 +24,29 @@
       "dropTableId": "ashfang_wolf",
       "sprite": "placeholder_wolf",
       "sound": "placeholder_wolf",
-      "respawnMs": 8000
+      "respawnMs": 8000,
+      "crit": 3,
+      "critResistance": 1,
+      "perfectDodge": 1,
+      "block": 4,
+      "blockReduction": 0.45,
+      "attackElement": "neutral",
+      "aggro": {
+        "baseThreat": 10,
+        "leashRange": 360,
+        "assistRadius": 100
+      },
+      "statusResist": {
+        "poison": 0.1,
+        "bleed": 0.05,
+        "stun": 0.15,
+        "slow": 0.05,
+        "burn": 0.05
+      },
+      "death": {
+        "corpseMs": 900,
+        "respawnMs": 8000
+      }
     }
   ]
 }
