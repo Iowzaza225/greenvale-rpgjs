@@ -129,6 +129,8 @@ async function unlockAudio() {
 }
 
 function playCue(name: string) {
+  const { effects } = ensureShell();
+  effects.dataset.lastAudioRequested = name;
   const cue = audioCue(name);
   if (!cue || !audioUnlocked || !audioContext || !audioIsEnabled()) return;
   try {
