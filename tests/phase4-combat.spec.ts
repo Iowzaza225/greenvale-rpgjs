@@ -29,8 +29,8 @@ test("Phase 4 combat core works on iPhone WebKit", async ({ page }) => {
 
   const autoAttack = page.locator("[data-auto-attack]");
   const autoLoot = page.locator("[data-auto-loot]");
-  await autoLoot.uncheck();
-  await autoAttack.check();
+  await autoLoot.uncheck({ force: true });
+  await autoAttack.check({ force: true });
   await page.locator("[data-combat-close]").click();
 
   await expect(page.locator("#gv-combat-target")).toBeVisible({ timeout: 15_000 });
