@@ -213,6 +213,127 @@ let activePlayer: RpgPlayer | null = null;
 const activeEnemies = new Set<any>();
 const SKILL_RANGE_TOLERANCE = 8;
 
+const ASHFANG_CONFIG = (monstersData.monsters as any[]).find((entry) => entry.id === "ashfang_wolf")!;
+const ASHFANG_DROP_TABLE = (dropsData.dropTables as any[]).find((entry) => entry.id === "ashfang_wolf")!;
+const STATUS_CONFIG = new Map((statusEffectsData.statuses as any[]).map((entry) => [entry.id, entry]));
+
+const AshfangFangDrop = {
+  id: "ashfang_fang",
+  name: "Ashfang Fang",
+  description: "เขี้ยวแข็งของหมาป่า Ashfang",
+  price: 7,
+  _type: "item" as const,
+};
+
+const FieldPatchDrop = {
+  id: "field_patch",
+  name: "Field Patch",
+  description: "แผ่นปฐมพยาบาลฉุกเฉิน ฟื้น HP ได้ในระบบไอเทมถัดไป",
+  price: 18,
+  _type: "item" as const,
+};
+
+const DROP_ITEM_DEFINITIONS: Record<string, any> = {
+  ashfang_fang: AshfangFangDrop,
+  field_patch: FieldPatchDrop,
+};
+
+type PendingLoot = {
+  token: string;
+  items: Array<{ itemId: string; quantity: number }>;
+  gold: number;
+  x: number;
+  y: number;
+  expiresAt: number;
+};
+
+const pendingLoot = new Map<string, PendingLoot>();
+const enemyThreat = new WeakMap<any, number>();
+const activeStatuses = new WeakMap<any, Map<string, {
+  id: string;
+  stacks: number;
+  expiresAt: number;
+  originalSpeed?: number;
+  interval?: number;
+  timeout?: number;
+}>>();
+let pendingPlayerAttackContext: { skill?: any; level?: number; source?: string } | null = null;
+let lastAutoAttackAt = 0;
+
+function profileCombatStats(profile = getProfile()): CombatantStats {
+  const derived = profile.derived || {};
+  return {
+    ATK: Math.max(1, Number(derived.ATK) || 10),
+    MATK: Math.max(1, Number(derived.MATK) || Number(derived.ATK) || 10),
+    DEF: Math.max(0, Number(derived.DEF) || 0),
+    MDEF: Math.max(0, Number(derived.MDEF) || 0),
+    HIT: Math.max(1, Number(derived.HIT) || (Number(profile.baseLevel) || 1) + 1),
+    FLEE: Math.max(1, Number(derived.FLEE) || (Number(profile.baseLevel) || 1) + 1),
+    perfectDodge: Math.max(0, Number(derived.perfectDodge) || 0),
+    CRIT: Math.max(0, Number(derived.CRIT) || 1),
+    critResistance: Math.max(0, Number(derived.critResistance) || 0),
+    BLOCK: Math.max(0, Number(derived.BLOCK) || 0),
+    blockReduction: Number(derived.blockReduction) || Number(combatConfig.blockDamageMultiplier) || .45,
+    MaxHP: Math.max(1, Number(derived.MaxHP) || 100),
+    MaxSP: Math.max(1, Number(derived.MaxSP) || 40),
+    element: "neutral",
+    size: "medium",
+    race: "human",
+  };
+}
+
+function monsterCombatStats(event: any): CombatantStats {
+  const config = event?.__greenvaleMonsterConfig || ASHFANG_CONFIG;
+  return {
+    ATK: Math.max(1, Number(config.atk) || 1),
+    MATK: Math.max(1, Number(config.matk) || Math.floor((Number(config.atk) || 1) * .65)),
+    DEF: Math.max(0, Number(config.def) || 0),
+    MDEF: Math.max(0, Number(config.mdef) || 0),
+    HIT: Math.max(1, Number(config.hit) || Number(config.level) + 8),
+    FLEE: Math.max(0, Number(config.flee) || 0),
+    perfectDodge: Math.max(0, Number(config.perfectDodge) || 0),
+    CRIT: Math.max(0, Number(config.crit) || 0),
+    critResistance: Math.max(0, Number(config.critResistance) || 0),
+    BLOCK: Math.max(0, Number(config.block) || 0),
+    blockReduction: Number(config.blockReduction) || Number(combatConfig.blockDamageMultiplier) || .45,
+    MaxHP: Math.max(1, Number(config.hp) || 1),
+    MaxSP: Math.max(0, Number(config.sp) || 0),
+    element: String(config.element || "neutral") as any,
+    size: String(config.size || "medium") as any,
+    race: String(config.race || "beast") as any,
+  };
+}
+
+function dispatchCombatEvent(detail: Record<string, any>) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("greenvale:combat-event", { detail }));
+}
+
+function setTargetHud(target: any | null, extra: Record<string, any> = {}) {
+  if (typeof window === "undefined") return;
+  if (!target) {
+    window.dispatchEvent(new CustomEvent("greenvale:target", { detail: { active: false, ...extra } }));
+    return;
+  }
+  const config = target.__greenvaleMonsterConfig || ASHFANG_CONFIG;
+  window.dispatchEvent(new CustomEvent("greenvale:target", {
+    detail: {
+      active: true,
+      id: String(target.id || config.id || "enemy"),
+      name: String(target.name || "Enemy"),
+      hp: Math.max(0, entityNumber(target, "hp")),
+      maxHp: Math.max(1, entityNumber(target, "param") ? Number(target.param?.[MAXHP]) || Number(config.hp) : Number(config.hp)),
+      level: Number(config.level) || 1,
+      element: String(config.element || "neutral"),
+      race: String(config.race || "beast"),
+      size: String(config.size || "medium"),
+      statuses: Array.from(activeStatuses.get(target)?.keys() || []),
+      threat: enemyThreat.get(target) || 0,
+      ...extra,
+    },
+  }));
+}
+
 function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
   const stats = CLASS_STATS[profile.classId] || CLASS_STATS.novice;
   const derived = profile.derived || {};
