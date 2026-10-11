@@ -1465,7 +1465,7 @@ function attachMonsterAi(entity: any, config: MonsterConfig) {
     enemyType: EnemyType.Aggressive,
     faction: "mutants",
     targets: "players",
-    visionRange: passive ? 0 : Math.max(60, Number(config.visionRange) || 180),
+    visionRange: passive ? 1 : Math.max(60, Number(config.visionRange) || 180),
     attackRange,
     attackCooldown: monsterAttackCooldown(config),
     dodgeChance: Math.max(0, Math.min(.35, Number(config.perfectDodge || 0) / 100)),
