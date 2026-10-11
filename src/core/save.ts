@@ -26,9 +26,14 @@ import {
   type HotbarSlot,
   type LearnedSkills,
 } from "./skills";
+import {
+  defaultCombatSettings,
+  normalizeCombatSettings,
+  type CombatSettings,
+} from "./combat";
 
 export const SAVE_KEY = "greenvale.save";
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 const LEGACY_PROFILE_KEY = "greenvale.profile.v1";
 
 export type GenderId = "female" | "male";
@@ -66,6 +71,8 @@ export type CharacterSave = {
   learnedSkills: LearnedSkills;
   hotbar: HotbarSlot[];
   autoBattle: AutoBattleSettings;
+  combatSettings: CombatSettings;
+  lootBag: Record<string, number>;
   skillResetItems: number;
   renameCredits: number;
   cutsceneSeen: boolean;
@@ -180,6 +187,10 @@ function normalizeCharacter(raw: any, slot: number): CharacterSave | null {
     learnedSkills,
     hotbar,
     autoBattle: normalizeAutoBattle(raw.autoBattle),
+    combatSettings: normalizeCombatSettings(raw.combatSettings),
+    lootBag: raw.lootBag && typeof raw.lootBag === "object"
+      ? Object.fromEntries(Object.entries(raw.lootBag).map(([id, qty]) => [id, Math.max(0, Math.floor(Number(qty) || 0))]))
+      : {},
     skillResetItems: Math.max(0, Math.floor(Number(raw.skillResetItems ?? 1) || 0)),
     renameCredits: Math.max(0, Number(raw.renameCredits ?? creation.freeRenames) || 0),
     cutsceneSeen: raw.cutsceneSeen === true,
@@ -221,6 +232,8 @@ function migrateLegacy(): GreenvaleSave {
     learnedSkills: normalizeLearnedSkills(null),
     hotbar: normalizeHotbar(null),
     autoBattle: defaultAutoBattle(),
+    combatSettings: defaultCombatSettings(),
+    lootBag: {},
     skillResetItems: 1,
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: true,
@@ -341,6 +354,8 @@ export function createCharacter(
     learnedSkills: normalizeLearnedSkills(null),
     hotbar: normalizeHotbar(null),
     autoBattle: defaultAutoBattle(),
+    combatSettings: defaultCombatSettings(),
+    lootBag: {},
     skillResetItems: 1,
     renameCredits: Number(creation.freeRenames) || 1,
     cutsceneSeen: false,
@@ -504,6 +519,30 @@ export function updateSelectedAutoBattle(next: Partial<AutoBattleSettings>): Cha
   return updated;
 }
 
+export function updateSelectedCombatSettings(next: Partial<CombatSettings>): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const updated = updateCharacter(selected.id, (character) => {
+    character.combatSettings = normalizeCombatSettings({ ...character.combatSettings, ...next });
+    return character;
+  });
+  gameEvents.emit("character:combat-settings", { characterId: updated.id, settings: updated.combatSettings });
+  return updated;
+}
+
+export function addSelectedLoot(itemId: string, quantity: number): CharacterSave | null {
+  const selected = getSelectedCharacter();
+  if (!selected) return null;
+  const qty = Math.max(0, Math.floor(Number(quantity) || 0));
+  if (!itemId || qty <= 0) return selected;
+  const updated = updateCharacter(selected.id, (character) => {
+    character.lootBag[itemId] = Math.max(0, Math.floor(Number(character.lootBag[itemId]) || 0)) + qty;
+    return character;
+  });
+  gameEvents.emit("character:loot", { characterId: updated.id, itemId, quantity: qty, total: updated.lootBag[itemId] });
+  return updated;
+}
+
 export function equipSelectedCostume(costumeId: string): CharacterSave | null {
   if (!validCostumeIds.has(costumeId)) throw new Error("Invalid costume");
   const selected = getSelectedCharacter();
@@ -547,6 +586,8 @@ export function writeLegacyBridge(character: CharacterSave): void {
     learnedSkills: character.learnedSkills,
     hotbar: character.hotbar,
     autoBattle: character.autoBattle,
+    combatSettings: character.combatSettings,
+    lootBag: character.lootBag,
     updatedAt: now(),
   };
   localStorage.setItem(LEGACY_PROFILE_KEY, JSON.stringify(legacy));
