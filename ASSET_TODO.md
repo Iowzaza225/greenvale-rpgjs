@@ -53,3 +53,17 @@ All final art must remain original to Greenvale Afterfall.
 | Generic cooldown conic overlay | Final icon masks/cooldown ring art |
 
 The placeholder ids are stable so final art/audio can replace them without changing skill logic.
+
+
+## Phase 4 placeholders
+
+| Placeholder | Final original asset |
+| --- | --- |
+| CSS target card / target button | Original lock-on ring + target marker |
+| CSS floating damage text | Original combat-number font/VFX treatment |
+| Text status chips | Original status-effect icons |
+| Generic impact animation | Element-specific hit, crit, block, miss and status VFX |
+| Text ground-loot panel | Original world-drop sprite, pickup glow and pickup SFX |
+| Knockout overlay | Original downed/respawn treatment |
+
+All final combat presentation must remain original to Greenvale Afterfall.
