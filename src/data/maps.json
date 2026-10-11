@@ -23,6 +23,20 @@
           "maxAlive": 5,
           "entries": [
             {
+              "monsterId": "ashfang_wolf",
+              "count": 2,
+              "points": [
+                [
+                  980,
+                  710
+                ],
+                [
+                  1100,
+                  690
+                ]
+              ]
+            },
+            {
               "monsterId": "mossling",
               "count": 2,
               "points": [
@@ -43,20 +57,6 @@
                 [
                   520,
                   820
-                ]
-              ]
-            },
-            {
-              "monsterId": "ashfang_wolf",
-              "count": 2,
-              "points": [
-                [
-                  980,
-                  710
-                ],
-                [
-                  1100,
-                  690
                 ]
               ]
             }
