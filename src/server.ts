@@ -37,6 +37,7 @@ import {
   spawnEntriesForMap,
   type MonsterConfig,
 } from "./core/monsters.ts";
+import { getClassConfig } from "./core/character.ts";
 
 const TrainingBlade = {
   id: "training-blade",
@@ -260,6 +261,13 @@ function profileCombatStats(profile: Profile): CombatStats {
 
 function monsterConfigForEntity(entity: any): MonsterConfig {
   return ((entity as any)?.greenvaleMonsterConfig as MonsterConfig) || WOLF_CONFIG;
+}
+
+function playerBasicAttackRange(profile: Profile): number {
+  // Read the current class config first so old saves do not keep the previous
+  // long melee range cached in profile.derived.attackRange.
+  const configured = Number((getClassConfig(profile.classId) as any)?.attackRange);
+  return Math.max(12, configured || Number(profile.derived?.attackRange) || 18);
 }
 
 function monsterCombatStats(source: any = WOLF_CONFIG): CombatStats {
@@ -562,7 +570,7 @@ function startBasicApproach(target: any) {
   stopBasicApproach();
 
   const profile = getProfile();
-  const targetRange = Math.max(12, Number(profile.derived?.attackRange) || 18);
+  const targetRange = playerBasicAttackRange(profile);
   const token = ++basicApproachToken;
   const startedAt = Date.now();
   const initialDistance = combatDistance(activePlayer, target);
@@ -660,7 +668,7 @@ function executeBasicAttack(source: "manual" | "auto" = "manual", approached = f
     return;
   }
 
-  const range = Math.max(12, Number(profile.derived?.attackRange) || 18);
+  const range = playerBasicAttackRange(profile);
   const distance = combatDistance(activePlayer, target);
   if (distance > range + BASIC_ATTACK_RANGE_TOLERANCE) {
     if (!approached) startBasicApproach(target);
