@@ -43,7 +43,7 @@
       "hpPerLevel": 1,
       "spPerLevel": 1,
       "aspd": 1,
-      "attackRange": 64,
+      "attackRange": 18,
       "baseWeight": 2000,
       "starterWeaponAtk": 14,
       "passive": {
@@ -103,7 +103,7 @@
       "hpPerLevel": 1.16,
       "spPerLevel": 0.86,
       "aspd": 0.95,
-      "attackRange": 70,
+      "attackRange": 22,
       "baseWeight": 2400,
       "starterWeaponAtk": 17,
       "passive": {
@@ -162,7 +162,7 @@
       "hpPerLevel": 0.9,
       "spPerLevel": 1.22,
       "aspd": 0.9,
-      "attackRange": 165,
+      "attackRange": 150,
       "baseWeight": 1800,
       "starterWeaponAtk": 9,
       "passive": {
@@ -220,7 +220,7 @@
       "hpPerLevel": 1,
       "spPerLevel": 1,
       "aspd": 1.08,
-      "attackRange": 220,
+      "attackRange": 190,
       "baseWeight": 1950,
       "starterWeaponAtk": 15,
       "passive": {
@@ -279,7 +279,7 @@
       "hpPerLevel": 1.02,
       "spPerLevel": 1.12,
       "aspd": 0.96,
-      "attackRange": 145,
+      "attackRange": 24,
       "baseWeight": 2000,
       "starterWeaponAtk": 11,
       "passive": {
@@ -338,7 +338,7 @@
       "hpPerLevel": 0.98,
       "spPerLevel": 1,
       "aspd": 1.18,
-      "attackRange": 58,
+      "attackRange": 14,
       "baseWeight": 1850,
       "starterWeaponAtk": 13,
       "passive": {
@@ -397,7 +397,7 @@
       "hpPerLevel": 1.04,
       "spPerLevel": 1,
       "aspd": 1,
-      "attackRange": 72,
+      "attackRange": 20,
       "baseWeight": 2800,
       "starterWeaponAtk": 14,
       "passive": {
