@@ -141,6 +141,31 @@ export function validateGameConfig(): void {
   assertUniqueIds("cutsceneFrames", cutscene.frames);
   assertUniqueIds("emotes", classes.emotes);
   assertUniqueIds("costumes", classes.costumes);
+
+  const itemIds = new Set(items.items.map((item) => item.id));
+  const dropIds = new Set(drops.dropTables.map((table) => table.id));
+  const allowedElements = new Set(formulas.elements);
+  for (const monster of monsters.monsters as any[]) {
+    if (!allowedElements.has(monster.element)) throw new Error(`Monster "${monster.id}" has invalid element`);
+    if (monster.dropTableId && !dropIds.has(monster.dropTableId)) throw new Error(`Monster "${monster.id}" references missing drop table`);
+  }
+  for (const table of drops.dropTables as any[]) {
+    for (const entry of table.entries ?? []) {
+      if (!itemIds.has(entry.itemId)) throw new Error(`Drop table "${table.id}" references missing item "${entry.itemId}"`);
+      if (Number(entry.chance) < 0 || Number(entry.chance) > 1) throw new Error(`Drop table "${table.id}" has invalid chance`);
+    }
+  }
+  for (const status of statusEffects.statuses as any[]) {
+    if (!status.effect?.kind) throw new Error(`Status "${status.id}" is missing effect.kind`);
+    if (!Number.isFinite(Number(status.durationMs)) || Number(status.durationMs) <= 0) throw new Error(`Status "${status.id}" has invalid duration`);
+  }
+  for (const element of formulas.elements) {
+    const row = (formulas as any).combat?.elementMatrix?.[element];
+    if (!row) throw new Error(`Combat element matrix is missing "${element}"`);
+    for (const defender of formulas.elements) {
+      if (!Number.isFinite(Number(row[defender]))) throw new Error(`Combat element matrix "${element}->${defender}" is invalid`);
+    }
+  }
 }
 
 export const gameConfig = Object.freeze({
