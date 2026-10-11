@@ -235,3 +235,30 @@ No TypeScript edit is required for a normal damage/heal/buff/debuff/toggle/passi
 Save schema version 4 stores learned levels, 10 hotbar slots, auto-battle settings and the reset-item count. Old Phase 1/2/3 saves migrate automatically. The mobile hotbar is separate from RPGJS synchronized built-in skill state so iPhone Safari does not reintroduce the earlier async hydration failure.
 
 See `docs/PHASE_3_QA.md`.
+
+
+## Phase 4 combat core
+
+Combat resolution is centralized in `src/core/combat.ts`. Normal attacks, class skills and monster attacks now share the same rules for:
+
+- HIT vs FLEE
+- Perfect Dodge
+- CRIT vs critical resistance
+- Block chance / block damage multiplier
+- physical vs magical defense
+- element multipliers
+- target size multipliers
+- race multipliers
+- threat generation
+
+Balance data remains in `formulas.json`. The full 7×7 element matrix covers Neutral, Fire, Water, Wind, Earth, Light and Dark.
+
+`status_effects.json` now defines duration, stacking, tick interval and runtime behavior for Poison, Bleed, Stun, Slow, Burn and Regen. Status application uses monster resistance data and reports status state to the target HUD.
+
+Phase 4 save schema is version 5. It stores Auto Attack, Auto Loot, loot radius and the lightweight persisted drop ledger. Combat automation never re-enables the RPGJS synchronized hotbar; Phase 3's custom hotbar remains isolated from the Safari hydration path.
+
+The in-game Combat / Auto panel controls Auto Attack and Auto Loot. Auto Attack acquires the nearest enemy, approaches legal attack range and respects character ASPD. Auto Loot rolls the JSON drop table; when disabled, loot is exposed as a nearby claim prompt.
+
+Player defeat uses a KO state and delayed camp revive instead of synchronous healing inside RPGJS `onDead`. Default revive restores 50% HP and SP.
+
+See `docs/PHASE_4_QA.md`.
