@@ -29,6 +29,11 @@ test("Phase 4 target, auto attack, loot, status and respawn work on iPhone WebKi
     return result?.direction === "outgoing" && Number(result.damage) > 0;
   }), { timeout: 14_000 }).toBe(true);
 
+  const basicRangeResult = await page.evaluate(() => (window as any).__GV_COMBAT_LAST_OUTGOING__);
+  expect(basicRangeResult.attackType).toBe("basic");
+  expect(Number(basicRangeResult.range)).toBe(18);
+  expect(Number(basicRangeResult.distance)).toBeLessThanOrEqual(Number(basicRangeResult.range) + 3);
+
   // Default auto-loot persists drops into save v5.
   await page.evaluate(() => window.dispatchEvent(new Event("greenvale:debug-force-loot")));
   await expect.poll(async () => page.evaluate(() => {
