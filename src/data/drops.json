@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "dropTables": [
+    {
+      "id": "ashfang_wolf",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "ashfang_fang",
+          "chance": 0.55,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.12,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "currency": {
+        "gold": {
+          "min": 2,
+          "max": 5,
+          "chance": 1
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "statuses": [
+    {
+      "id": "poison",
+      "nameKey": "status.poison.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "durationMs": 6000,
+      "tickMs": 1000,
+      "effect": {
+        "kind": "dot_max_hp",
+        "value": 0.018
+      },
+      "icon": "status_poison"
+    },
+    {
+      "id": "bleed",
+      "nameKey": "status.bleed.name",
+      "category": "debuff",
+      "stacking": "stack",
+      "maxStacks": 5,
+      "durationMs": 5000,
+      "tickMs": 1000,
+      "effect": {
+        "kind": "dot_source_atk",
+        "value": 0.08
+      },
+      "icon": "status_bleed"
+    },
+    {
+      "id": "stun",
+      "nameKey": "status.stun.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "durationMs": 900,
+      "tickMs": 0,
+      "effect": {
+        "kind": "stun",
+        "value": 1
+      },
+      "icon": "status_stun"
+    },
+    {
+      "id": "slow",
+      "nameKey": "status.slow.name",
+      "category": "debuff",
+      "stacking": "strongest",
+      "maxStacks": 1,
+      "durationMs": 3500,
+      "tickMs": 0,
+      "effect": {
+        "kind": "speed_multiplier",
+        "value": 0.55
+      },
+      "icon": "status_slow"
+    },
+    {
+      "id": "burn",
+      "nameKey": "status.burn.name",
+      "category": "debuff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "durationMs": 4000,
+      "tickMs": 1000,
+      "effect": {
+        "kind": "dot_source_matk",
+        "value": 0.1
+      },
+      "icon": "status_burn"
+    },
+    {
+      "id": "regen",
+      "nameKey": "status.regen.name",
+      "category": "buff",
+      "stacking": "refresh",
+      "maxStacks": 1,
+      "durationMs": 6000,
+      "tickMs": 1000,
+      "effect": {
+        "kind": "hot_max_hp",
+        "value": 0.025
+      },
+      "icon": "status_regen"
+    }
+  ]
+}
