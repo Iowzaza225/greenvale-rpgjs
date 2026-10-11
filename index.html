@@ -67,7 +67,14 @@
 
     window.addEventListener('error', (event) => {
       const error = event.error;
-      window.__GV_SHOW_ERROR__('JS ERROR\n' + (error?.stack || event.message || 'unknown'));
+      const location = event.filename
+        ? '\nSource: ' + event.filename + ':' + (event.lineno || '?') + ':' + (event.colno || '?')
+        : '';
+      const detail = error?.stack
+        || [error?.name, error?.message].filter(Boolean).join(': ')
+        || event.message
+        || String(error || 'unknown');
+      window.__GV_SHOW_ERROR__('JS ERROR\n' + detail + location);
     });
     window.addEventListener('unhandledrejection', (event) => {
       const reason = event.reason;
