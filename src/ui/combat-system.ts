@@ -170,7 +170,11 @@ export function initCombatSystem():void{
   window.addEventListener("greenvale:player-status",(event)=>{
     playerStatuses.clear();for(const state of ((event as CustomEvent).detail?.statuses||[])){playerStatuses.set(String(state.id),{stacks:Number(state.stacks)||1,expiresAt:Number(state.expiresAt)||0});}renderStatusStrip();
   });
-  window.addEventListener("greenvale:combat-result",(event)=>showCombatFloat((event as CustomEvent).detail||{}));
+  window.addEventListener("greenvale:combat-result",(event)=>{
+    const detail=(event as CustomEvent).detail||{};
+    (window as any).__GV_COMBAT_LAST__=detail;
+    showCombatFloat(detail);
+  });
   window.addEventListener("greenvale:loot-drop",(event)=>{
     const drops=((event as CustomEvent).detail?.drops||[]) as GroundDrop[];
     groundDrops.push(...drops.filter(drop=>drop?.itemId&&Number(drop.quantity)>0));
