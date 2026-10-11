@@ -501,14 +501,16 @@ function startSkillApproach(detail: any, skill: any, level: number, target: any,
       lastDistance = distance;
       lastProgressAt = now;
     } else if (now - lastProgressAt >= SKILL_APPROACH_STUCK_MS) {
-      beginTrackingMove();
+      // RPGJS moveTo() can fail silently in the standalone/browser bridge:
+      // it returns without throwing when no authoritative physics body is
+      // available. Retrying moveTo would keep the player frozen forever and
+      // end as "no target in range". After a short no-progress window, switch
+      // to the bounded synchronized step assist instead.
+      approachMode = "step";
+      try { activePlayer.stopMoveTo?.(); } catch {}
       lastProgressAt = now;
       lastDistance = distance;
-    }
-
-    if (distance + 2 < lastDistance) {
-      lastDistance = distance;
-      lastProgressAt = now;
+      stepTowardTarget();
     }
 
     if (now - startedAt > SKILL_APPROACH_TIMEOUT_MS || distance > SKILL_ASSIST_MAX_DISTANCE + 160) {
