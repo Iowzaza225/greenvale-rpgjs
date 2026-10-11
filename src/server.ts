@@ -827,28 +827,51 @@ function executeGreenvaleSkill(detail: any) {
     const shape = String(skill.area?.shape || "single");
     const limit = shape === "single" ? 1 : shape === "chain" ? 3 : 6;
     const selected = targets.slice(0, limit);
-    const profilePower = skill.formula === "magical_basic"
-      ? Number(profile.derived?.MATK) || Number(profile.derived?.ATK) || Number(activePlayer.param[ATK]) || 10
-      : Number(activePlayer.param[ATK]) || Number(profile.derived?.ATK) || 10;
     const percent = skillArrayValue(skill.powerPercent, level);
-    const originalAtk = Number(activePlayer.param[ATK]) || 1;
-    const scaledAtk = Math.max(1, Math.round(profilePower * Math.max(0, percent) / 100));
 
     for (const target of selected) {
       targetName ||= String(target.name || "Target");
+      const before = entityNumber(target, "hp");
       if (percent > 0) {
-        const before = entityNumber(target, "hp");
-        activePlayer.param[ATK] = scaledAtk;
         if (target.battleAi?.takeDamage) {
-          target.battleAi.takeDamage(activePlayer);
+          pendingPlayerAttackContext = { skill, level, source };
+          try {
+            target.battleAi.takeDamage(activePlayer);
+          } finally {
+            pendingPlayerAttackContext = null;
+          }
         } else {
-          target.hp = Math.max(0, before - Math.max(1, scaledAtk));
+          const attackKind: AttackKind = skill.formula === "magical_basic"
+            ? "magic"
+            : Number(skill.range) >= 120 ? "ranged" : "melee";
+          const result = resolveCombatHit({
+            attacker: profileCombatStats(profile),
+            defender: monsterCombatStats(target),
+            attackKind,
+            skillPowerPercent: percent,
+            attackElement: String(skill.element || "neutral") as any,
+          });
+          target.hp = Math.max(0, before - result.damage);
+          dispatchCombatEvent({
+            type: "damage",
+            source: "player",
+            skillId,
+            targetName: String(target.name || "Target"),
+            ...result,
+            hp: entityNumber(target, "hp"),
+            maxHp: Number(target.param?.[MAXHP]) || Number(target.__greenvaleMonsterConfig?.hp) || 1,
+          });
         }
-        damageTotal += Math.max(0, before - entityNumber(target, "hp"));
       }
-      applyStatus(target, skill, level);
+      const dealt = Math.max(0, before - entityNumber(target, "hp"));
+      damageTotal += dealt;
+      if (dealt > 0 || percent <= 0) {
+        applyStatus(target, skill, level);
+        const threat = (enemyThreat.get(target) || 0) + calculateThreat(dealt, 0, 1);
+        enemyThreat.set(target, threat);
+      }
+      setTargetHud(target);
     }
-    activePlayer.param[ATK] = originalAtk;
   }
 
   activePlayer.sp = Math.max(0, Number(activePlayer.sp) - spCost);
