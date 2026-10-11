@@ -1440,6 +1440,8 @@ export default createServer({
           [EngineerCutter.id]: EngineerCutter,
           [GreenvaleSaber.id]: GreenvaleSaber,
           [WolfFang.id]: WolfFang,
+          [AshfangFangDrop.id]: AshfangFangDrop,
+          [FieldPatchDrop.id]: FieldPatchDrop,
           [FieldPotion.id]: FieldPotion,
           [FocusSlash.id]: FocusSlash,
           [WolfClaw.id]: WolfClaw,
