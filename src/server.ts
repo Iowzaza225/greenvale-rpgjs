@@ -692,7 +692,7 @@ function executeBasicAttack(source: "manual" | "auto" = "manual", approached = f
       targetRace: String(monsterConfigForEntity(target).race || "beast") as any,
     },
   );
-  applyEnemyCombatDamage(target, result, { source, attackType: "basic", distance: Math.round(distance), range });
+  applyEnemyCombatDamage(target, result, { source, attackType: "basic", element: "neutral", distance: Math.round(distance), range });
 }
 
 function dispatchSkillState(type = "greenvale:skill-state", extra: Record<string, any> = {}) {
@@ -1761,6 +1761,7 @@ export default createServer({
                   outcome: result.outcome,
                   damage: 0,
                   attackType: "basic",
+                  element: "neutral",
                   targetId: combatEventId(target),
                   targetName: String(target?.name || "Ashfang Wolf"),
                   hp,
@@ -1799,7 +1800,9 @@ export default createServer({
                   outcome: result.outcome,
                   damage: 0,
                   attackType: "basic",
-                  attackerName: String(monsterConfigForEntity(attacker).name || attacker?.name || "Monster"),
+                  element: String(attackerConfig.basicAttack?.element || attackerConfig.element || "neutral"),
+                  attackerMonsterId: attackerConfig.id,
+                  attackerName: String(attackerConfig.name || attacker?.name || "Monster"),
                   hp,
                   maxHp: Number(target.param?.[MAXHP]) || 0,
                 });
@@ -1833,6 +1836,7 @@ export default createServer({
                 outcome: result?.outcome || "hit",
                 damage,
                 attackType: "basic",
+                element: "neutral",
                 targetId: combatEventId(target),
                 targetName: String(target?.name || "Ashfang Wolf"),
                 hp: Number(target.hp) || 0,
@@ -1846,12 +1850,15 @@ export default createServer({
             }
 
             if (direction === "incoming" && target === activePlayer) {
+              const attackerConfig = monsterConfigForEntity(attacker);
               dispatchCombat("greenvale:combat-result", {
                 direction: "incoming",
                 outcome: result?.outcome || "hit",
                 damage,
                 attackType: "basic",
-                attackerName: String(monsterConfigForEntity(attacker).name || attacker?.name || "Monster"),
+                element: String(attackerConfig.basicAttack?.element || attackerConfig.element || "neutral"),
+                attackerMonsterId: attackerConfig.id,
+                attackerName: String(attackerConfig.name || attacker?.name || "Monster"),
                 hp: Number(target.hp) || 0,
                 maxHp: Number(target.param?.[MAXHP]) || 0,
               });
@@ -1861,6 +1868,8 @@ export default createServer({
                   hp: Number(target.hp) || 0,
                   maxHp: Number(target.param?.[MAXHP]) || 0,
                   outcome: result?.outcome || "hit",
+                  element: String(attackerConfig.basicAttack?.element || attackerConfig.element || "neutral"),
+                  attackerMonsterId: attackerConfig.id,
                 },
               }));
               const attackerConfig = monsterConfigForEntity(attacker);
