@@ -67,3 +67,15 @@ The placeholder ids are stable so final art/audio can replace them without chang
 | Knockout overlay | Original downed/respawn treatment |
 
 All final combat presentation must remain original to Greenvale Afterfall.
+
+## Phase 5 monster placeholders
+
+| Placeholder | Final original asset |
+| --- | --- |
+| Shared RPGJS monster sheet | Original sheets for Mossling, Rustpipe Rat, Ashfang Wolf, Wandering Sporecap, Ironspine Boar, Ragcrow, Cinder Bat, Mire Crab, Hivewing, Shale Golem, Hollow Raider, Ashfang Alpha, Verdant Rotroot and Marrowtusk |
+| Text/CSS field-boss bar | Original Greenvale boss-frame art and phase markers |
+| CSS Bestiary symbols | Original monster portraits/silhouettes and discovery/reward badges |
+| Melee animation reused by ranged AI | Original projectile sprite/VFX and impact animation in Phase 6 |
+| Text mini-boss announcement | Original world-announcement panel and SFX |
+
+All Phase 5 names and data are original Greenvale Afterfall content.
