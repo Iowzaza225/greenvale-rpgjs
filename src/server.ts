@@ -1153,6 +1153,12 @@ if (typeof window !== "undefined") {
     executeGreenvaleSkill((event as CustomEvent).detail || {});
   });
   window.addEventListener("greenvale:skill-state-request", () => dispatchSkillState());
+  window.addEventListener("greenvale:basic-attack", () => executeBasicAttack("manual"));
+  window.addEventListener("greenvale:target-cycle", () => cycleCombatTarget());
+  window.addEventListener("greenvale:combat-state-request", () => {
+    dispatchTargetState();
+    dispatchPlayerStatuses();
+  });
 
   // QA-only position hook. It is enabled only on ?debug=1 and exists so the
   // iPhone WebKit test can reproduce "enemy visible but outside skill range".
@@ -1165,6 +1171,14 @@ if (typeof window !== "undefined") {
     activePlayer.teleport({ x, y });
   });
 }
+
+  window.setInterval(() => {
+    if (!activePlayer || Number(activePlayer.hp) <= 0) return;
+    const profile = getProfile();
+    if (profile.combatSettings?.autoAttack === true) {
+      executeBasicAttack("auto");
+    }
+  }, 240);
 
 function getProfile(): Profile {
   const fallback: Profile = { name: "Survivor", classId: "novice", started: true, kills: 0, completed: false };
@@ -1206,6 +1220,27 @@ function saveQuestProgress(kills: number, completed: boolean) {
   }
 }
 
+function rollWolfLoot() {
+  const table = (dropsData.dropTables as any[]).find((entry) => entry.id === WOLF_CONFIG.dropTableId);
+  if (!table) return;
+  const drops: Array<{ itemId: string; quantity: number }> = [];
+  const rolls = Math.max(1, Math.floor(Number(table.rolls) || 1));
+  for (let rollIndex = 0; rollIndex < rolls; rollIndex++) {
+    for (const entry of table.entries || []) {
+      if (!rollDrop(Number(entry.chance) || 0)) continue;
+      const quantity = randomQuantity(Number(entry.min) || 1, Number(entry.max) || 1);
+      if (quantity > 0) drops.push({ itemId: String(entry.itemId), quantity });
+    }
+  }
+  if (!drops.length) return;
+  dispatchCombat("greenvale:loot-drop", {
+    sourceId: "ashfang_wolf",
+    sourceName: "Ashfang Wolf",
+    drops,
+    autoLootRadius: Number((dropsData as any).settings?.autoLootRadius) || Number(WOLF_CONFIG.autoLootRadius) || 120,
+  });
+}
+
 function onWolfDefeated(attacker?: any) {
   if (!attacker || typeof attacker.getVariable !== "function") return;
 
@@ -1214,9 +1249,12 @@ function onWolfDefeated(attacker?: any) {
   // a narrow event that the versioned character save consumes.
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("greenvale:experience", {
-      detail: { baseExp: 18, jobExp: 8, source: "ashfang_wolf" },
+      detail: { baseExp: Number(WOLF_CONFIG.baseExp) || 18, jobExp: Number(WOLF_CONFIG.jobExp) || 8, source: "ashfang_wolf" },
     }));
   }
+  rollWolfLoot();
+  lockedTarget = null;
+  dispatchTargetState(null);
 
   if (attacker.getVariable("greenvale.quest.main") !== "first-hunt") return;
   const next = Math.min(3, Number(attacker.getVariable("greenvale.quest.kills") || 0) + 1);
@@ -1344,6 +1382,7 @@ const player = {
   onInput(player: RpgPlayer, { action }: any) {
     if (["up", "down", "left", "right"].includes(String(action))) {
       stopSkillApproach();
+      stopBasicApproach();
     }
     if (action === "escape" || action === "back") {
       void player.callMainMenu({
@@ -1359,10 +1398,17 @@ const player = {
   },
 
   onDead(player: RpgPlayer) {
-    // RPGJS v5 HP setter calls onDead BEFORE writing hpSignal=0.
-    // Healing synchronously here is overwritten by that final zero write.
+    // The HP setter completes after onDead, so revive must remain asynchronous.
     if (player.getVariable("greenvale.respawning")) return;
     player.setVariable("greenvale.respawning", true);
+    player.setVariable("greenvale.invulnerable", true);
+    stopSkillApproach();
+    stopBasicApproach();
+    lockedTarget = null;
+    dispatchTargetState(null);
+    dispatchCombat("greenvale:player-dead", { respawnMs: 1800 });
+    for (const id of Array.from(playerStatuses.keys())) clearPlayerStatus(id);
+
     setTimeout(() => {
       try {
         const maxHp = Number(player.param[MAXHP]);
@@ -1370,11 +1416,16 @@ const player = {
         player.hp = Number.isFinite(maxHp) && maxHp > 0 ? maxHp : 165;
         player.sp = Number.isFinite(maxSp) && maxSp > 0 ? maxSp : 85;
         player.teleport({ x: 760, y: 720 });
-        void player.showText("คุณหมดสติและถูกพากลับ Greenvale Camp");
+        dispatchCombat("greenvale:player-respawn", {
+          hp: Number(player.hp) || 0,
+          maxHp: Number(player.param[MAXHP]) || 0,
+          invulnerableMs: 2200,
+        });
       } finally {
         player.setVariable("greenvale.respawning", false);
+        setTimeout(() => player.setVariable("greenvale.invulnerable", false), 2200);
       }
-    }, 0);
+    }, 1800);
   },
 };
 
@@ -1390,15 +1441,41 @@ export default createServer({
             const attacker = context.attacker as any;
             const target = context.target as any;
             if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
+            if (target.getVariable("greenvale.invulnerable")) return false;
             const hp = Number(target.hp);
             if (!Number.isFinite(hp) || hp <= 0) return false;
-            const defense = Number(target.param?.[PDEF]);
-            const safeDefense = Number.isFinite(defense) ? defense : 6;
-            const damage = Math.max(4, Math.min(12, Math.round(10 - safeDefense * 0.25)));
-            // Provide the damage object before RPGJS resolves damage; the engine's
-            // default resolveDamage must not write invalid/zero HP first.
-            context.damage = { damage, raw: damage, defeated: hp <= damage };
-            context.metadata = { ...context.metadata, greenvaleHpBefore: hp };
+
+            const result = resolveDamage(
+              wolfCombatStats(),
+              profileCombatStats(getProfile()),
+              {
+                kind: "physical",
+                powerPercent: 100,
+                element: String(WOLF_CONFIG.basicAttack?.element || WOLF_CONFIG.element || "neutral") as any,
+                targetSize: "medium",
+                targetRace: "human",
+              },
+            );
+
+            if (result.outcome === "miss" || result.outcome === "perfect-dodge") {
+              dispatchCombat("greenvale:combat-result", {
+                direction: "incoming",
+                outcome: result.outcome,
+                damage: 0,
+                attackType: "basic",
+                attackerName: "Ashfang Wolf",
+                hp,
+                maxHp: Number(target.param?.[MAXHP]) || 0,
+              });
+              return false;
+            }
+
+            context.damage = { damage: result.damage, raw: result.raw, defeated: hp <= result.damage };
+            context.metadata = {
+              ...context.metadata,
+              greenvaleHpBefore: hp,
+              greenvaleCombatResult: result,
+            };
             return context;
           },
           afterDamage(context: any) {
@@ -1406,18 +1483,34 @@ export default createServer({
             const target = context.target as any;
             if (!attacker?.battleAi || typeof target?.getVariable !== "function") return;
             const hp = Number(context.metadata?.greenvaleHpBefore);
+            const result = context.metadata?.greenvaleCombatResult;
             const damage = Number(context.damage?.damage);
             if (!Number.isFinite(hp) || hp <= 0 || !Number.isFinite(damage)) return;
-            // Apply exactly one bounded hit, using the same number as the popup.
+
             target.hp = Math.max(0, hp - damage);
             if (typeof window !== "undefined" && target === activePlayer) {
+              dispatchCombat("greenvale:combat-result", {
+                direction: "incoming",
+                outcome: result?.outcome || "hit",
+                damage,
+                attackType: "basic",
+                attackerName: "Ashfang Wolf",
+                hp: Number(target.hp) || 0,
+                maxHp: Number(target.param?.[MAXHP]) || 0,
+              });
               window.dispatchEvent(new CustomEvent("greenvale:player-hit", {
                 detail: {
                   damage,
                   hp: Number(target.hp) || 0,
                   maxHp: Number(target.param?.[MAXHP]) || 0,
+                  outcome: result?.outcome || "hit",
                 },
               }));
+
+              const status = WOLF_CONFIG.basicAttack?.statusEffect;
+              if (status?.id && Math.random() < Number(status.chance || 0)) {
+                applyPlayerStatus(String(status.id), Number(status.durationMs) || undefined, Number(WOLF_CONFIG.level) || 1);
+              }
             }
             return context;
           },
