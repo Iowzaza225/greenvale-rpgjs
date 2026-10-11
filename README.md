@@ -270,3 +270,19 @@ AI metadata supports:
 The Bestiary is persisted separately in `greenvale.bestiary.v1` so Phase 4 save schema v5 remains backward compatible. Bestiary reward thresholds feed into the existing loot event rather than inventing a second inventory path.
 
 See `docs/PHASE_5_QA.md`.
+
+## Phase 6 effects and environment
+
+Phase 6 keeps combat authoritative in the existing server/runtime and adds presentation through `src/ui/effects-system.ts`.
+
+All tunable visual/audio/environment values are in `src/data/effects.json > runtime`:
+
+- combat effect kind, duration, particle count and scale
+- seven element palettes
+- generated Web Audio cue shape/frequency/duration/gain
+- day/dusk/night timing and overlays
+- rain cadence, duration, opacity and particle count
+
+No copied effect art or audio is required for this phase. Final original assets can replace the CSS/Web Audio placeholders while keeping the event contracts unchanged.
+
+See `docs/PHASE_6_QA.md`.
