@@ -1392,6 +1392,110 @@ const Mara: EventDefinition = {
   },
 };
 
+function WorldGate(label: string, x: number, y: number, destination: string, spawn: { x: number; y: number }): EventDefinition {
+  return {
+    name: `gate-${destination}`,
+    onInit() {
+      this.setGraphic("npc-gatekeeper");
+      this.name = label;
+      this.through = false;
+      this.teleport({ x, y });
+      this.setHitbox(32, 35);
+      this.setComponentsTop(Components.text(`⇄ ${label}`, {
+        fontSize: 12, fill: "#f6d98f", stroke: "#142b24"
+      }), { width: 180, marginBottom: 10 });
+    },
+    async onAction(player: RpgPlayer) {
+      stopBasicApproach();
+      stopSkillApproach();
+      lockedTarget = null;
+      const valid = (mapsData.maps as any[]).some(map => map.id === destination);
+      if (!valid) return;
+      await player.changeMap(destination, spawn);
+      dispatchCombat("greenvale:map-changed", { id: destination });
+    },
+  };
+}
+
+function TownNPC(id: string, displayName: string, x: number, y: number): EventDefinition {
+  const dialogues: Record<string,string> = {
+    trainer:"ฝึกฝน STR / AGI / VIT / INT / DEX / LUK และเลือกสายอาชีพได้จากเมนูตัวละคร",
+    merchant:"ผู้รอดชีวิตต้องเตรียมเสบียงให้พร้อมก่อนออกนอกค่าย",
+    blacksmith:"ยุค Afterfall ต้องซ่อมอาวุธจากเศษโลหะที่ยังใช้ได้",
+    healer:"พักรักษาตัวก่อนออกเดินทาง จุดเกิดอยู่ที่ Greenvale Camp",
+    quest_keeper:"ภารกิจแรก: ตามรอย Ashfang Wolf รอบค่าย",
+    gatekeeper:"ประตูค่ายไป Training Plains อยู่ทางตะวันออก",
+    settler:"เคยเป็นพื้นที่อุดมสมบูรณ์ ก่อนป่าเริ่มกลายพันธุ์",
+  };
+  return {
+    name: `npc-${id}`,
+    onInit() {
+      this.setGraphic(`npc-${id}`);
+      this.name = displayName;
+      this.through = false;
+      this.teleport({ x, y });
+      this.setHitbox(28, 34);
+      this.setComponentsTop(Components.text(displayName, {
+        fontSize: 12, fill: "#e5dcad", stroke:"#15231e"
+      }), { width: 120, marginBottom: 11 });
+    },
+    async onAction(player:RpgPlayer) {
+      await player.showText(`${displayName}: ${dialogues[id] || "ยินดีต้อนรับ Greenvale"}`);
+    },
+  };
+}
+
+const TOWN_NPCS: Array<{ id: string; name: string; x: number; y: number }> = [
+  {id:"trainer",name:"Tarin · Trainer",x:850,y:370},
+  {id:"merchant",name:"Vela · Merchant",x:1200,y:590},
+  {id:"blacksmith",name:"Brann · Smith",x:400,y:350},
+  {id:"healer",name:"Eira · Healer",x:1120,y:820},
+  {id:"quest_keeper",name:"Nim · Quests",x:800,y:250},
+  {id:"gatekeeper",name:"Roa · Guide",x:1330,y:430},
+  {id:"settler",name:"Iva · Settler",x:270,y:620},
+];
+
+const WORLD_MAP_DEFINITIONS = (mapsData.maps as any[]).map((map) => {
+  const mainCamp = map.id === CAMP_MAP_ID;
+  const monsterTypes = (map.monsters || []) as string[];
+  return {
+    id: map.id,
+    width: Number(map.width) || 1600,
+    height: Number(map.height) || 1000,
+    hitboxes: mainCamp ? CAMP_HITBOXES : [
+      {id:"top",x:0,y:0,width:1600,height:10},
+      {id:"bottom",x:0,y:990,width:1600,height:10},
+      {id:"left",x:0,y:0,width:10,height:1000},
+      {id:"right",x:1590,y:0,width:10,height:1000},
+    ],
+    events: [
+      ...(mainCamp ? [
+        {event:Mara},
+        ...TOWN_NPCS.map(npc => ({event:TownNPC(npc.id,npc.name,npc.x,npc.y)})),
+        {event:MutantEnemy("camp-wolf-a","ashfang_wolf",1030,420)},
+        {event:MutantEnemy("camp-wolf-b","ashfang_wolf",1180,500)},
+        {event:MutantEnemy("camp-wolf-c","ashfang_wolf",980,710)},
+      ] : monsterTypes.flatMap((monsterId,index) => {
+        const x=580+(index%3)*230;
+        const y=235+(index%2)*510;
+        return [
+          {event:MutantEnemy(`${map.id}-${monsterId}-a`,monsterId,x,y)},
+          {event:MutantEnemy(`${map.id}-${monsterId}-b`,monsterId,x+110,y+60)},
+        ];
+      })),
+      ...(map.warps||[]).map((gate:any) => ({
+        event:WorldGate(
+          String(gate.to).split("-").join(" "),
+          Number(gate.x) || 1400,
+          Number(gate.y) || 500,
+          String(gate.to),
+          {x:Number(gate.spawn?.x)||300,y:Number(gate.spawn?.y)||500},
+        ),
+      })),
+    ],
+  };
+});
+
 const player = {
   async onConnected(player: RpgPlayer) {
     const profile = getProfile();
@@ -1653,20 +1757,7 @@ export default createServer({
           [WolfClaw.id]: WolfClaw,
         }),
         player,
-        maps: [
-          {
-            id: CAMP_MAP_ID,
-            width: CAMP_WIDTH,
-            height: CAMP_HEIGHT,
-            hitboxes: CAMP_HITBOXES,
-            events: [
-              { event: Mara },
-              { event: MutantWolf("wolf-a", 1030, 420) },
-              { event: MutantWolf("wolf-b", 1180, 500) },
-              { event: MutantWolf("wolf-c", 980, 710) },
-            ],
-          } as any,
-        ],
+        maps: WORLD_MAP_DEFINITIONS as any,
       },
     ]),
   ],
