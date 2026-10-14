@@ -1,0 +1,8 @@
+<Container onBeforeDestroy={dispose}>
+  <EventLayerComponent pixiChildren={layers} />
+</Container>
+<script>
+  import { EventLayerComponent } from "@rpgjs/client";
+  import { createWorldScene } from "../art/world-scene";
+  const { layers, dispose } = createWorldScene("stoneburrow-cavern");
+</script>

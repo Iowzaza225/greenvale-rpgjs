@@ -1,0 +1,21 @@
+#gv-desktop-help[hidden],#gv-desktop-help-detail[hidden]{display:none!important}
+#gv-desktop-help{position:fixed;right:14px;top:calc(55px + env(safe-area-inset-top));z-index:139800;display:flex;gap:5px;font-family:system-ui,sans-serif;pointer-events:auto}
+#gv-desktop-help button{border:1px solid #718477;border-radius:9px;background:#132320e8;color:#e9d9a0;padding:9px 12px;min-height:38px;font-size:11px;font-weight:800;box-shadow:0 4px 14px #0008}
+#gv-desktop-help-detail{position:fixed;right:14px;top:calc(102px + env(safe-area-inset-top));z-index:250000;max-width:330px;width:calc(100% - 28px);padding:17px;border:1px solid #9f8953;border-radius:13px;background:#13221ff5;color:#ecdfbb;box-shadow:0 15px 50px #000d;font-family:system-ui,sans-serif}
+#gv-desktop-help-detail h3{margin:0 0 12px;color:#ecd38e;font-size:16px}
+#gv-desktop-help-detail>button{float:right;min-width:37px;min-height:37px;border:1px solid #52645a;border-radius:8px;background:#25352d;color:#eedab7}
+#gv-desktop-help-detail dl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:12px;margin:0}
+#gv-desktop-help-detail dt{font-family:ui-monospace,monospace;color:#d8bb75}#gv-desktop-help-detail dd{margin:0;color:#b8c9be}
+body[data-gv-device=desktop] #gv-skill-hotbar{bottom:12px;width:min(72vw,800px)}
+body[data-gv-device=desktop] .gv3-hotbar-slots{grid-template-columns:repeat(10,minmax(0,1fr))}
+body[data-gv-device=desktop] #gv-combat-controls{right:20px;bottom:22px;grid-template-columns:repeat(4,49px)}
+body[data-gv-device=desktop] #gv-combat-controls button{height:49px;width:49px}
+body[data-gv-device=desktop] #gv-combat-target{top:18px;width:340px}
+body[data-gv-device=desktop] #gv-castbar{bottom:95px}
+body[data-gv-device=desktop] #gv-ground-loot{left:16px;bottom:40px}
+body[data-gv-device=desktop] #gv-in-game{pointer-events:none}
+body[data-gv-device=desktop] #gv-in-game button{pointer-events:auto}
+body[data-gv-device=desktop] #gv-panel .gv-modal{max-width:540px}
+body[data-gv-device=desktop] #gv-desktop-help-detail{max-width:330px}
+@media (min-width:1100px){body[data-gv-device=desktop] .gv2-window{max-width:860px}body[data-gv-device=desktop] .gv3-window{max-width:1040px}}
+@media (max-width:799px){#gv-desktop-help,#gv-desktop-help-detail{display:none!important}}

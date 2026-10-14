@@ -1,0 +1,69 @@
+{
+  "id": "rotten-core",
+  "biome": "core",
+  "width": 1600,
+  "height": 1000,
+  "projection": "oblique-2.5d",
+  "props": [
+    {
+      "id": "core-prop-0",
+      "kind": "crystal",
+      "x": 90,
+      "y": 120,
+      "width": 90,
+      "depth": 34,
+      "height": 95,
+      "solid": true
+    },
+    {
+      "id": "core-prop-1",
+      "kind": "crystal",
+      "x": 1370,
+      "y": 150,
+      "width": 90,
+      "depth": 34,
+      "height": 111,
+      "solid": true
+    },
+    {
+      "id": "core-prop-2",
+      "kind": "crystal",
+      "x": 160,
+      "y": 820,
+      "width": 90,
+      "depth": 34,
+      "height": 127,
+      "solid": true
+    },
+    {
+      "id": "core-prop-3",
+      "kind": "crystal",
+      "x": 1420,
+      "y": 820,
+      "width": 90,
+      "depth": 34,
+      "height": 95,
+      "solid": true
+    },
+    {
+      "id": "core-prop-4",
+      "kind": "crystal",
+      "x": 420,
+      "y": 100,
+      "width": 90,
+      "depth": 34,
+      "height": 111,
+      "solid": true
+    },
+    {
+      "id": "core-prop-5",
+      "kind": "crystal",
+      "x": 1100,
+      "y": 90,
+      "width": 90,
+      "depth": 34,
+      "height": 127,
+      "solid": true
+    }
+  ]
+}

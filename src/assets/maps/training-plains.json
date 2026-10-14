@@ -1,0 +1,69 @@
+{
+  "id": "training-plains",
+  "biome": "plains",
+  "width": 1600,
+  "height": 1000,
+  "projection": "oblique-2.5d",
+  "props": [
+    {
+      "id": "plains-prop-0",
+      "kind": "tree",
+      "x": 90,
+      "y": 120,
+      "width": 54,
+      "depth": 34,
+      "height": 95,
+      "solid": true
+    },
+    {
+      "id": "plains-prop-1",
+      "kind": "tree",
+      "x": 1370,
+      "y": 150,
+      "width": 54,
+      "depth": 34,
+      "height": 111,
+      "solid": true
+    },
+    {
+      "id": "plains-prop-2",
+      "kind": "tree",
+      "x": 160,
+      "y": 820,
+      "width": 54,
+      "depth": 34,
+      "height": 127,
+      "solid": true
+    },
+    {
+      "id": "plains-prop-3",
+      "kind": "tree",
+      "x": 1420,
+      "y": 820,
+      "width": 54,
+      "depth": 34,
+      "height": 95,
+      "solid": true
+    },
+    {
+      "id": "plains-prop-4",
+      "kind": "tree",
+      "x": 420,
+      "y": 100,
+      "width": 54,
+      "depth": 34,
+      "height": 111,
+      "solid": true
+    },
+    {
+      "id": "plains-prop-5",
+      "kind": "tree",
+      "x": 1100,
+      "y": 90,
+      "width": 54,
+      "depth": 34,
+      "height": 127,
+      "solid": true
+    }
+  ]
+}

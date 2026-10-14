@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "camp_blade",
+      "nameKey": "item.camp_blade.name",
+      "descriptionKey": "item.camp_blade.description",
+      "type": "weapon",
+      "weaponType": "blade",
+      "rarity": "common",
+      "atk": 14,
+      "weight": 40,
+      "price": 20,
+      "icon": "placeholder_blade"
+    },
+    {
+      "id": "field_patch",
+      "nameKey": "item.field_patch.name",
+      "descriptionKey": "item.field_patch.description",
+      "type": "consumable",
+      "rarity": "common",
+      "healHp": 45,
+      "weight": 2,
+      "price": 18,
+      "icon": "placeholder_field_patch"
+    },
+    {
+      "id": "ashfang_fang",
+      "nameKey": "item.ashfang_fang.name",
+      "descriptionKey": "item.ashfang_fang.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 7,
+      "icon": "placeholder_fang"
+    },
+    {
+      "id": "memory_respec_chip",
+      "nameKey": "item.memory_respec_chip.name",
+      "descriptionKey": "item.memory_respec_chip.description",
+      "type": "consumable",
+      "rarity": "uncommon",
+      "skillReset": true,
+      "weight": 1,
+      "price": 0,
+      "icon": "placeholder_respec_chip"
+    },
+    {
+      "id": "moss_fiber",
+      "nameKey": "item.moss_fiber.name",
+      "descriptionKey": "item.moss_fiber.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 3,
+      "icon": "icon_moss_fiber"
+    },
+    {
+      "id": "rat_tail",
+      "nameKey": "item.rat_tail.name",
+      "descriptionKey": "item.rat_tail.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 5,
+      "icon": "icon_rat_tail"
+    },
+    {
+      "id": "iron_tusk",
+      "nameKey": "item.iron_tusk.name",
+      "descriptionKey": "item.iron_tusk.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 7,
+      "icon": "icon_iron_tusk"
+    },
+    {
+      "id": "blight_spore",
+      "nameKey": "item.blight_spore.name",
+      "descriptionKey": "item.blight_spore.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 9,
+      "icon": "icon_blight_spore"
+    },
+    {
+      "id": "straw_fragment",
+      "nameKey": "item.straw_fragment.name",
+      "descriptionKey": "item.straw_fragment.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 11,
+      "icon": "icon_straw_fragment"
+    },
+    {
+      "id": "mire_shell",
+      "nameKey": "item.mire_shell.name",
+      "descriptionKey": "item.mire_shell.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 13,
+      "icon": "icon_mire_shell"
+    },
+    {
+      "id": "ash_wing",
+      "nameKey": "item.ash_wing.name",
+      "descriptionKey": "item.ash_wing.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 15,
+      "icon": "icon_ash_wing"
+    },
+    {
+      "id": "stone_core",
+      "nameKey": "item.stone_core.name",
+      "descriptionKey": "item.stone_core.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 17,
+      "icon": "icon_stone_core"
+    },
+    {
+      "id": "raider_emblem",
+      "nameKey": "item.raider_emblem.name",
+      "descriptionKey": "item.raider_emblem.description",
+      "type": "material",
+      "rarity": "common",
+      "weight": 1,
+      "price": 19,
+      "icon": "icon_raider_emblem"
+    },
+    {
+      "id": "rotten_seed",
+      "nameKey": "item.rotten_seed.name",
+      "descriptionKey": "item.rotten_seed.description",
+      "type": "material",
+      "rarity": "rare",
+      "weight": 1,
+      "price": 150,
+      "icon": "icon_rotten_seed"
+    }
+  ]
+}
