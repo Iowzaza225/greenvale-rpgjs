@@ -536,6 +536,7 @@ function renderInGameShell(): void {
   const characterButton = document.getElementById("gv-character-btn");
   const skillButton = document.getElementById("gv-skill-btn");
   const combatButton = document.getElementById("gv-combat-btn");
+  const worldButton = document.getElementById("gv-world-btn");
   const resume = document.getElementById("gv-resume");
   const returnTitle = document.getElementById("gv-title-btn");
   if (menuTitle) menuTitle.textContent = t("menu.title");
@@ -546,6 +547,7 @@ function renderInGameShell(): void {
   if (characterButton) characterButton.textContent = t("menu.character");
   if (skillButton) skillButton.textContent = t("menu.skills");
   if (combatButton) combatButton.textContent = t("menu.combat");
+  if (worldButton) worldButton.textContent = t("menu.world");
   if (resume) resume.textContent = t("menu.resume");
   if (returnTitle) returnTitle.textContent = t("menu.returnTitle");
 }
