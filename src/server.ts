@@ -269,6 +269,8 @@ function wolfCombatStats(entity?: any): CombatStats {
 let activePlayer: RpgPlayer | null = null;
 const activeEnemies = new Set<any>();
 const monsterTypes = new WeakMap<object, string>();
+const monsterMaps = new WeakMap<object, string>();
+let currentMapId = CAMP_MAP_ID;
 function monsterConfig(entityOrId: any): any {
   const id = typeof entityOrId === "string" ? entityOrId : monsterTypes.get(entityOrId) || "ashfang_wolf";
   return (monstersData.monsters as any[]).find(entry => entry.id === id) || WOLF_CONFIG;
@@ -373,7 +375,7 @@ function enemyCandidates(player: RpgPlayer): Array<{ event: any; distance: numbe
   // facade instead of the authoritative room, which has no getEvents().
   // Battle events register themselves here during server-side onInit instead.
   return Array.from(activeEnemies)
-    .filter((event: any) => event?.battleAi && entityNumber(event, "hp") > 0)
+    .filter((event: any) => event?.battleAi && entityNumber(event, "hp") > 0 && monsterMaps.get(event) === currentMapId)
     .map((event: any) => ({ event, distance: combatDistance(player, event) }))
     .sort((a: any, b: any) => a.distance - b.distance);
 }
@@ -1170,6 +1172,19 @@ if (typeof window !== "undefined") {
 
   // QA-only position hook. It is enabled only on ?debug=1 and exists so the
   // iPhone WebKit test can reproduce "enemy visible but outside skill range".
+  window.addEventListener("greenvale:debug-travel", async (event) => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    const id = String((event as CustomEvent).detail?.id || "");
+    const map = (mapsData.maps as any[]).find(entry => entry.id === id);
+    if (!map) return;
+    stopBasicApproach();
+    stopSkillApproach();
+    lockedTarget = null;
+    await activePlayer.changeMap(id, { x:Number(map.spawn?.x)||300,y:Number(map.spawn?.y)||500 });
+    currentMapId = id;
+    dispatchCombat("greenvale:map-changed", {id});
+    dispatchTargetState(null);
+  });
   window.addEventListener("greenvale:debug-player-position", (event) => {
     if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
     const detail = (event as CustomEvent).detail || {};
@@ -1309,7 +1324,7 @@ function onWolfDefeated(attacker?: any, monsterId = "ashfang_wolf") {
   saveQuestProgress(next, done);
 }
 
-function MutantEnemy(name: string, monsterId: string, x: number, y: number): EventDefinition {
+function MutantEnemy(name: string, monsterId: string, x: number, y: number, mapId = CAMP_MAP_ID): EventDefinition {
   const config = monsterConfig(monsterId);
   const displayName = monsterId.split("_").map(part => part[0].toUpperCase()+part.slice(1)).join(" ");
   return {
@@ -1318,6 +1333,7 @@ function MutantEnemy(name: string, monsterId: string, x: number, y: number): Eve
       this.setGraphic(`monster-${monsterId}`);
       this.name = displayName;
       monsterTypes.set(this, monsterId);
+      monsterMaps.set(this, mapId);
       this.speed = Number(config.moveSpeed) || 1.35;
       this.through = false;
       this.initializeDefaultStats();
@@ -1412,7 +1428,10 @@ function WorldGate(label: string, x: number, y: number, destination: string, spa
       const valid = (mapsData.maps as any[]).some(map => map.id === destination);
       if (!valid) return;
       await player.changeMap(destination, spawn);
+      currentMapId = destination;
+      lockedTarget = null;
       dispatchCombat("greenvale:map-changed", { id: destination });
+      dispatchTargetState(null);
     },
   };
 }
@@ -1479,8 +1498,8 @@ const WORLD_MAP_DEFINITIONS = (mapsData.maps as any[]).map((map) => {
         const x=580+(index%3)*230;
         const y=235+(index%2)*510;
         return [
-          {event:MutantEnemy(`${map.id}-${monsterId}-a`,monsterId,x,y)},
-          {event:MutantEnemy(`${map.id}-${monsterId}-b`,monsterId,x+110,y+60)},
+          {event:MutantEnemy(`${map.id}-${monsterId}-a`,monsterId,x,y,map.id)},
+          {event:MutantEnemy(`${map.id}-${monsterId}-b`,monsterId,x+110,y+60,map.id)},
         ];
       })),
       ...(map.warps||[]).map((gate:any) => ({
@@ -1500,6 +1519,7 @@ const player = {
   async onConnected(player: RpgPlayer) {
     const profile = getProfile();
     activePlayer = player;
+    currentMapId = CAMP_MAP_ID;
     player.setGraphic(`hero-${profile.classId}`);
     player.initializeDefaultStats();
     applyProfileToPlayer(player, profile, true);
