@@ -35,7 +35,7 @@ function mapSize(id: string) {
 }
 
 async function makeCharacterSpritesheet(id: string) {
-  // Default to smooth-fantasy. ?art=pixel restores the old pixel sheet for QA.
+  // Painted Smooth Fantasy is the default. ?art=canvas or ?art=pixel are QA fallbacks.
   const mode = typeof window === "undefined" ? "painted" :
     new URLSearchParams(window.location.search).get("art") || "painted";
   const pixelArt = mode === "pixel";
@@ -78,7 +78,8 @@ async function makeCharacterSpritesheet(id: string) {
 /** Debug-only adapter for QA of bundled, production-generated image atlases. */
 declare global {
   interface Window {
-    __GV_ART_QA__?: { smooth: (id: string) => string; pixel: (id: string) => string };
+    __GV_ART_QA__?: { smooth: (id: string) => string; pixel: (id: string) => string;
+      painted: (id: string) => Promise<string | undefined> };
   }
 }
 if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debug") === "1") {
