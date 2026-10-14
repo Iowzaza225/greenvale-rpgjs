@@ -34,7 +34,7 @@ function sendKey(type: "keydown" | "keyup", code: string): void {
   const key = code.replace(/^Arrow/, "Arrow");
   const event = new KeyboardEvent(type, { code, key, bubbles: true, cancelable: true });
   Object.defineProperty(event, "gvSynthetic", { value: true });
-  window.dispatchEvent(event);
+  document.dispatchEvent(event);
 }
 
 function closeOverlays(): boolean {
