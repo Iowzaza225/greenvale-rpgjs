@@ -20,10 +20,16 @@ export default defineConfig({
   projects: [
     {
       name: "iphone-webkit",
+      testIgnore: "**/desktop-world.spec.ts",
       use: {
         ...devices["iPhone 14"],
         browserName: "webkit",
       },
+    },
+    {
+      name: "desktop-chromium",
+      testMatch: "**/desktop-world.spec.ts",
+      use: { ...devices["Desktop Chrome"], viewport: {width:1280,height:800}, browserName:"chromium" },
     },
   ],
 });
