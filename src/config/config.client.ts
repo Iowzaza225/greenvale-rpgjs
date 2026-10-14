@@ -18,6 +18,7 @@ import CavernMap from "../components/stoneburrow-cavern.ce";
 import BossMap from "../components/rotten-core.ce";
 import { ORIGINAL_SPRITE_SIZE, originalSpriteDataUrl } from "../art/original-sprites";
 import { SMOOTH_FRAME, smoothFantasySheetDataUrl } from "../art/smooth-fantasy";
+import { paintedFantasySheetDataUrl } from "../art/painted-sprites";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_WIDTH } from "../shared";
 
 const WORLD_COMPONENTS: Record<string, any> = {
@@ -33,11 +34,20 @@ function mapSize(id: string) {
     : { width: 1600, height: 1000 };
 }
 
-function makeCharacterSpritesheet(id: string) {
+async function makeCharacterSpritesheet(id: string) {
   // Default to smooth-fantasy. ?art=pixel restores the old pixel sheet for QA.
-  const pixelArt = typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("art") === "pixel";
-  const image = pixelArt ? originalSpriteDataUrl(id) : smoothFantasySheetDataUrl(id);
+  const mode = typeof window === "undefined" ? "painted" :
+    new URLSearchParams(window.location.search).get("art") || "painted";
+  const pixelArt = mode === "pixel";
+  // Painted original assets are the default; canvas art remains a safe fallback.
+  let image = pixelArt ? originalSpriteDataUrl(id) : smoothFantasySheetDataUrl(id);
+  if (!pixelArt && mode !== "canvas") {
+    try {
+      image = (await paintedFantasySheetDataUrl(id)) ?? image;
+    } catch (error) {
+      console.warn("[Greenvale] Painted sprite unavailable, using canvas fallback:", id, error);
+    }
+  }
   const width = pixelArt ? ORIGINAL_SPRITE_SIZE.width : SMOOTH_FRAME.width * SMOOTH_FRAME.columns;
   const height = pixelArt ? ORIGINAL_SPRITE_SIZE.height : SMOOTH_FRAME.height * SMOOTH_FRAME.rows;
   const preset = Presets.RMSpritesheet(3, 4, 1);
@@ -73,6 +83,7 @@ if (typeof window !== "undefined" && new URLSearchParams(window.location.search)
   window.__GV_ART_QA__ = {
     smooth: smoothFantasySheetDataUrl,
     pixel: originalSpriteDataUrl,
+    painted: paintedFantasySheetDataUrl,
   };
 }
 
