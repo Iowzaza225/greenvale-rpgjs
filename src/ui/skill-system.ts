@@ -1,4 +1,5 @@
 import skillsData from "../data/skills.json";
+import { originalIconDataUrl } from "../art/original-icons";
 import { t } from "../core/i18n";
 import {
   assignSelectedHotbar,
@@ -73,6 +74,10 @@ function toast(message: string): void {
   window.setTimeout(() => { el.hidden = true; }, 1800);
 }
 
+function skillIcon(skill: any):string {
+  return `<img src="${originalIconDataUrl(skill.id,skill.type)}" alt="" width="32" height="32" loading="eager" />`;
+}
+
 function skillName(skillId: string): string {
   const skill = getSkill(skillId);
   return skill ? t(skill.nameKey) : skillId;
@@ -95,7 +100,7 @@ function renderHotbar(): void {
         const level = skillId ? getSkillLevel(character.learnedSkills, skillId) : 0;
         return `<button class="gv3-hotbar-slot" data-hotbar-slot="${slot}" data-use-skill="${skillId || ""}" ${!skill ? "disabled" : ""}>
           <span class="gv3-slot-number">${slot}</span>
-          <i class="gv3-skill-icon gv3-skill-icon--${skill?.type || "empty"}">${skill ? escapeHtml(t(skill.nameKey).slice(0, 2)) : "—"}</i>
+          <i class="gv3-skill-icon gv3-skill-icon--${skill?.type || "empty"}">${skill ? skillIcon(skill) : "—"}</i>
           <small>${skill ? `${escapeHtml(t("skill.ui.levelShort"))}${level}` : escapeHtml(t("skill.ui.empty"))}</small>
           <span class="gv3-cooldown" data-cooldown-skill="${skillId || ""}"></span>
         </button>`;
@@ -127,7 +132,7 @@ function renderSkillCard(skill: any, group: "novice" | "job"): string {
       style="--tree-x:${Number(skill.tree?.x || 0) + 1};--tree-y:${Number(skill.tree?.y || 0) + 1}"
       data-skill-id="${skill.id}" data-tree-group="${group}">
     <button class="gv3-skill-main" data-select-skill="${skill.id}" data-drag-skill="${level > 0 ? skill.id : ""}">
-      <i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${escapeHtml(t(skill.nameKey).slice(0,2))}</i>
+      <i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${skillIcon(skill)}</i>
       <span><b>${escapeHtml(t(skill.nameKey))}</b><small>${escapeHtml(t(`skill.ui.type.${skill.type}`))}</small></span>
       <em>${escapeHtml(t("skill.ui.level",{level,max:skill.maxLv}))}</em>
     </button>
@@ -160,7 +165,7 @@ function renderDetail(): string {
   const data = getSkillLevelData(skill.id, shownLevel);
   const next = level < skill.maxLv ? getSkillLevelData(skill.id, Math.max(1, level + 1)) : null;
   return `<aside class="gv3-detail">
-    <div class="gv3-detail-head"><i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${escapeHtml(t(skill.nameKey).slice(0,2))}</i><div><b>${escapeHtml(t(skill.nameKey))}</b><span>${escapeHtml(t(`skill.ui.type.${skill.type}`))}</span></div></div>
+    <div class="gv3-detail-head"><i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${skillIcon(skill)}</i><div><b>${escapeHtml(t(skill.nameKey))}</b><span>${escapeHtml(t(`skill.ui.type.${skill.type}`))}</span></div></div>
     <p>${escapeHtml(t(skill.descriptionKey))}</p>
     <div class="gv3-detail-stats">
       <span>${escapeHtml(t("skill.ui.level",{level,max:skill.maxLv}))}</span>
@@ -199,7 +204,7 @@ function renderHotbarEditor(): string {
       ${character.hotbar.map((skillId,slot)=>`<button data-hotbar-slot="${slot}" data-editor-slot="${slot}"><b>${slot}</b><span>${skillId ? escapeHtml(skillName(skillId)) : escapeHtml(t("skill.ui.empty"))}</span><em data-clear-slot="${slot}">×</em></button>`).join("")}
     </div>
     <div class="gv3-learned-list">
-      ${learned.map(skill=>`<button data-drag-skill="${skill.id}" data-quickslot-skill="${skill.id}"><i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${escapeHtml(t(skill.nameKey).slice(0,2))}</i><span>${escapeHtml(t(skill.nameKey))}<small>${escapeHtml(t("skill.ui.levelShort"))} ${getSkillLevel(character.learnedSkills,skill.id)}</small></span></button>`).join("")}
+      ${learned.map(skill=>`<button data-drag-skill="${skill.id}" data-quickslot-skill="${skill.id}"><i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${skillIcon(skill)}</i><span>${escapeHtml(t(skill.nameKey))}<small>${escapeHtml(t("skill.ui.levelShort"))} ${getSkillLevel(character.learnedSkills,skill.id)}</small></span></button>`).join("")}
     </div>
   </div>`;
 }
@@ -216,7 +221,7 @@ function renderAuto(): string {
     <div class="gv3-auto-list">
       ${learned.map((skill)=>{
         const index=character.autoBattle.skillIds.indexOf(skill.id);
-        return `<div class="${index>=0?"active":""}"><button data-auto-toggle="${skill.id}"><i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${escapeHtml(t(skill.nameKey).slice(0,2))}</i><span>${escapeHtml(t(skill.nameKey))}</span><em>${index>=0 ? index+1 : "＋"}</em></button>
+        return `<div class="${index>=0?"active":""}"><button data-auto-toggle="${skill.id}"><i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${skillIcon(skill)}</i><span>${escapeHtml(t(skill.nameKey))}</span><em>${index>=0 ? index+1 : "＋"}</em></button>
         ${index>=0 ? `<button data-auto-move="${skill.id}" data-dir="-1">↑</button><button data-auto-move="${skill.id}" data-dir="1">↓</button>` : ""}</div>`;
       }).join("")}
     </div>
