@@ -27,7 +27,7 @@ function ready(): boolean {
 }
 
 function busy(): boolean {
-  return modalIds.some(visible) || visible("gv-tutorial") || visible("gv-death-overlay");
+  return modalIds.some(visible) || visible("gv-death-overlay");
 }
 
 function sendKey(type: "keydown" | "keyup", code: string): void {
@@ -35,7 +35,6 @@ function sendKey(type: "keydown" | "keyup", code: string): void {
   const event = new KeyboardEvent(type, { code, key, bubbles: true, cancelable: true });
   Object.defineProperty(event, "gvSynthetic", { value: true });
   window.dispatchEvent(event);
-  document.dispatchEvent(event);
 }
 
 function closeOverlays(): boolean {
