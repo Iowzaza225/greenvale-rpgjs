@@ -16,7 +16,217 @@
       "spawn": {
         "x": 760,
         "y": 720
-      }
+      },
+      "warps": [
+        {
+          "id": "training",
+          "x": 1460,
+          "y": 490,
+          "to": "training-plains",
+          "spawn": {
+            "x": 300,
+            "y": 530
+          }
+        }
+      ],
+      "npcIds": [
+        "mara",
+        "trainer",
+        "merchant",
+        "blacksmith",
+        "healer",
+        "quest_keeper",
+        "gatekeeper",
+        "settler"
+      ]
+    },
+    {
+      "id": "training-plains",
+      "nameKey": "map.training_plains.name",
+      "width": 1600,
+      "height": 1000,
+      "bgm": "bgm_training_plains",
+      "channels": [
+        1,
+        2,
+        3
+      ],
+      "safeZone": false,
+      "levelRange": [
+        1,
+        10
+      ],
+      "spawn": {
+        "x": 300,
+        "y": 530
+      },
+      "warps": [
+        {
+          "id": "camp",
+          "x": 190,
+          "y": 480,
+          "to": "greenvale-camp",
+          "spawn": {
+            "x": 1300,
+            "y": 540
+          }
+        },
+        {
+          "id": "grove",
+          "x": 1400,
+          "y": 480,
+          "to": "mutant-grove",
+          "spawn": {
+            "x": 180,
+            "y": 500
+          }
+        }
+      ],
+      "npcIds": [],
+      "monsters": [
+        "mossling",
+        "sewer_rat",
+        "ashfang_wolf"
+      ]
+    },
+    {
+      "id": "mutant-grove",
+      "nameKey": "map.mutant_grove.name",
+      "width": 1600,
+      "height": 1000,
+      "bgm": "bgm_mutant_grove",
+      "channels": [
+        1,
+        2,
+        3
+      ],
+      "safeZone": false,
+      "levelRange": [
+        10,
+        20
+      ],
+      "spawn": {
+        "x": 280,
+        "y": 510
+      },
+      "warps": [
+        {
+          "id": "plains",
+          "x": 180,
+          "y": 500,
+          "to": "training-plains",
+          "spawn": {
+            "x": 1320,
+            "y": 480
+          }
+        },
+        {
+          "id": "cavern",
+          "x": 1400,
+          "y": 490,
+          "to": "stoneburrow-cavern",
+          "spawn": {
+            "x": 190,
+            "y": 505
+          }
+        }
+      ],
+      "npcIds": [],
+      "monsters": [
+        "ashfang_wolf",
+        "blightcap_mushroom",
+        "ironthorn_boar",
+        "hollow_scarecrow"
+      ]
+    },
+    {
+      "id": "stoneburrow-cavern",
+      "nameKey": "map.stoneburrow_cavern.name",
+      "width": 1600,
+      "height": 1000,
+      "bgm": "bgm_stoneburrow_cavern",
+      "channels": [
+        1,
+        2,
+        3
+      ],
+      "safeZone": false,
+      "levelRange": [
+        20,
+        30
+      ],
+      "spawn": {
+        "x": 300,
+        "y": 505
+      },
+      "warps": [
+        {
+          "id": "grove",
+          "x": 185,
+          "y": 500,
+          "to": "mutant-grove",
+          "spawn": {
+            "x": 1320,
+            "y": 490
+          }
+        },
+        {
+          "id": "core",
+          "x": 1410,
+          "y": 505,
+          "to": "rotten-core",
+          "spawn": {
+            "x": 280,
+            "y": 510
+          }
+        }
+      ],
+      "npcIds": [],
+      "monsters": [
+        "stone_husk",
+        "ash_bat",
+        "giant_mire_crab",
+        "hollow_raider"
+      ]
+    },
+    {
+      "id": "rotten-core",
+      "nameKey": "map.rotten_core.name",
+      "width": 1600,
+      "height": 1000,
+      "bgm": "bgm_rotten_core",
+      "channels": [
+        1,
+        2,
+        3
+      ],
+      "safeZone": false,
+      "levelRange": [
+        30,
+        40
+      ],
+      "spawn": {
+        "x": 290,
+        "y": 510
+      },
+      "warps": [
+        {
+          "id": "cavern",
+          "x": 185,
+          "y": 510,
+          "to": "stoneburrow-cavern",
+          "spawn": {
+            "x": 1320,
+            "y": 505
+          }
+        }
+      ],
+      "npcIds": [],
+      "monsters": [
+        "field_boss",
+        "hollow_raider",
+        "stone_husk"
+      ]
     }
   ]
 }
