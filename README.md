@@ -251,3 +251,24 @@ The pure rules engine is `src/core/combat.ts`. Balance belongs in JSON rather th
 The iPhone HUD adds target cycling, manual basic attack, auto attack, auto loot, floating combat results, status chips, a small persistent loot bag and knockout/respawn feedback. Native RPGJS player attacks and Greenvale custom skills both route through the same combat-rule layer.
 
 Character save schema is version 5 and stores combat preferences and collected Phase 4 loot. See `docs/PHASE_4_QA.md`.
+
+
+## Desktop input and five original Afterfall zones
+
+This build supports iPhone Safari and desktop browsers. The desktop input adapter lives in
+`src/ui/desktop-controls.ts`: WASD/arrow movement, hotbar 1–0, Q target, Space/J attack, K skills,
+C stats, B combat, I menu, M world map, E interact, F fullscreen and Escape to close custom panels.
+
+Art no longer loads the RPGJS playground's external hero and monster sprites. The local generators
+`src/art/original-sprites.ts` and `src/art/original-icons.ts` draw 7 hero variants,
+11 monsters, 8 NPC variants and individually deterministic pixel skill icons. These are functional
+original sprites, deliberately small for mobile; hand-illustrated animation polish is tracked
+in `docs/ART_BIBLE.md`.
+
+`src/data/maps.json` defines Greenvale Camp → Training Plains → Mutant Grove →
+Stoneburrow Cavern → Rotten Core, each with level ranges, spawn points and bidirectional portals.
+The corresponding `src/components/*.ce` components render five distinct terrain palettes;
+the server registers matching map events, NPCs and monster spawns. World navigation UI is
+`src/ui/world-map.ts`.
+
+See `docs/DESKTOP_WORLD_QA.md`. No merge to main without review and manual iPhone/desktop QA.
