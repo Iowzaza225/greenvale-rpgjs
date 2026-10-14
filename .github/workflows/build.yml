@@ -63,11 +63,11 @@ jobs:
       - name: Install Chromium for desktop smoke
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Desktop Chromium and world travel
-        run: pnpm run test:desktop
-
       - name: Smooth Fantasy atlas regression
         run: pnpm exec playwright test tests/smooth-fantasy.spec.ts --project=desktop-chromium
+
+      - name: Desktop Chromium and world travel
+        run: pnpm run test:desktop
 
       - name: Upload Playwright traces on failure
         if: failure()
