@@ -49,3 +49,38 @@ test("pixel art remains available as a safe fallback", async ({ page }) => {
   });
   expect(checked).toEqual({ width: 144, height: 224 });
 });
+
+test("painted atlas is bundled and visibly differs from old canvas primitives", async ({ page }) => {
+  await page.goto("/?debug=1&art=painted");
+  await expect.poll(() => page.evaluate(() => Boolean((window as any).__GV_ART_QA__))).toBe(true);
+  const result = await page.evaluate(async () => {
+    const art = (window as any).__GV_ART_QA__;
+    const ids = ["hero-novice", "hero-vanguard", "hero-arcanist",
+      "npc-mara", "npc-trainer", "monster-ashfang_wolf", "monster-hollow_raider"];
+    return Promise.all(ids.map(async id => {
+      const painted: string | undefined = await art.painted(id);
+      if (!painted) return {id, available:false};
+      const img = new Image();
+      img.src = painted;
+      await img.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img,0,0);
+      const rgba = ctx.getImageData(0,0,img.width,img.height);
+      let visiblePixels=0;
+      for(let i=3;i<rgba.data.length;i+=4)if(rgba.data[i]>32)visiblePixels++;
+      return {id,available:true,width:img.width,height:img.height,
+        visiblePixels,pixelSource: painted===art.smooth(id)};
+    }));
+  });
+  expect(result).toHaveLength(7);
+  for(const sprite of result){
+    expect(sprite.available).toBe(true);
+    expect(sprite.width).toBe(288);
+    expect(sprite.height).toBe(448);
+    expect(sprite.visiblePixels).toBeGreaterThan(2000);
+    expect(sprite.pixelSource).toBe(false);
+  }
+});
