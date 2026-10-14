@@ -466,5 +466,11 @@
   "item.raider_emblem.name": "Raider Emblem",
   "item.raider_emblem.description": "A material salvaged from the Afterfall wilderness.",
   "item.rotten_seed.name": "Rotten Seed",
-  "item.rotten_seed.description": "A material salvaged from the Afterfall wilderness."
+  "item.rotten_seed.description": "A material salvaged from the Afterfall wilderness.",
+  "desktop.inventory": "Inventory",
+  "desktop.quests": "Quests",
+  "desktop.close": "Close",
+  "desktop.bagHelp": "Loot collected in combat",
+  "desktop.firstHunt": "First hunt: Ashfang Wolf",
+  "desktop.questHelp": "Defeat 3 Ashfang Wolves, then speak to Mara."
 }

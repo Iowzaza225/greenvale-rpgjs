@@ -1,3 +1,4 @@
+import { worldHitboxes } from "../core/world-geometry";
 import {
   Presets,
   provideClientGlobalConfig,
@@ -62,12 +63,7 @@ export default {
       component: WORLD_COMPONENTS[id] || CampMap,
       ...mapSize(id),
       data: {},
-      hitboxes: id === "greenvale-camp" ? CAMP_HITBOXES : [
-        { id: "top", x: 0, y: 0, width: 1600, height: 10 },
-        { id: "bottom", x: 0, y: 990, width: 1600, height: 10 },
-        { id: "left", x: 0, y: 0, width: 10, height: 1000 },
-        { id: "right", x: 1590, y: 0, width: 10, height: 1000 },
-      ],
+      hitboxes: worldHitboxes(id),
     })),
     provideClientGlobalConfig(),
     provideActionBattle({

@@ -1,3 +1,4 @@
+import { worldHitboxes } from "./core/world-geometry";
 import {
   ATK,
   Components,
@@ -1182,12 +1183,7 @@ if (typeof window !== "undefined") {
     const dt=Math.max(1,Math.min(42,Number(detail.dt)||16));
     const distance=Math.min(10,Math.max(1,Number(activePlayer.speed)||3.1)*dt/16);
     const px=entityCoord(activePlayer,"x"),py=entityCoord(activePlayer,"y");
-    const obstacles=currentMapId===CAMP_MAP_ID?CAMP_HITBOXES:[
-      {id:"top",x:0,y:0,width:1600,height:10},
-      {id:"bottom",x:0,y:990,width:1600,height:10},
-      {id:"left",x:0,y:0,width:10,height:1000},
-      {id:"right",x:1590,y:0,width:10,height:1000},
-    ];
+    const obstacles=worldHitboxes(currentMapId);
     const blocked=(x:number,y:number)=>obstacles.some(box=>
       x+12>box.x && x-12<box.x+box.width &&
       y+17>box.y && y-17<box.y+box.height
@@ -1543,12 +1539,7 @@ const WORLD_MAP_DEFINITIONS = (mapsData.maps as any[]).map((map) => {
     id: map.id,
     width: Number(map.width) || 1600,
     height: Number(map.height) || 1000,
-    hitboxes: mainCamp ? CAMP_HITBOXES : [
-      {id:"top",x:0,y:0,width:1600,height:10},
-      {id:"bottom",x:0,y:990,width:1600,height:10},
-      {id:"left",x:0,y:0,width:10,height:1000},
-      {id:"right",x:1590,y:0,width:10,height:1000},
-    ],
+    hitboxes: worldHitboxes(map.id),
     events: [
       ...(mainCamp ? [
         {event:Mara},

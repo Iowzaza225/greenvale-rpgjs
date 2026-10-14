@@ -1,0 +1,26 @@
+/* Dedicated safe areas keep a ten-slot hotbar clear of combat controls. */
+body[data-gv-device=desktop] #gv-skill-hotbar{width:min(calc(100vw - 320px),720px);left:50%;bottom:12px}
+body[data-gv-device=desktop] #gv-combat-controls{grid-template-columns:repeat(2,44px);right:12px;bottom:12px;gap:6px}
+body[data-gv-device=desktop] #gv-combat-controls button{width:44px;height:44px}
+body[data-gv-device=desktop] #gv-combat-target{width:min(30vw,320px)}
+body[data-gv-device=desktop] .gv-floating-host{inset:0!important;background:none!important;pointer-events:none;padding:0!important;display:block!important}
+body[data-gv-device=desktop] .gv-floating-host[hidden]{display:none!important}
+body[data-gv-device=desktop] .gv-floating-host>section,
+body[data-gv-device=desktop] .gv-floating-host>.gv-modal{position:absolute;left:var(--panel-x,20px);top:var(--panel-y,100px);width:min(560px,calc(50vw - 24px));max-width:calc(100vw - 16px)!important;max-height:calc(100dvh - 110px);overflow:auto;pointer-events:auto;margin:0}
+body[data-gv-device=desktop] .gv-floating-host header,
+body[data-gv-device=desktop] #gv-panel-title{cursor:grab;touch-action:none;user-select:none}
+body[data-gv-device=desktop] .gv-floating-host header:active{cursor:grabbing}
+body[data-gv-device=desktop] .gv3-tree-layout{min-width:0}
+.gv-utility-window{width:min(540px,100%);max-height:90dvh;overflow:auto;background:#12251f;color:#e8dfbf;border:1px solid #a18d57;border-radius:14px;box-shadow:0 16px 60px #0009;font-family:system-ui}
+.gv-utility-window header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #52664c}
+.gv-utility-window h2{font-size:19px;margin:0}.gv-utility-window header button{min-width:44px;min-height:44px;background:#293d30;color:#e8dfbf;border:1px solid #738160;border-radius:8px;font-size:24px}
+.gv-utility-window main{padding:16px}.gv-utility-window p{font-size:13px;line-height:1.6;color:#b3c5b7}
+#gv-inventory,#gv-quests{position:fixed;inset:0;display:grid;place-items:center;background:#07110fe8;z-index:248000;padding:12px}
+#gv-inventory[hidden],#gv-quests[hidden]{display:none!important}
+.gv-bag-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.gv-bag-grid article{display:flex;align-items:center;gap:8px;background:#20392d;border:1px solid #51664c;padding:10px;border-radius:8px;font-size:12px}.gv-bag-grid img{width:32px;height:32px;image-rendering:pixelated}.gv-bag-grid b{margin-left:auto}.gv-quest-entry progress{width:100%;accent-color:#bdad71}
+@media (max-width:1000px){body[data-gv-device=desktop] .gv-floating-host>section,body[data-gv-device=desktop] .gv-floating-host>.gv-modal{width:min(540px,calc(100vw - 32px))}}
+body[data-gv-device=desktop] .gv3-tree-layout{grid-template-columns:1fr}
+body[data-gv-device=desktop] .gv3-detail{position:static}
+body[data-gv-device=desktop] .gv3-skill-main{grid-template-columns:32px 1fr;gap:5px}
+body[data-gv-device=desktop] .gv3-skill-main em{grid-column:2}
+body[data-gv-device=desktop] #gv-tutorial{top:106px}

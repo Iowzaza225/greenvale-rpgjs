@@ -3,23 +3,19 @@ import { openCharacterSystem } from "./character-system";
 import { openSkillSystem } from "./skill-system";
 import { openCombatSystem } from "./combat-system";
 import "./desktop-controls.css";
+import "./hud-desktop.css";
+import { movementKeys, isTextEntry } from "../input/keyboard";
+import { panelIds, isPanelVisible, closeTopPanel, initDesktopLayout } from "./desktop-layout";
+import { openUtility, initUtilityWindows } from "./inventory-quests";
 
 let initialized = false;
 const held = new Set<string>();
-const directions: Record<string, {dx:number;dy:number}> = {
-  KeyW:{dx:0,dy:-1},KeyA:{dx:-1,dy:0},KeyS:{dx:0,dy:1},KeyD:{dx:1,dy:0},
-};
-const modalIds=["gv-world-map","gv-character-system","gv-skill-system","gv-combat-system","gv-panel"];
+const directions=movementKeys;
+const modalIds=panelIds;
 let frame=0,lastFrame=0;
 
-function visible(id:string):boolean {
-  const el=document.getElementById(id);
-  return !!el && !el.hidden && getComputedStyle(el).display!=="none";
-}
-function inputFocused():boolean {
-  const el=document.activeElement as HTMLElement | null;
-  return !!el && (["INPUT","TEXTAREA","SELECT"].includes(el.tagName)||el.isContentEditable);
-}
+const visible=isPanelVisible;
+function inputFocused():boolean { return isTextEntry(document.activeElement); }
 function ready():boolean {
   return Boolean(window.__GV_CANVAS_READY__ && !document.getElementById("gv-app")?.offsetParent);
 }
@@ -43,17 +39,7 @@ function moveTick(now:number):void {
   }
   frame=requestAnimationFrame(moveTick);
 }
-function closeOverlays():boolean {
-  for(const id of modalIds){
-    if(!visible(id))continue;
-    const el=document.getElementById(id);if(el)el.hidden=true;
-    return true;
-  }
-  return false;
-}
-function openMenu():void {
-  (document.getElementById("gv-menu-btn") as HTMLButtonElement|null)?.click();
-}
+const closeOverlays=closeTopPanel;
 function updateDevice():void {
   const desktop=matchMedia("(pointer: fine) and (min-width: 800px)").matches;
   document.body.dataset.gvDevice=desktop?"desktop":"touch";
@@ -70,16 +56,22 @@ function onKey(event:KeyboardEvent):void {
   if(event.metaKey||event.ctrlKey||event.altKey)return;
   if(directions[event.code] && event.type==="keyup"){
     held.delete(event.code);
-    event.preventDefault();
+    event.preventDefault();event.stopImmediatePropagation();
     return;
   }
   if(!ready())return;
   if(event.code==="Escape"&&event.type==="keydown"){
     stopMovement();
-    if(closeOverlays()){event.preventDefault();event.stopPropagation();}
+    if(closeOverlays()){event.preventDefault();event.stopImmediatePropagation();}
     return;
   }
-  if(inputFocused()||busy())return;
+  if(inputFocused()||visible("gv-death-overlay"))return;
+  if(busy() && !["KeyI","KeyQ","KeyK","KeyC","KeyM","KeyB"].includes(event.code)){
+    if(directions[event.code]||event.code==="Space"||event.code==="Tab"){
+      event.preventDefault();event.stopImmediatePropagation();
+    }
+    stopMovement();return;
+  }
 
   if(directions[event.code]){
     if(event.type==="keydown"){
@@ -87,7 +79,7 @@ function onKey(event:KeyboardEvent):void {
       if(!frame)frame=requestAnimationFrame(moveTick);
     }
     event.preventDefault();
-    event.stopPropagation();
+    event.stopImmediatePropagation();
     return;
   }
   if(event.type!=="keydown"||event.repeat)return;
@@ -100,8 +92,10 @@ function onKey(event:KeyboardEvent):void {
 
   if(event.code==="Space"||event.code==="KeyJ"){
     window.dispatchEvent(new Event("greenvale:basic-attack"));
-  }else if(event.code==="KeyQ"||event.code==="Tab"){
+  }else if(event.code==="Tab"){
     window.dispatchEvent(new Event("greenvale:target-cycle"));
+  }else if(event.code==="KeyQ"){
+    openUtility("quests");
   }else if(event.code==="KeyK"){
     openSkillSystem("tree");
   }else if(event.code==="KeyC"){
@@ -111,20 +105,23 @@ function onKey(event:KeyboardEvent):void {
   }else if(event.code==="KeyM"){
     window.dispatchEvent(new Event("greenvale:world-map-open"));
   }else if(event.code==="KeyI"){
-    openMenu();
+    openUtility("inventory");
   }else if(event.code==="KeyF"){
     void toggleFullscreen();
   }else if(event.code==="KeyE"){
     window.dispatchEvent(new Event("greenvale:desktop-interact"));
   }else return;
-  event.preventDefault();event.stopPropagation();
+  event.preventDefault();event.stopImmediatePropagation();
 }
 export function initDesktopControls():void {
   if(initialized)return;
   initialized=true;
+  initUtilityWindows();
+  initDesktopLayout();
   window.addEventListener("keydown",onKey,{capture:true});
   window.addEventListener("keyup",onKey,{capture:true});
   window.addEventListener("blur",stopMovement);
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)stopMovement();});
   window.addEventListener("resize",updateDevice);
   gameEvents.on("game:canvas-ready",updateDevice);
   updateDevice();

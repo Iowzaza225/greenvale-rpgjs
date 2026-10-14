@@ -466,5 +466,11 @@
   "item.raider_emblem.name": "ตราโจร",
   "item.raider_emblem.description": "วัสดุที่พบในพื้นที่กลายพันธุ์ของ Afterfall",
   "item.rotten_seed.name": "เมล็ดแกนเน่า",
-  "item.rotten_seed.description": "วัสดุที่พบในพื้นที่กลายพันธุ์ของ Afterfall"
+  "item.rotten_seed.description": "วัสดุที่พบในพื้นที่กลายพันธุ์ของ Afterfall",
+  "desktop.inventory": "กระเป๋า",
+  "desktop.quests": "เควส",
+  "desktop.close": "ปิด",
+  "desktop.bagHelp": "ไอเทมที่เก็บได้จากการต่อสู้",
+  "desktop.firstHunt": "ภารกิจแรก: Ashfang Wolf",
+  "desktop.questHelp": "กำจัด Ashfang Wolf 3 ตัว แล้วกลับไปคุยกับ Mara"
 }

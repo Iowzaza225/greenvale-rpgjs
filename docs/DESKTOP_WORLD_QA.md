@@ -17,11 +17,12 @@ Tests use an iPhone 14-size WebKit project for Phase 0–4 regressions and a 128
 | WASD / arrows | Movement (WASD relayed to the RPGJS arrow control path) |
 | Space / J | Basic attack |
 | 1–0 | Hotbar slots (0 activates the last slot) |
-| Q / Tab | Cycle nearest visible target |
+| Tab | Cycle nearest visible target |
+| Q | Quest journal |
 | K | Skill tree |
 | C | Character stats |
 | B | Combat / loot |
-| I | Main menu |
+| I | Inventory (collected loot) |
 | M | World map |
 | E | Interact with NPC / gate |
 | F | Fullscreen |
@@ -56,3 +57,15 @@ Map routes are bidirectional. In `?debug=1` mode tests use `greenvale:debug-trav
 - Maps are five playable connected zones, not fully featured dungeons with pathfinding, fog-of-war, multi-channel networking or bespoke boss phase AI.
 - NPC merchants/trainers are interactable dialogue placeholders; real shops and server-driven quest chains remain future implementation.
 - Art and world simulation are local standalone RPGJS/Netlify, not yet a synchronized multiplayer backend.
+
+## 0.8.1 desktop / oblique 2.5D slice
+- I/Q open dedicated loot inventory and first-hunt journal from the existing save.
+- Desktop panels are floating, can be open side by side, and have draggable headers.
+- Esc closes the visually topmost panel. Movement/attacks stop while panels are open.
+- Arrow keys and WASD use the same collision-checked movement path.
+- Mouse skill drag starts after 5 px; touch retains a 450 ms hold. Cancel does not drop.
+- Five maps now use height-extruded props and directional ground shadows. Prop foot Y
+  sorts them with characters inside RPGJS's event layer. Collision footprints come
+  from the same JSON read by renderer, server and desktop movement.
+- Test 16:9 / 16:10 HUD separation, resize clamping and map round trips.
+- This is an oblique 2.5D prototype, not a 3D engine or finished authored pixel art.

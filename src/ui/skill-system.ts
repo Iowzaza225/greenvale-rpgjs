@@ -99,7 +99,7 @@ function renderHotbar(): void {
         const skill = skillId ? getSkill(skillId) : null;
         const level = skillId ? getSkillLevel(character.learnedSkills, skillId) : 0;
         return `<button class="gv3-hotbar-slot" data-hotbar-slot="${slot}" data-use-skill="${skillId || ""}" ${!skill ? "disabled" : ""}>
-          <span class="gv3-slot-number">${slot}</span>
+          <span class="gv3-slot-number">${(slot+1)%10}</span>
           <i class="gv3-skill-icon gv3-skill-icon--${skill?.type || "empty"}">${skill ? skillIcon(skill) : "—"}</i>
           <small>${skill ? `${escapeHtml(t("skill.ui.levelShort"))}${level}` : escapeHtml(t("skill.ui.empty"))}</small>
           <span class="gv3-cooldown" data-cooldown-skill="${skillId || ""}"></span>
@@ -201,7 +201,7 @@ function renderHotbarEditor(): string {
   return `<div class="gv3-editor">
     <p class="gv3-help">${escapeHtml(t("skill.ui.dragHint"))}</p>
     <div class="gv3-editor-slots">
-      ${character.hotbar.map((skillId,slot)=>`<button data-hotbar-slot="${slot}" data-editor-slot="${slot}"><b>${slot}</b><span>${skillId ? escapeHtml(skillName(skillId)) : escapeHtml(t("skill.ui.empty"))}</span><em data-clear-slot="${slot}">×</em></button>`).join("")}
+      ${character.hotbar.map((skillId,slot)=>`<button data-hotbar-slot="${slot}" data-editor-slot="${slot}"><b>${(slot+1)%10}</b><span>${skillId ? escapeHtml(skillName(skillId)) : escapeHtml(t("skill.ui.empty"))}</span><em data-clear-slot="${slot}">×</em></button>`).join("")}
     </div>
     <div class="gv3-learned-list">
       ${learned.map(skill=>`<button data-drag-skill="${skill.id}" data-quickslot-skill="${skill.id}"><i class="gv3-skill-icon gv3-skill-icon--${skill.type}">${skillIcon(skill)}</i><span>${escapeHtml(t(skill.nameKey))}<small>${escapeHtml(t("skill.ui.levelShort"))} ${getSkillLevel(character.learnedSkills,skill.id)}</small></span></button>`).join("")}
@@ -316,43 +316,61 @@ function quickAssign(skillId: string): void {
   if(slot<0) slot=0;
   try {
     assignSelectedHotbar(slot,skillId);
-    toast(t("skill.ui.assigned",{skill:skillName(skillId),slot}));
+    toast(t("skill.ui.assigned",{skill:skillName(skillId),slot:(slot+1)%10}));
     renderWindow(); renderHotbar();
   } catch {}
 }
 
 function bindLongPressDrag(node: HTMLElement): void {
   const skillId=String(node.dataset.dragSkill||"");
-  if(!skillId) return;
-  node.addEventListener("pointerdown",(event)=>{
-    try { node.setPointerCapture(event.pointerId); } catch {}
+  if(!skillId)return;
+  node.title=skillName(skillId);
+  let start: {x:number;y:number;id:number;mouse:boolean}|null=null;
+  let suppressClick=false;
+  const begin=()=>{
+    if(!start||draggingSkillId)return;
+    draggingSkillId=skillId;suppressClick=true;
+    dragGhost=document.createElement("div");dragGhost.className="gv3-drag-ghost";
+    dragGhost.textContent=skillName(skillId);document.body.appendChild(dragGhost);
+    moveGhost(start.x,start.y);
+    if(!start.mouse&&navigator.vibrate)navigator.vibrate(20);
+  };
+  const clear=()=>{
+    window.clearTimeout(dragTimer);start=null;
+    draggingSkillId=null;dragGhost?.remove();dragGhost=null;
+  };
+  node.addEventListener("pointerdown",event=>{
+    if(event.button!==0)return;
+    start={x:event.clientX,y:event.clientY,id:event.pointerId,mouse:event.pointerType==='mouse'};
+    suppressClick=false;
+    try{node.setPointerCapture(event.pointerId);}catch{}
     window.clearTimeout(dragTimer);
-    dragTimer=window.setTimeout(()=>{
-      draggingSkillId=skillId;
-      dragGhost=document.createElement("div");
-      dragGhost.className="gv3-drag-ghost";
-      dragGhost.textContent=skillName(skillId);
-      document.body.appendChild(dragGhost);
-      moveGhost(event.clientX,event.clientY);
-      if(navigator.vibrate) navigator.vibrate(20);
-    },450);
+    if(!start.mouse)dragTimer=window.setTimeout(begin,450);
   });
-  node.addEventListener("pointermove",(event)=>{
+  node.addEventListener("pointermove",event=>{
+    if(!start||start.id!==event.pointerId)return;
+    const distance=Math.hypot(event.clientX-start.x,event.clientY-start.y);
+    if(start.mouse&&distance>=5)begin();
+    // Let a touch scroll cancel a pending hold, never accidentally assign a skill.
+    if(!start.mouse&&!draggingSkillId&&distance>10){clear();return;}
     if(draggingSkillId){event.preventDefault();moveGhost(event.clientX,event.clientY);}
   });
-  const finish=(event:PointerEvent)=>{
+  node.addEventListener("pointerup",event=>{
+    if(!start||start.id!==event.pointerId)return;
     window.clearTimeout(dragTimer);
-    if(!draggingSkillId) return;
+    if(!draggingSkillId){start=null;return;}
     const target=document.elementFromPoint(event.clientX,event.clientY)?.closest<HTMLElement>("[data-hotbar-slot]");
     if(target){
       const slot=Number(target.dataset.hotbarSlot);
-      try {assignSelectedHotbar(slot,draggingSkillId);toast(t("skill.ui.assigned",{skill:skillName(draggingSkillId),slot}));}
-      catch {}
+      try{assignSelectedHotbar(slot,draggingSkillId);toast(t("skill.ui.assigned",{skill:skillName(draggingSkillId),slot:(slot+1)%10}));}catch{}
     }
-    draggingSkillId=null;dragGhost?.remove();dragGhost=null;renderWindow();renderHotbar();
-  };
-  node.addEventListener("pointerup",finish);
-  node.addEventListener("pointercancel",(event)=>finish(event as PointerEvent));
+    clear();renderWindow();renderHotbar();
+  });
+  node.addEventListener("pointercancel",clear);
+  node.addEventListener("lostpointercapture",clear);
+  node.addEventListener("click",event=>{
+    if(suppressClick){event.preventDefault();event.stopImmediatePropagation();suppressClick=false;}
+  },true);
 }
 
 function moveGhost(x:number,y:number):void{

@@ -1,7 +1,7 @@
 # Greenvale Afterfall — Original Art Bible (procedural first pass)
 
 ## World identity
-- Top-down pixel-art RPG, post-disaster forests and hand-repaired settlements.
+- Oblique 2.5D world with 2D pixel sprites, post-disaster forests and hand-repaired settlements.
 - Palette: forest #243c32, pine #5a8268, dirt #82735a, old brass #d0b97d, rock #747b77, ash #393b40 and crimson corruption #755454.
 - No borrowed RPGJS playground hero/monster/wood image URLs. Current runtime textures are built in browser using `src/art/original-sprites.ts` and `src/art/original-icons.ts`.
 - All original art is programmatic, deterministic and local to the project. It is an independently editable foundation, **not** finished hand-drawn studio sprite art.
@@ -37,3 +37,13 @@
 - Individually hand-pixelled tile atlases and decorative prop layers; current terrain is original procedural geometry.
 - VFX/SFX/sprite FX per 51 abilities (Phase 3 IDs are already registered).
 - Creature sounds, biome BGM and final lighting/shader passes, without overloading iPhone Safari.
+
+## 2.5D renderer contract (0.8.1)
+- Geometry source: `src/assets/maps/<map-id>.json`; renderer: `src/art/world-scene.ts`.
+- XY is the existing RPGJS world plane; height extends artwork upward only.
+- Ground and shadows are background layers. Props sort at `y + depth` with RPGJS
+  characters (their foot position), allowing rear/front occlusion.
+- Solid footprint width/depth is shared with server, client and keyboard movement.
+- Components own/dispose their Pixi graphics on map unload; no shared destroyed nodes.
+- Existing 48x56 character sheets remain a separate pipeline. Full nine-state
+  animation and costume compositing are NOT implemented by this renderer change.
