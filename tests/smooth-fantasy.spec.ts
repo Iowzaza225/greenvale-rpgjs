@@ -1,16 +1,16 @@
 import { expect, test } from "@playwright/test";
 
 test("smooth fantasy atlas: 3x4 transparent PNG for heroes, NPCs and monsters", async ({ page }) => {
-  await page.goto("/?art=smooth");
+  await page.goto("/?debug=1&art=smooth");
+  await expect.poll(() => page.evaluate(() => Boolean((window as any).__GV_ART_QA__))).toBe(true);
   const sheets = await page.evaluate(async () => {
-    // Loaded inside Vite's browser runtime: generator requires Canvas 2D.
-    const modulePath = "/src/art/smooth-fantasy.ts";
-    const art = await import(/* @vite-ignore */ modulePath);
+    // Production Vite preview serves bundled JS, not raw TypeScript modules.
+    const art = (window as any).__GV_ART_QA__;
     const ids = ["hero-novice", "hero-vanguard", "hero-arcanist", "npc-mara",
       "monster-ashfang_wolf", "monster-mossling", "monster-hollow_raider",
       "monster-giant_mire_crab"];
     return Promise.all(ids.map(async (id) => {
-      const source: string = art.smoothFantasySheetDataUrl(id);
+      const source: string = art.smooth(id);
       const image = new Image();
       image.src = source;
       await image.decode();
@@ -38,12 +38,12 @@ test("smooth fantasy atlas: 3x4 transparent PNG for heroes, NPCs and monsters", 
 });
 
 test("pixel art remains available as a safe fallback", async ({ page }) => {
-  await page.goto("/?art=pixel");
+  await page.goto("/?debug=1&art=pixel");
+  await expect.poll(() => page.evaluate(() => Boolean((window as any).__GV_ART_QA__))).toBe(true);
   const checked = await page.evaluate(async () => {
-    const modulePath = "/src/art/original-sprites.ts";
-    const art = await import(/* @vite-ignore */ modulePath);
+    const art = (window as any).__GV_ART_QA__;
     const image = new Image();
-    image.src = art.originalSpriteDataUrl("hero-novice");
+    image.src = art.pixel("hero-novice");
     await image.decode();
     return { width: image.width, height: image.height };
   });
