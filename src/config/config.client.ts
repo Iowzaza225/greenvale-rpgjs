@@ -88,8 +88,8 @@ export default {
         enabled: "auto",
         layout: {
           joystickSide: "left",
-          joystickMargin: [24, 22, 24, 18],
-          buttonsMargin: 20,
+          joystickMargin: [24, 22, 46, 18],
+          buttonsMargin: 42,
           gap: 12,
         },
         joystick: {
@@ -100,9 +100,9 @@ export default {
           threshold: 0.06,
         },
         buttons: {
-          action: { enabled: true, width: 70, height: 70 },
-          back: { enabled: true, width: 54, height: 54 },
-          dash: { enabled: true, width: 56, height: 56 },
+          action: { enabled: true, width: 54, height: 54 },
+          back: { enabled: false, width: 54, height: 54 },
+          dash: { enabled: true, width: 48, height: 48 },
         },
       }),
       {
