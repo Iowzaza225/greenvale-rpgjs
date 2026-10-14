@@ -21,7 +21,7 @@ function clampPanel(host:HTMLElement):void {
   const width=sheet.getBoundingClientRect().width;
   const height=sheet.getBoundingClientRect().height;
   pos.x=Math.max(8,Math.min(innerWidth-width-8,pos.x));
-  pos.y=Math.max(8,Math.min(innerHeight-height-8,pos.y));
+  pos.y=Math.max(8,Math.min(innerHeight-height-110,pos.y));
   host.style.setProperty('--panel-x',`${pos.x}px`);
   host.style.setProperty('--panel-y',`${pos.y}px`);
 }

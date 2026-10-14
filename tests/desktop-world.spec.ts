@@ -39,6 +39,22 @@ test("desktop keyboard, original character sprites and five connected maps", asy
 
   await page.keyboard.press("KeyK");
   await expect(page.locator("#gv-skill-system")).toBeVisible();
+  await page.locator('[data-skill-tab="hotbar"]').click();
+  const source=page.locator('[data-drag-skill="survivor_strike"]').first();
+  await source.scrollIntoViewIfNeeded();
+  const sourceBox=await source.boundingBox();
+  const slotBox=await page.locator('#gv-skill-hotbar [data-hotbar-slot="8"]').boundingBox();
+  expect(sourceBox).toBeTruthy();expect(slotBox).toBeTruthy();
+  await page.mouse.move(sourceBox!.x+15,sourceBox!.y+15);
+  await page.mouse.down();
+  await page.mouse.move(sourceBox!.x+35,sourceBox!.y+15,{steps:3});
+  await expect(page.locator('.gv3-drag-ghost')).toBeVisible();
+  await page.mouse.move(slotBox!.x+slotBox!.width/2,slotBox!.y+slotBox!.height/2,{steps:10});
+  await page.mouse.up();
+  await expect.poll(()=>page.evaluate(()=>{
+    const save=JSON.parse(localStorage.getItem('greenvale.save')||'null');
+    return save.characters.find((c:any)=>c?.id===save.selectedCharacterId).hotbar[8];
+  })).toBe('survivor_strike');
   await page.keyboard.press("Escape");
   await expect(page.locator("#gv-skill-system")).toBeHidden();
 

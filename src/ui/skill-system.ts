@@ -341,6 +341,7 @@ function bindLongPressDrag(node: HTMLElement): void {
   };
   node.addEventListener("pointerdown",event=>{
     if(event.button!==0)return;
+    if(event.pointerType==='mouse')event.preventDefault();
     start={x:event.clientX,y:event.clientY,id:event.pointerId,mouse:event.pointerType==='mouse'};
     suppressClick=false;
     try{node.setPointerCapture(event.pointerId);}catch{}
