@@ -1,0 +1,81 @@
+/*
+ * Phase 5B mobile portrait HUD layout.
+ * Separate mission, target and tutorial rows; keep hotbar and combat actions
+ * in nonoverlapping columns; reserve the lower region for native joystick.
+ * Desktop layout deliberately unchanged.
+ */
+@media (orientation: portrait) and (max-width: 700px) {
+  #gv-quest {
+    width: auto;
+    max-width: calc(100vw - 84px - env(safe-area-inset-left) - env(safe-area-inset-right));
+    min-height: 42px;
+    max-height: 42px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+  }
+  #gv-menu-btn {
+    min-width: 46px;
+    min-height: 42px;
+  }
+  #gv-combat-target {
+    top: calc(62px + env(safe-area-inset-top));
+    width: min(calc(100vw - 24px), 420px);
+  }
+  .gv4-target-card { padding: 6px 10px; }
+  #gv-tutorial {
+    top: calc(136px + env(safe-area-inset-top));
+    width: min(calc(100vw - 24px), 440px);
+    max-height: min(22vh, 145px);
+    overflow-y: auto;
+  }
+  .gv-tutorial-card { padding: 9px 12px; }
+  #gv-player-status {
+    top: calc(270px + env(safe-area-inset-top));
+    max-width: min(35vw, 130px);
+  }
+
+  /* Left = 5x2 skill slots; right = 2x2 combat actions. */
+  #gv-skill-hotbar {
+    left: max(8px, env(safe-area-inset-left));
+    right: auto;
+    transform: none;
+    bottom: calc(134px + env(safe-area-inset-bottom));
+    width: min(calc(100vw - 136px - env(safe-area-inset-left) - env(safe-area-inset-right)), 295px);
+  }
+  #gv-skill-hotbar .gv3-hotbar-slots {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 3px;
+  }
+  #gv-skill-hotbar .gv3-hotbar-slot {
+    min-height: 47px;
+    padding: 3px 1px;
+  }
+  #gv-skill-hotbar .gv3-skill-icon { width: 26px; height: 26px; }
+  #gv-skill-hotbar .gv3-hotbar-status { top: -15px; }
+  #gv-combat-controls {
+    right: max(8px, env(safe-area-inset-right));
+    bottom: calc(134px + env(safe-area-inset-bottom));
+    grid-template-columns: repeat(2, 48px);
+    gap: 5px;
+  }
+  #gv-combat-controls button {
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
+  }
+  #gv-combat-controls button small { font-size: 7px; }
+  #gv-castbar { bottom: calc(252px + env(safe-area-inset-bottom)); width: min(68vw, 290px); }
+  #gv-ground-loot {
+    bottom: calc(255px + env(safe-area-inset-bottom));
+    max-width: 52vw;
+  }
+  #gv-toast { bottom: calc(252px + env(safe-area-inset-bottom)); }
+}
+@media (orientation: portrait) and (max-width: 360px) {
+  #gv-skill-hotbar { width: calc(100vw - 128px); }
+  #gv-combat-controls { grid-template-columns: repeat(2, 44px); }
+  #gv-combat-controls button { width: 44px; height: 44px; }
+}

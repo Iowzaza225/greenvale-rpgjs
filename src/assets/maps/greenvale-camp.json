@@ -1,0 +1,99 @@
+{
+  "id": "greenvale-camp",
+  "biome": "camp",
+  "width": 1600,
+  "height": 1000,
+  "projection": "oblique-2.5d",
+  "props": [
+    {
+      "id": "mara-house",
+      "kind": "building",
+      "x": 510,
+      "y": 190,
+      "width": 280,
+      "depth": 170,
+      "height": 100,
+      "solid": true
+    },
+    {
+      "id": "workshop",
+      "kind": "building",
+      "x": 240,
+      "y": 210,
+      "width": 180,
+      "depth": 105,
+      "height": 72,
+      "solid": true
+    },
+    {
+      "id": "safehouse",
+      "kind": "building",
+      "x": 1070,
+      "y": 620,
+      "width": 230,
+      "depth": 135,
+      "height": 84,
+      "solid": true
+    },
+    {
+      "id": "supply-hut",
+      "kind": "building",
+      "x": 810,
+      "y": 680,
+      "width": 220,
+      "depth": 155,
+      "height": 82,
+      "solid": true
+    },
+    {
+      "id": "camp-prop-1",
+      "kind": "tree",
+      "x": 1370,
+      "y": 150,
+      "width": 54,
+      "depth": 34,
+      "height": 111,
+      "solid": true
+    },
+    {
+      "id": "camp-prop-2",
+      "kind": "tree",
+      "x": 160,
+      "y": 820,
+      "width": 54,
+      "depth": 34,
+      "height": 127,
+      "solid": true
+    },
+    {
+      "id": "camp-prop-3",
+      "kind": "tree",
+      "x": 1420,
+      "y": 820,
+      "width": 54,
+      "depth": 34,
+      "height": 95,
+      "solid": true
+    },
+    {
+      "id": "camp-prop-5",
+      "kind": "tree",
+      "x": 1100,
+      "y": 90,
+      "width": 54,
+      "depth": 34,
+      "height": 127,
+      "solid": true
+    },
+    {
+      "id": "lake",
+      "kind": "water",
+      "x": 70,
+      "y": 85,
+      "width": 390,
+      "depth": 255,
+      "height": 0,
+      "solid": true
+    }
+  ]
+}

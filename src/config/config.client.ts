@@ -1,3 +1,4 @@
+import { worldHitboxes } from "../core/world-geometry";
 import {
   Presets,
   provideClientGlobalConfig,
@@ -11,24 +12,123 @@ import {
   provideActionBattle,
 } from "@rpgjs/action-battle/client";
 import CampMap from "../components/camp-map.ce";
+import TrainingMap from "../components/training-plains.ce";
+import GroveMap from "../components/mutant-grove.ce";
+import CavernMap from "../components/stoneburrow-cavern.ce";
+import BossMap from "../components/rotten-core.ce";
+import { ORIGINAL_SPRITE_SIZE, originalSpriteDataUrl } from "../art/original-sprites";
+import { SMOOTH_FRAME, smoothFantasySheetDataUrl } from "../art/smooth-fantasy";
+import { paintedFantasySheetDataUrl } from "../art/painted-sprites";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_WIDTH } from "../shared";
 
-const ASSET_BASE =
-  "https://raw.githubusercontent.com/RSamaium/RPG-JS/v5/playground/games/action-battle/public/";
+const WORLD_COMPONENTS: Record<string, any> = {
+  "greenvale-camp": CampMap,
+  "training-plains": TrainingMap,
+  "mutant-grove": GroveMap,
+  "stoneburrow-cavern": CavernMap,
+  "rotten-core": BossMap,
+};
+
+function mapSize(id: string) {
+  return id === "greenvale-camp" ? { width: CAMP_WIDTH, height: CAMP_HEIGHT }
+    : { width: 1600, height: 1000 };
+}
+
+type ResolvedArt = "painted" | "canvas" | "pixel";
+declare global {
+  interface Window {
+    __GV_ACTUAL_ART__?: Record<string, ResolvedArt>;
+  }
+}
+function recordActiveArt(id: string, actual: ResolvedArt): void {
+  if (typeof window === "undefined") return;
+  (window.__GV_ACTUAL_ART__ ??= {})[id] = actual;
+  document.body.dataset.gvArt = actual;
+  // This small indicator is only shown on ?debug=1. Verify what was
+  // actually decoded rather than which URL argument was requested.
+  if (new URLSearchParams(window.location.search).get("debug") !== "1") return;
+  let badge = document.getElementById("gv-art-source-debug");
+  if (!badge) {
+    badge = document.createElement("div");
+    badge.id = "gv-art-source-debug";
+    badge.style.cssText = "position:fixed;bottom:calc(4px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:190100;padding:3px 8px;border-radius:6px;border:1px solid #e1b966;background:#101a1df0;color:#f6de9d;font:700 10px system-ui;pointer-events:none;white-space:nowrap";
+    document.body.append(badge);
+  }
+  badge.textContent = "GREENVALE ART: " + actual.toUpperCase() + " · " + id;
+}
+
+async function makeCharacterSpritesheet(id: string) {
+  // Painted Smooth Fantasy is the default. ?art=canvas or ?art=pixel are QA fallbacks.
+  const mode = typeof window === "undefined" ? "painted" :
+    new URLSearchParams(window.location.search).get("art") || "painted";
+  const pixelArt = mode === "pixel";
+  // Painted original assets are the default; canvas art remains a safe fallback.
+  let image: string | undefined;
+  let activeArt: ResolvedArt = pixelArt ? "pixel" : "canvas";
+  if (pixelArt) image = originalSpriteDataUrl(id);
+  else if (mode === "canvas") image = smoothFantasySheetDataUrl(id);
+  else {
+    try { image = await paintedFantasySheetDataUrl(id); if (image) activeArt = "painted"; }
+    catch (error) {
+      console.warn("[Greenvale] Painted sprite unavailable; using canvas:", id, error);
+    }
+    image ??= smoothFantasySheetDataUrl(id);
+  }
+  recordActiveArt(id, activeArt);
+  const width = pixelArt ? ORIGINAL_SPRITE_SIZE.width : SMOOTH_FRAME.width * SMOOTH_FRAME.columns;
+  const height = pixelArt ? ORIGINAL_SPRITE_SIZE.height : SMOOTH_FRAME.height * SMOOTH_FRAME.rows;
+  const preset = Presets.RMSpritesheet(3, 4, 1);
+  const row = (direction: string) => ({ down: 0, left: 1, right: 2, up: 3 } as Record<string, number>)[direction] ?? 0;
+  const swing = ({direction}: {direction: string}) => [[
+    {time:0,frameX:0,frameY:row(direction)},
+    {time:5,frameX:1,frameY:row(direction)},
+    {time:10,frameX:2,frameY:row(direction)},
+  ]];
+  return {
+    id, image,
+    width, height,
+    framesWidth: 3, framesHeight: 4,
+    spriteRealSize: { width: 40, height: 48 },
+    ...preset,
+    textures: {
+      ...preset.textures,
+      attack2: { animations: swing },
+      attack3: { animations: swing },
+      attack: { animations: swing },
+      skill: { animations: swing },
+    },
+  };
+}
+
+/** Debug-only adapter for QA of bundled, production-generated image atlases. */
+declare global {
+  interface Window {
+    __GV_ART_QA__?: { smooth: (id: string) => string; pixel: (id: string) => string;
+      painted: (id: string) => Promise<string | undefined> };
+  }
+}
+if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debug") === "1") {
+  window.__GV_ART_QA__ = {
+    smooth: smoothFantasySheetDataUrl,
+    pixel: originalSpriteDataUrl,
+    painted: paintedFantasySheetDataUrl,
+  };
+}
 
 export default {
   providers: [
     provideLoadMap((id: string) => ({
       id,
-      component: CampMap,
-      width: CAMP_WIDTH,
-      height: CAMP_HEIGHT,
+      component: WORLD_COMPONENTS[id] || CampMap,
+      ...mapSize(id),
       data: {},
-      hitboxes: CAMP_HITBOXES,
+      hitboxes: worldHitboxes(id),
     })),
     provideClientGlobalConfig(),
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
+      // LPC preset provides attack2 (7-frame slash) and attack3 (6-frame heavy swing).
+      animations: { attack: { animationName: "attack2", repeat: 1 } },
       ui: createActionBattleUi({
         hotbar: false,
         targeting: true,
@@ -40,41 +140,36 @@ export default {
         enabled: "auto",
         layout: {
           joystickSide: "left",
-          joystickMargin: [24, 22, 24, 18],
-          buttonsMargin: 20,
+          joystickMargin: [24, 22, 46, 18],
+          buttonsMargin: 42,
           gap: 12,
         },
         joystick: {
           outerColor: "#29495c",
           innerColor: "#eef6f6",
           scale: 0.86,
-          moveInterval: 40,
-          threshold: 0.08,
+          moveInterval: 25,
+          threshold: 0.06,
         },
         buttons: {
-          action: { enabled: true, width: 70, height: 70 },
-          back: false,
-          dash: { enabled: true, width: 56, height: 56 },
+          action: { enabled: true, width: 54, height: 54 },
+          back: { enabled: false, width: 54, height: 54 },
+          dash: { enabled: true, width: 48, height: 48 },
         },
       }),
       {
         spritesheetResolver: async (id: string) => {
-          if (id === "hero") {
-            return Presets.LPCSpritesheetPreset({
-              id: "hero",
-              imageSource: ASSET_BASE + "hero.png",
-              width: 1728,
-              height: 5568,
-              ratio: 1.5,
-            });
+          if (id === "hero") return makeCharacterSpritesheet("hero-novice");
+          if (id === "monster") return makeCharacterSpritesheet("monster-ashfang_wolf");
+          if (id.startsWith("hero-") || id.startsWith("monster-") || id.startsWith("npc-")) {
+            return makeCharacterSpritesheet(id);
           }
-          if (id === "monster") {
-            return Presets.LPCSpritesheetPreset({
-              id: "monster",
-              imageSource: ASSET_BASE + "monster.png",
-              width: 1728,
-              height: 5568,
-              ratio: 1.5,
+          if (id === "potion" || id === "focus-slash") {
+            return Presets.IconPreset({
+              id,
+              image: originalSpriteDataUrl("hero-novice"),
+              framesWidth: 3,
+              framesHeight: 4,
             });
           }
           return undefined;
