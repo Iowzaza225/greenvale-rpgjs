@@ -18,6 +18,186 @@
           "max": 1
         }
       ]
+    },
+    {
+      "id": "mossling",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "moss_fiber",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "sewer_rat",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "rat_tail",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "ironthorn_boar",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "iron_tusk",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "blightcap_mushroom",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "blight_spore",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "hollow_scarecrow",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "straw_fragment",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "giant_mire_crab",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "mire_shell",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "ash_bat",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "ash_wing",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "stone_husk",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "stone_core",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "hollow_raider",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "raider_emblem",
+          "chance": 0.68,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "field_boss",
+      "rolls": 1,
+      "entries": [
+        {
+          "itemId": "rotten_seed",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "itemId": "field_patch",
+          "chance": 0.06,
+          "min": 1,
+          "max": 1
+        }
+      ]
     }
   ],
   "settings": {
