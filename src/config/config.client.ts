@@ -63,6 +63,19 @@ function makeCharacterSpritesheet(id: string) {
   };
 }
 
+/** Debug-only adapter for QA of bundled, production-generated image atlases. */
+declare global {
+  interface Window {
+    __GV_ART_QA__?: { smooth: (id: string) => string; pixel: (id: string) => string };
+  }
+}
+if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debug") === "1") {
+  window.__GV_ART_QA__ = {
+    smooth: smoothFantasySheetDataUrl,
+    pixel: originalSpriteDataUrl,
+  };
+}
+
 export default {
   providers: [
     provideLoadMap((id: string) => ({
