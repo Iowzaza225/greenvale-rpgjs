@@ -479,6 +479,12 @@ export function initSkillSystem():void{
   });
   gameEvents.on("i18n:changed",()=>{if(root()&&!root()!.hidden)renderWindow();renderHotbar();});
 
+  window.addEventListener("greenvale:hotbar-use",(event)=>{
+    const slot=Number((event as CustomEvent).detail?.slot);
+    const char=getSelectedCharacter();
+    const skillId=Number.isInteger(slot)&&slot>=0&&slot<10?char?.hotbar[slot]:null;
+    if(skillId)void useSkill(skillId,"hotbar");
+  });
   window.addEventListener("greenvale:skill-result",(event)=>handleSkillResult((event as CustomEvent).detail||{}));
   window.addEventListener("greenvale:skill-state",(event)=>handleSkillResult((event as CustomEvent).detail||{}));
   window.addEventListener("greenvale:player-hit",(event)=>{
