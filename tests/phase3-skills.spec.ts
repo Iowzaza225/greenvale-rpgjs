@@ -36,7 +36,10 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
     return result?.skillId === "survivor_strike" && result?.ok === true;
   }), { timeout: 12_000 }).toBe(true);
   const noviceCast = await page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult);
-  expect(noviceCast.damage).toBeGreaterThan(0);
+  // Phase 4 adds hit/miss/perfect-dodge rolls; a valid targeted cast can deal
+  // 0 damage. Check target acquisition here; Phase 4 separately verifies hits.
+  expect(noviceCast.targetName).toContain("Wolf");
+  expect(noviceCast.damage).toBeGreaterThanOrEqual(0);
 
   // Raise Novice high enough to unlock the first job and earn skill points.
   await page.evaluate(() => (window as any).__GV_PHASE2__.gainExp(9000, 9000));
@@ -99,7 +102,8 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
   const castResult = await page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult);
   console.log("PHASE3_CAST_RESULT", JSON.stringify(castResult));
   expect(castResult.ok).toBe(true);
-  expect(castResult.damage).toBeGreaterThan(0);
+  expect(castResult.targetName).toContain("Wolf");
+  expect(castResult.damage).toBeGreaterThanOrEqual(0);
 
   // Cast bar must interrupt on a hit event for interruptible skills.
   await page.locator("[data-hotbar-slot='1']").click();
