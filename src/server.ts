@@ -1172,6 +1172,64 @@ if (typeof window !== "undefined") {
 
   // QA-only position hook. It is enabled only on ?debug=1 and exists so the
   // iPhone WebKit test can reproduce "enemy visible but outside skill range".
+  window.addEventListener("greenvale:desktop-move",(event)=>{
+    if(!activePlayer||Number(activePlayer.hp)<=0||activePlayer.getVariable("greenvale.respawning"))return;
+    const detail=(event as CustomEvent).detail||{};
+    let dx=Math.max(-1,Math.min(1,Number(detail.dx)||0));
+    let dy=Math.max(-1,Math.min(1,Number(detail.dy)||0));
+    const magnitude=Math.hypot(dx,dy);if(!magnitude)return;
+    dx/=magnitude;dy/=magnitude;
+    const dt=Math.max(1,Math.min(42,Number(detail.dt)||16));
+    const distance=Math.min(10,Math.max(1,Number(activePlayer.speed)||3.1)*dt/16);
+    const px=entityCoord(activePlayer,"x"),py=entityCoord(activePlayer,"y");
+    const obstacles=currentMapId===CAMP_MAP_ID?CAMP_HITBOXES:[
+      {id:"top",x:0,y:0,width:1600,height:10},
+      {id:"bottom",x:0,y:990,width:1600,height:10},
+      {id:"left",x:0,y:0,width:10,height:1000},
+      {id:"right",x:1590,y:0,width:10,height:1000},
+    ];
+    const blocked=(x:number,y:number)=>obstacles.some(box=>
+      x+12>box.x && x-12<box.x+box.width &&
+      y+17>box.y && y-17<box.y+box.height
+    );
+    let x=Math.max(28,Math.min(1572,px+dx*distance));
+    let y=Math.max(28,Math.min(972,py+dy*distance));
+    if(blocked(x,y)){
+      if(!blocked(x,py))y=py;
+      else if(!blocked(px,y))x=px;
+      else return;
+    }
+    stopSkillApproach();stopBasicApproach();
+    if(Math.abs(x-px)>0.1||Math.abs(y-py)>0.1){
+      activePlayer.direction=Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up");
+      activePlayer.teleport({x,y});
+    }
+  });
+  window.addEventListener("greenvale:desktop-interact",async ()=>{
+    if(!activePlayer||Number(activePlayer.hp)<=0)return;
+    const px=entityCoord(activePlayer,"x"),py=entityCoord(activePlayer,"y");
+    const current=(mapsData.maps as any[]).find(entry=>entry.id===currentMapId);
+    const nearestGate=(current?.warps||[])
+      .map((gate:any)=>({...gate,distance:Math.hypot(px-Number(gate.x),py-Number(gate.y))}))
+      .sort((a:any,b:any)=>a.distance-b.distance)[0];
+    if(nearestGate&&nearestGate.distance<=105){
+      const to=String(nearestGate.to),spawn=nearestGate.spawn||{x:300,y:500};
+      if(!(mapsData.maps as any[]).some(entry=>entry.id===to))return;
+      stopBasicApproach();stopSkillApproach();lockedTarget=null;
+      await activePlayer.changeMap(to,{x:Number(spawn.x)||300,y:Number(spawn.y)||500});
+      currentMapId=to;
+      dispatchCombat("greenvale:map-changed",{id:to});
+      dispatchTargetState(null);
+      return;
+    }
+    if(currentMapId===CAMP_MAP_ID){
+      const npc=TOWN_NPCS.map(entry=>({...entry,distance:Math.hypot(px-entry.x,py-entry.y)}))
+        .sort((a,b)=>a.distance-b.distance)[0];
+      if(npc&&npc.distance<=105){
+        void activePlayer.showText(`${npc.name}: Welcome to Greenvale Afterfall.`);
+      }
+    }
+  });
   window.addEventListener("greenvale:debug-player-coords-request", () => {
     if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
     dispatchCombat("greenvale:debug-player-coords", { x: entityCoord(activePlayer,"x"),y:entityCoord(activePlayer,"y"),mapId:currentMapId });
