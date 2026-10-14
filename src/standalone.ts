@@ -12,6 +12,7 @@ import { initCombatSystem } from "./ui/combat-system";
 import { initDesktopControls } from "./ui/desktop-controls";
 import { initWorldMap } from "./ui/world-map";
 import "./styles.css";
+import "./ui/mobile-hud.css";
 
 declare global {
   interface Window {
