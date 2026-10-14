@@ -17,6 +17,7 @@ import GroveMap from "../components/mutant-grove.ce";
 import CavernMap from "../components/stoneburrow-cavern.ce";
 import BossMap from "../components/rotten-core.ce";
 import { ORIGINAL_SPRITE_SIZE, originalSpriteDataUrl } from "../art/original-sprites";
+import { SMOOTH_FRAME, smoothFantasySheetDataUrl } from "../art/smooth-fantasy";
 import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_WIDTH } from "../shared";
 
 const WORLD_COMPONENTS: Record<string, any> = {
@@ -32,7 +33,13 @@ function mapSize(id: string) {
     : { width: 1600, height: 1000 };
 }
 
-function makeOriginalSpritesheet(id: string) {
+function makeCharacterSpritesheet(id: string) {
+  // Default to smooth-fantasy. ?art=pixel restores the old pixel sheet for QA.
+  const pixelArt = typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("art") === "pixel";
+  const image = pixelArt ? originalSpriteDataUrl(id) : smoothFantasySheetDataUrl(id);
+  const width = pixelArt ? ORIGINAL_SPRITE_SIZE.width : SMOOTH_FRAME.width * SMOOTH_FRAME.columns;
+  const height = pixelArt ? ORIGINAL_SPRITE_SIZE.height : SMOOTH_FRAME.height * SMOOTH_FRAME.rows;
   const preset = Presets.RMSpritesheet(3, 4, 1);
   const row = (direction: string) => ({ down: 0, left: 1, right: 2, up: 3 } as Record<string, number>)[direction] ?? 0;
   const swing = ({direction}: {direction: string}) => [[
@@ -41,8 +48,8 @@ function makeOriginalSpritesheet(id: string) {
     {time:10,frameX:2,frameY:row(direction)},
   ]];
   return {
-    id, image: originalSpriteDataUrl(id),
-    width: ORIGINAL_SPRITE_SIZE.width, height: ORIGINAL_SPRITE_SIZE.height,
+    id, image,
+    width, height,
     framesWidth: 3, framesHeight: 4,
     spriteRealSize: { width: 40, height: 48 },
     ...preset,
@@ -100,10 +107,10 @@ export default {
       }),
       {
         spritesheetResolver: async (id: string) => {
-          if (id === "hero") return makeOriginalSpritesheet("hero-novice");
-          if (id === "monster") return makeOriginalSpritesheet("monster-ashfang_wolf");
+          if (id === "hero") return makeCharacterSpritesheet("hero-novice");
+          if (id === "monster") return makeCharacterSpritesheet("monster-ashfang_wolf");
           if (id.startsWith("hero-") || id.startsWith("monster-") || id.startsWith("npc-")) {
-            return makeOriginalSpritesheet(id);
+            return makeCharacterSpritesheet(id);
           }
           if (id === "potion" || id === "focus-slash") {
             return Presets.IconPreset({
