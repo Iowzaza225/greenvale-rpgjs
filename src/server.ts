@@ -23,6 +23,7 @@ import { CAMP_HEIGHT, CAMP_HITBOXES, CAMP_MAP_ID, CAMP_WIDTH } from "./shared.ts
 import skillsData from "./data/skills.json" with { type: "json" };
 import monstersData from "./data/monsters.json" with { type: "json" };
 import dropsData from "./data/drops.json" with { type: "json" };
+import mapsData from "./data/maps.json" with { type: "json" };
 import statusData from "./data/status_effects.json" with { type: "json" };
 import {
   basicAttackDelayMs,
@@ -244,28 +245,34 @@ function profileCombatStats(profile: Profile): CombatStats {
   };
 }
 
-function wolfCombatStats(): CombatStats {
+function wolfCombatStats(entity?: any): CombatStats {
+  const monster = monsterConfig(entity);
   return {
-    ATK: Number(WOLF_CONFIG.atk) || 13,
-    MATK: Math.max(1, (Number(WOLF_CONFIG.atk) || 13) * .7),
-    DEF: Number(WOLF_CONFIG.def) || 3,
-    MDEF: Number(WOLF_CONFIG.mdef) || 1,
-    HIT: Number(WOLF_CONFIG.hit) || 12,
-    FLEE: Number(WOLF_CONFIG.flee) || 8,
-    CRIT: Number(WOLF_CONFIG.crit) || 3,
-    critResistance: Number(WOLF_CONFIG.critResistance) || 1,
-    perfectDodge: Number(WOLF_CONFIG.perfectDodge) || 1,
-    blockChance: Number(WOLF_CONFIG.blockChance) || 2,
-    blockReduction: Number(WOLF_CONFIG.blockReduction) || .35,
-    element: String(WOLF_CONFIG.element || "neutral") as any,
-    size: String(WOLF_CONFIG.size || "medium") as any,
-    race: String(WOLF_CONFIG.race || "beast") as any,
+    ATK: Number(monster.atk) || 13,
+    MATK: Math.max(1, (Number(monster.atk) || 13) * .7),
+    DEF: Number(monster.def) || 3,
+    MDEF: Number(monster.mdef) || 1,
+    HIT: Number(monster.hit) || 12,
+    FLEE: Number(monster.flee) || 8,
+    CRIT: Number(monster.crit) || 3,
+    critResistance: Number(monster.critResistance) || 1,
+    perfectDodge: Number(monster.perfectDodge) || 1,
+    blockChance: Number(monster.blockChance) || 2,
+    blockReduction: Number(monster.blockReduction) || .35,
+    element: String(monster.element || "neutral") as any,
+    size: String(monster.size || "medium") as any,
+    race: String(monster.race || "beast") as any,
   };
 }
 
 
 let activePlayer: RpgPlayer | null = null;
 const activeEnemies = new Set<any>();
+const monsterTypes = new WeakMap<object, string>();
+function monsterConfig(entityOrId: any): any {
+  const id = typeof entityOrId === "string" ? entityOrId : monsterTypes.get(entityOrId) || "ashfang_wolf";
+  return (monstersData.monsters as any[]).find(entry => entry.id === id) || WOLF_CONFIG;
+}
 const SKILL_RANGE_TOLERANCE = 8;
 
 function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = false) {
@@ -277,6 +284,7 @@ function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = fals
   const defense = Math.max(0, Number(derived.DEF) || stats.pdef);
 
   player.name = profile.name;
+  try { player.setGraphic(`hero-${profile.classId}`); } catch {}
   player.param[MAXHP] = maxHp;
   player.param[MAXSP] = maxSp;
   player.param[ATK] = attack;
@@ -612,7 +620,7 @@ function executeBasicAttack(source: "manual" | "auto" = "manual", approached = f
 
   const result = resolveDamage(
     profileCombatStats(profile),
-    wolfCombatStats(),
+    wolfCombatStats(target),
     {
       kind: "physical",
       powerPercent: 100,
@@ -1109,7 +1117,7 @@ function executeGreenvaleSkill(detail: any) {
       if (percent > 0) {
         const result = resolveDamage(
           profileCombatStats(profile),
-          wolfCombatStats(),
+          wolfCombatStats(target),
           {
             kind: skill.formula === "magical_basic" ? "magical" : "physical",
             powerPercent: percent,
@@ -1246,8 +1254,9 @@ function saveQuestProgress(kills: number, completed: boolean) {
   }
 }
 
-function rollWolfLoot() {
-  const table = (dropsData.dropTables as any[]).find((entry) => entry.id === WOLF_CONFIG.dropTableId);
+function rollWolfLoot(monsterId = "ashfang_wolf") {
+  const monster = monsterConfig(monsterId);
+  const table = (dropsData.dropTables as any[]).find((entry) => entry.id === monster.dropTableId);
   if (!table) return;
   const drops: Array<{ itemId: string; quantity: number }> = [];
   const rolls = Math.max(1, Math.floor(Number(table.rolls) || 1));
@@ -1260,29 +1269,30 @@ function rollWolfLoot() {
   }
   if (!drops.length) return;
   dispatchCombat("greenvale:loot-drop", {
-    sourceId: "ashfang_wolf",
-    sourceName: "Ashfang Wolf",
+    sourceId: monsterId,
+    sourceName: monsterId.split("_").join(" "),
     drops,
     autoLootRadius: Number((dropsData as any).settings?.autoLootRadius) || Number(WOLF_CONFIG.autoLootRadius) || 120,
   });
 }
 
-function onWolfDefeated(attacker?: any) {
+function onWolfDefeated(attacker?: any, monsterId = "ashfang_wolf") {
   if (!attacker || typeof attacker.getVariable !== "function") return;
 
+  const monster = monsterConfig(monsterId);
   // EXP progression is independent from the first quest. In standalone mode the
   // server and client share the browser, so the authoritative defeat hook emits
   // a narrow event that the versioned character save consumes.
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("greenvale:experience", {
-      detail: { baseExp: Number(WOLF_CONFIG.baseExp) || 18, jobExp: Number(WOLF_CONFIG.jobExp) || 8, source: "ashfang_wolf" },
+      detail: { baseExp: Number(monster.baseExp) || 18, jobExp: Number(monster.jobExp) || 8, source: monsterId },
     }));
   }
-  rollWolfLoot();
+  rollWolfLoot(monsterId);
   lockedTarget = null;
   dispatchTargetState(null);
 
-  if (attacker.getVariable("greenvale.quest.main") !== "first-hunt") return;
+  if (monsterId !== "ashfang_wolf" || attacker.getVariable("greenvale.quest.main") !== "first-hunt") return;
   const next = Math.min(3, Number(attacker.getVariable("greenvale.quest.kills") || 0) + 1);
   attacker.setVariable("greenvale.quest.kills", next);
   attacker.addItem(WolfFang, 1);
@@ -1299,20 +1309,23 @@ function onWolfDefeated(attacker?: any) {
   saveQuestProgress(next, done);
 }
 
-function MutantWolf(name: string, x: number, y: number): EventDefinition {
+function MutantEnemy(name: string, monsterId: string, x: number, y: number): EventDefinition {
+  const config = monsterConfig(monsterId);
+  const displayName = monsterId.split("_").map(part => part[0].toUpperCase()+part.slice(1)).join(" ");
   return {
     name,
     onInit() {
-      this.setGraphic("monster");
-      this.name = "Ashfang Wolf";
-      this.speed = 1.35;
+      this.setGraphic(`monster-${monsterId}`);
+      this.name = displayName;
+      monsterTypes.set(this, monsterId);
+      this.speed = Number(config.moveSpeed) || 1.35;
       this.through = false;
       this.initializeDefaultStats();
-      this.param[MAXHP] = 90;
+      this.param[MAXHP] = Number(config.hp) || 90;
       this.param[MAXSP] = 20;
-      this.param[ATK] = 13;
-      this.param[PDEF] = 3;
-      this.hp = 90;
+      this.param[ATK] = Number(config.atk) || 13;
+      this.param[PDEF] = Number(config.def) || 3;
+      this.hp = Number(config.hp) || 90;
       this.sp = 20;
       this.addItem(WolfClaw, 1);
       this.equip(WolfClaw.id);
@@ -1327,9 +1340,9 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
         enemyType: EnemyType.Aggressive,
         faction: "mutants",
         targets: "players",
-        visionRange: 230,
-        attackRange: 58,
-        attackCooldown: 1650,
+        visionRange: Number(config.visionRange) || 230,
+        attackRange: Number(config.attackRange) || 58,
+        attackCooldown: monsterId === "field_boss" ? 2150 : 1650,
         dodgeChance: 0.08,
         attackPatterns: [AttackPattern.Melee],
         simpleBehavior: {
@@ -1338,18 +1351,18 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
           ],
           otherwise: chase(),
         },
-        rewards: { exp: 18, gold: 4 },
+        rewards: { exp: Number(config.baseExp) || 18, gold: Math.max(1,Math.floor((Number(config.level)||3)/3)) },
         onDefeated: ({ attacker, reward }: any) => {
           if (attacker && typeof attacker.getVariable === "function") {
             reward.giveTo(attacker);
-            onWolfDefeated(attacker);
+            onWolfDefeated(attacker, monsterId);
           }
         },
         presentation: {
           role: "enemy",
-          name: "Ashfang Wolf",
+          name: displayName,
           healthBar: {
-            text: "Ashfang Wolf",
+            text: displayName,
             style: { width: 68, height: 6, fontSize: 11 },
             layout: { width: 76, marginBottom: 10 },
           },
@@ -1362,7 +1375,7 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
 const Mara: EventDefinition = {
   name: "Mara",
   onInit() {
-    this.setGraphic("hero");
+    this.setGraphic("npc-mara");
     this.name = "Mara";
     this.through = false;
     this.teleport({ x: 690, y: 390 });
@@ -1383,7 +1396,7 @@ const player = {
   async onConnected(player: RpgPlayer) {
     const profile = getProfile();
     activePlayer = player;
-    player.setGraphic("hero");
+    player.setGraphic(`hero-${profile.classId}`);
     player.initializeDefaultStats();
     applyProfileToPlayer(player, profile, true);
     player.setVariable("greenvale.quest.kills", profile.kills);
@@ -1473,7 +1486,7 @@ export default createServer({
               const profile = getProfile();
               const result = resolveDamage(
                 profileCombatStats(profile),
-                wolfCombatStats(),
+                wolfCombatStats(target),
                 {
                   kind: "physical",
                   powerPercent: 100,
