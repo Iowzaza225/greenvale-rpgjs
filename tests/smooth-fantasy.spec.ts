@@ -84,3 +84,17 @@ test("painted atlas is bundled and visibly differs from old canvas primitives", 
     expect(sprite.pixelSource).toBe(false);
   }
 });
+
+test("actual gameplay uses painted sprites, not procedural cartoon fallback", async ({ page }) => {
+  await page.goto("/?debug=1&art=painted");
+  await page.locator("#gv-play").click();
+  await page.locator("[data-action=create-slot]").first().click();
+  await page.locator("#gv-name").fill("PaintedQA");
+  await page.locator("#gv-create-character").click();
+  await page.locator("[data-action=skip-cutscene]").click();
+  await expect(page.locator("#rpg canvas")).toBeVisible({timeout:30_000});
+  await expect.poll(() => page.evaluate(() => {
+    return (window as any).__GV_ACTUAL_ART__?.["hero-novice"];
+  }), {timeout:20_000}).toBe("painted");
+  await expect(page.locator("#gv-art-source-debug")).toContainText("PAINTED");
+});
