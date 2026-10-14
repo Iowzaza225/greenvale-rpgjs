@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills, phase/4-combat ]
+    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills, phase/4-combat, feature/desktop-original-world ]
   pull_request:
     branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills ]
   workflow_dispatch:
@@ -59,6 +59,12 @@ jobs:
 
       - name: Phase 4 iPhone WebKit combat
         run: pnpm run test:phase4
+
+      - name: Install Chromium for desktop smoke
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Desktop Chromium and world travel
+        run: pnpm run test:desktop
 
       - name: Upload Playwright traces on failure
         if: failure()
