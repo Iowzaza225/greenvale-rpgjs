@@ -1,0 +1,14 @@
+#gv-world-map[hidden]{display:none!important}
+#gv-world-map{position:fixed;inset:0;z-index:247000;display:grid;place-items:center;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:#07110fef;font-family:system-ui,sans-serif;color:#edf0e4}
+.gv-world-sheet{width:min(100%,940px);max-height:100%;overflow:auto;border-radius:16px;border:1px solid #718373;background:linear-gradient(145deg,#172920,#0e1718);box-shadow:0 16px 80px #000b}
+.gv-world-sheet header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #354d3e}
+.gv-world-sheet header small{font:800 10px ui-monospace,monospace;letter-spacing:.12em;color:#a5b28a}
+.gv-world-sheet h2{margin:4px 0 0;color:#ebdca6;font:900 24px Georgia,serif}
+.gv-world-sheet header button{width:44px;height:44px;border:1px solid #72816c;border-radius:10px;background:#253a2f;color:#e6dfc3;font-size:25px}
+.gv-world-sheet>p,.gv-world-sheet>footer{margin:0;padding:14px 16px;color:#afbeaf;font-size:12px;line-height:1.5}
+.gv-world-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;padding:4px 16px 16px}
+.gv-world-zone{border:1px solid #3d5a48;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:5px;background:#0b1714}.gv-world-zone.active{border-color:#eed38d;box-shadow:inset 0 0 0 1px #eed38d55}
+.gv-world-zone strong{color:#f1db99;font-size:14px}.gv-world-zone span,.gv-world-zone small{color:#9db0a2;font-size:10px}.gv-world-zone mark{border-radius:5px;padding:5px 8px;background:#8e7745;color:#fff1c2;font-size:9px;font-weight:800;align-self:start}
+.gv-world-map-preview{position:relative;height:125px;border-radius:9px;overflow:hidden;background:radial-gradient(ellipse at 60% 40%,var(--zone-color),#12251e 85%);border:1px solid #4f6754}
+.gv-world-map-preview>i{position:absolute;display:block;background:#0f2c2a9c;border-radius:2px}.gv-world-map-preview>.gv-world-path{position:absolute;left:0;top:52%;width:100%;height:12px;border-top:2px dashed #d6c3979c;transform:rotate(-12deg)}.gv-world-map-preview>b{position:absolute;bottom:8px;right:9px;font:900 24px Georgia,serif;color:#f0e8dbaa}
+@media(max-width:640px){.gv-world-grid{grid-template-columns:1fr 1fr;gap:7px;padding:4px 10px 12px}.gv-world-zone{padding:7px}.gv-world-map-preview{height:84px}.gv-world-zone strong{font-size:11px}.gv-world-sheet>p,.gv-world-sheet>footer{font-size:10px;padding:10px}}
