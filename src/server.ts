@@ -1172,6 +1172,10 @@ if (typeof window !== "undefined") {
 
   // QA-only position hook. It is enabled only on ?debug=1 and exists so the
   // iPhone WebKit test can reproduce "enemy visible but outside skill range".
+  window.addEventListener("greenvale:debug-player-coords-request", () => {
+    if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
+    dispatchCombat("greenvale:debug-player-coords", { x: entityCoord(activePlayer,"x"),y:entityCoord(activePlayer,"y"),mapId:currentMapId });
+  });
   window.addEventListener("greenvale:debug-travel", async (event) => {
     if (!activePlayer || !new URLSearchParams(window.location.search).has("debug")) return;
     const id = String((event as CustomEvent).detail?.id || "");
