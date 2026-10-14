@@ -34,6 +34,29 @@ function mapSize(id: string) {
     : { width: 1600, height: 1000 };
 }
 
+type ResolvedArt = "painted" | "canvas" | "pixel";
+declare global {
+  interface Window {
+    __GV_ACTUAL_ART__?: Record<string, ResolvedArt>;
+  }
+}
+function recordActiveArt(id: string, actual: ResolvedArt): void {
+  if (typeof window === "undefined") return;
+  (window.__GV_ACTUAL_ART__ ??= {})[id] = actual;
+  document.body.dataset.gvArt = actual;
+  // This small indicator is only shown on ?debug=1. Verify what was
+  // actually decoded rather than which URL argument was requested.
+  if (new URLSearchParams(window.location.search).get("debug") !== "1") return;
+  let badge = document.getElementById("gv-art-source-debug");
+  if (!badge) {
+    badge = document.createElement("div");
+    badge.id = "gv-art-source-debug";
+    badge.style.cssText = "position:fixed;bottom:calc(4px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:190100;padding:3px 8px;border-radius:6px;border:1px solid #e1b966;background:#101a1df0;color:#f6de9d;font:700 10px system-ui;pointer-events:none;white-space:nowrap";
+    document.body.append(badge);
+  }
+  badge.textContent = "GREENVALE ART: " + actual.toUpperCase() + " · " + id;
+}
+
 async function makeCharacterSpritesheet(id: string) {
   // Painted Smooth Fantasy is the default. ?art=canvas or ?art=pixel are QA fallbacks.
   const mode = typeof window === "undefined" ? "painted" :
@@ -41,15 +64,17 @@ async function makeCharacterSpritesheet(id: string) {
   const pixelArt = mode === "pixel";
   // Painted original assets are the default; canvas art remains a safe fallback.
   let image: string | undefined;
+  let activeArt: ResolvedArt = pixelArt ? "pixel" : "canvas";
   if (pixelArt) image = originalSpriteDataUrl(id);
   else if (mode === "canvas") image = smoothFantasySheetDataUrl(id);
   else {
-    try { image = await paintedFantasySheetDataUrl(id); }
+    try { image = await paintedFantasySheetDataUrl(id); if (image) activeArt = "painted"; }
     catch (error) {
       console.warn("[Greenvale] Painted sprite unavailable; using canvas:", id, error);
     }
     image ??= smoothFantasySheetDataUrl(id);
   }
+  recordActiveArt(id, activeArt);
   const width = pixelArt ? ORIGINAL_SPRITE_SIZE.width : SMOOTH_FRAME.width * SMOOTH_FRAME.columns;
   const height = pixelArt ? ORIGINAL_SPRITE_SIZE.height : SMOOTH_FRAME.height * SMOOTH_FRAME.rows;
   const preset = Presets.RMSpritesheet(3, 4, 1);
