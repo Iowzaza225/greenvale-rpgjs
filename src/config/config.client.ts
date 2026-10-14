@@ -40,13 +40,15 @@ async function makeCharacterSpritesheet(id: string) {
     new URLSearchParams(window.location.search).get("art") || "painted";
   const pixelArt = mode === "pixel";
   // Painted original assets are the default; canvas art remains a safe fallback.
-  let image = pixelArt ? originalSpriteDataUrl(id) : smoothFantasySheetDataUrl(id);
-  if (!pixelArt && mode !== "canvas") {
-    try {
-      image = (await paintedFantasySheetDataUrl(id)) ?? image;
-    } catch (error) {
-      console.warn("[Greenvale] Painted sprite unavailable, using canvas fallback:", id, error);
+  let image: string | undefined;
+  if (pixelArt) image = originalSpriteDataUrl(id);
+  else if (mode === "canvas") image = smoothFantasySheetDataUrl(id);
+  else {
+    try { image = await paintedFantasySheetDataUrl(id); }
+    catch (error) {
+      console.warn("[Greenvale] Painted sprite unavailable; using canvas:", id, error);
     }
+    image ??= smoothFantasySheetDataUrl(id);
   }
   const width = pixelArt ? ORIGINAL_SPRITE_SIZE.width : SMOOTH_FRAME.width * SMOOTH_FRAME.columns;
   const height = pixelArt ? ORIGINAL_SPRITE_SIZE.height : SMOOTH_FRAME.height * SMOOTH_FRAME.rows;
