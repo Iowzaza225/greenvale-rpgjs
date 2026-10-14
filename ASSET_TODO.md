@@ -67,3 +67,19 @@ The placeholder ids are stable so final art/audio can replace them without chang
 | Knockout overlay | Original downed/respawn treatment |
 
 All final combat presentation must remain original to Greenvale Afterfall.
+
+
+## New original assets in desktop/world branch
+
+**Implemented as runtime-generated original assets (not external RPGJS sample art):**
+- 7 hero class sprites, 11 monster designs and 8 NPC role sprites, 3×4 frames at 48×56 per cell
+- 51+ deterministic 32×32 skill/icon designs
+- five new/retained original world-map component backgrounds and route gate landmarks
+
+**Still requiring manual art pass for full production quality:**
+- Bespoke run/hit/death/rest/emote animations and character layers for cosmetics
+- Dedicated monster attack, recoil and boss phase sprites
+- Authored Tiled tilesets, collision polygons, foliage overlays, props and richer environmental FX
+- Finished VFX/SFX for all abilities, biome music and NPC portraits
+
+See `docs/ART_BIBLE.md` for exact frame layout and palette.
