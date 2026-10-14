@@ -12,6 +12,24 @@ test("desktop keyboard, original character sprites and five connected maps", asy
   await expect(page.locator("#rpg canvas")).toBeVisible({timeout:30000});
 
   await expect(page.locator("body")).toHaveAttribute("data-gv-device","desktop");
+  // WASD is translated to native RPGJS arrow events. Check actual player motion,
+  // not merely synthetic key dispatch.
+  await page.evaluate(() => {
+    (window as any).__GV_COORDS__ = null;
+    window.addEventListener("greenvale:debug-player-coords",event => {
+      (window as any).__GV_COORDS__ = (event as CustomEvent).detail;
+    });
+    window.dispatchEvent(new Event("greenvale:debug-player-coords-request"));
+  });
+  const before = await page.evaluate(() => (window as any).__GV_COORDS__);
+  expect(before).toBeTruthy();
+  await page.keyboard.down("w");
+  await page.waitForTimeout(420);
+  await page.keyboard.up("w");
+  await page.evaluate(() => window.dispatchEvent(new Event("greenvale:debug-player-coords-request")));
+  const after = await page.evaluate(() => (window as any).__GV_COORDS__);
+  expect(after.y).toBeLessThan(before.y - 3);
+
   await expect(page.locator("#gv-desktop-help")).toBeVisible();
   await page.keyboard.press("KeyM");
   await expect(page.locator("#gv-world-map")).toBeVisible();
