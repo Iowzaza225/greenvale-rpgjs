@@ -14,7 +14,8 @@
     "test:phase2": "playwright test tests/phase2-character.spec.ts",
     "test:phase3": "playwright test tests/phase3-skills.spec.ts",
     "test:phase4": "playwright test tests/phase4-combat.spec.ts",
-    "test:mobile-hud": "playwright test tests/mobile-hud.spec.ts"
+    "test:mobile-hud": "playwright test tests/mobile-hud.spec.ts",
+    "test:reborn-art": "playwright test tests/reborn-smooth-animation.spec.ts tests/reborn-licensed-hud.spec.ts"
   },
   "dependencies": {
     "@canvasengine/presets": "2.4.0",
