@@ -1,0 +1,47 @@
+/* Kenney Mobile Controls sprite icons (CC0) — see ASSET_LICENSES_REBORN.md.
+ * Keep semantic real HTML buttons and their original Greenvale event handlers.
+ * The downloaded PNGs are directly part of this branch, not remote URLs.
+ */
+@media (pointer: coarse) and (max-width: 900px) {
+  body.gv-compact-hud #gv-combat-controls [data-combat="attack"],
+  body.gv-compact-hud #gv-combat-controls [data-combat="target"],
+  body.gv-compact-hud #gv-menu-btn { font-size: 0; }
+  body.gv-compact-hud #gv-combat-controls [data-combat="attack"]::before,
+  body.gv-compact-hud #gv-combat-controls [data-combat="target"]::before,
+  body.gv-compact-hud #gv-menu-btn::before {
+    content: "";
+    display: block;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+    filter: drop-shadow(0 1px 2px #0008);
+  }
+  body.gv-compact-hud #gv-combat-controls [data-combat="attack"]::before {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+    background-image: url("/assets/kenney-mobile/icon_sword.png");
+  }
+  body.gv-compact-hud #gv-combat-controls [data-combat="target"]::before {
+    width: 23px;
+    height: 23px;
+    flex-basis: 23px;
+    background-image: url("/assets/kenney-mobile/icon_target.png");
+  }
+  body.gv-compact-hud #gv-menu-btn::before {
+    background-image: url("/assets/kenney-mobile/icon_menu.png");
+    width: 25px;
+    height: 25px;
+    flex-basis: 25px;
+  }
+  body.gv-compact-hud #gv-combat-controls button small {
+    font-size: 9px;
+    color: #e9e2cd;
+    line-height: 1.15;
+  }
+  body.gv-compact-hud #gv-combat-controls [data-combat="attack"] small { font-size: 10px; }
+}
