@@ -42,21 +42,21 @@ export default {
         enabled: "auto",
         layout: {
           joystickSide: "left",
-          joystickMargin: [24, 22, 24, 18],
-          buttonsMargin: 20,
-          gap: 12,
+          joystickMargin: [18, 18, 18, 12],
+          buttonsMargin: 18,
+          gap: 10,
         },
         joystick: {
           outerColor: "#29495c",
           innerColor: "#eef6f6",
-          scale: 0.86,
+          scale: 0.83,
           moveInterval: 25,
           threshold: 0.06,
         },
         buttons: {
-          action: { enabled: true, width: 70, height: 70 },
-          back: { enabled: true, width: 54, height: 54 },
-          dash: { enabled: true, width: 56, height: 56 },
+          action: { enabled: true, width: 62, height: 62 },
+          back: { enabled: false, width: 54, height: 54 },
+          dash: { enabled: false, width: 56, height: 56 },
         },
       }),
       {
