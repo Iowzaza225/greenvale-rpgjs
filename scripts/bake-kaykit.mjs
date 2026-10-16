@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { spawn } from "node:child_process";
+import { createServer } from "node:http";
+import { resolve, sep } from "node:path";
 import { chromium } from "@playwright/test";
 
 const provenance = {
@@ -27,23 +28,30 @@ async function prepare() {
 }
 async function run() {
   await prepare();
-  const server=spawn(process.platform==="win32"?"pnpm.cmd":"pnpm",
-    ["exec","vite","--host","127.0.0.1","--port","4178","--strictPort"],
-    {stdio:["ignore","pipe","pipe"]});
-  server.stdout.on("data", x=>process.stdout.write(x));
-  server.stderr.on("data", x=>process.stderr.write(x));
+  // Plain static asset server: Vite's RPGJS HTML transformer also injects the
+  // actual game entry into non-game pages, so the atlas baker must not use Vite.
+  const root=process.cwd();
+  const server=createServer(async(req,res)=>{
+    try{
+      const pathname=decodeURIComponent(new URL(req.url,"http://localhost").pathname);
+      const allowed=pathname.startsWith("/node_modules/three/") ||
+        pathname==="/tools/kaykit-bake.html" ||
+        pathname==="/tools/kaykit-bake.js" ||
+        pathname==="/assets/vendor/kaykit/Knight.glb";
+      if(!allowed) {res.writeHead(404);res.end("not found");return;}
+      const absolute=resolve(root,"."+pathname);
+      if(!absolute.startsWith(root+sep)) {res.writeHead(403);res.end();return;}
+      const bytes=await readFile(absolute);
+      const ext=pathname.endsWith(".html")?"text/html":
+        pathname.endsWith(".js")?"text/javascript":
+        pathname.endsWith(".glb")?"model/gltf-binary":"application/octet-stream";
+      res.writeHead(200,{"Content-Type":ext,"Access-Control-Allow-Origin":"*"});
+      res.end(bytes);
+    }catch(e){res.writeHead(404);res.end(String(e));}
+  });
+  await new Promise((ok,fail)=>{server.once("error",fail);server.listen(4178,"127.0.0.1",ok)});
   let browser;
   try {
-    let ready=false;
-    for (let i=0;i<80;i++) {
-      if (server.exitCode!==null) throw new Error("Vite quit before starting");
-      try {
-        const ping=await fetch("http://127.0.0.1:4178/tools/kaykit-bake.html");
-        if(ping.ok){ready=true;break}
-      }catch{}
-      await new Promise(r=>setTimeout(r,350));
-    }
-    if(!ready)throw new Error("Vite renderer server unavailable");
     browser=await chromium.launch({headless:true,args:["--use-gl=angle","--use-angle=swiftshader","--enable-webgl"]});
     const page=await browser.newPage({viewport:{width:1180,height:760}});
     page.on("console",x=>console.log("[baker]",x.text()));
@@ -57,6 +65,6 @@ async function run() {
     if(bytes.length<9000)throw new Error("Atlas suspiciously small");
     await writeFile(outputPath,bytes);
     console.log("Baked KayKit Knight atlas",bytes.length,"bytes",outputPath);
-  } finally {await browser?.close();server.kill("SIGTERM")}
+  } finally {await browser?.close(); await new Promise(ok=>server.close(ok));}
 }
 run().catch(e=>{console.error(e);process.exitCode=1;});
