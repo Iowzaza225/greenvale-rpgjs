@@ -29,6 +29,8 @@ export default {
     provideClientGlobalConfig(),
     provideActionBattle({
       visual: createActionBattleVisual("impact"),
+      // LPC preset provides attack2 (7-frame slash) and attack3 (6-frame heavy swing).
+      animations: { attack: { animationName: "attack2", repeat: 1 } },
       ui: createActionBattleUi({
         hotbar: false,
         targeting: true,
@@ -40,21 +42,21 @@ export default {
         enabled: "auto",
         layout: {
           joystickSide: "left",
-          joystickMargin: [24, 22, 24, 18],
-          buttonsMargin: 20,
-          gap: 12,
+          joystickMargin: [18, 18, 18, 12],
+          buttonsMargin: 18,
+          gap: 10,
         },
         joystick: {
           outerColor: "#29495c",
           innerColor: "#eef6f6",
-          scale: 0.86,
-          moveInterval: 40,
-          threshold: 0.08,
+          scale: 0.83,
+          moveInterval: 25,
+          threshold: 0.06,
         },
         buttons: {
-          action: { enabled: true, width: 70, height: 70 },
-          back: false,
-          dash: { enabled: true, width: 56, height: 56 },
+          action: { enabled: true, width: 62, height: 62 },
+          back: { enabled: false, width: 54, height: 54 },
+          dash: { enabled: false, width: 56, height: 56 },
         },
       }),
       {
@@ -75,6 +77,14 @@ export default {
               width: 1728,
               height: 5568,
               ratio: 1.5,
+            });
+          }
+          if (id === "potion" || id === "focus-slash") {
+            return Presets.IconPreset({
+              id,
+              image: ASSET_BASE + "wood.png",
+              framesWidth: 1,
+              framesHeight: 1,
             });
           }
           return undefined;
