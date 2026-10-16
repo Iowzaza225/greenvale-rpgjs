@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
-import { chromium } from "playwright";
+import { chromium } from "@playwright/test";
 
 const provenance = {
   url: "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb",
@@ -49,7 +49,7 @@ async function run() {
     page.on("console",x=>console.log("[baker]",x.text()));
     page.on("pageerror",e=>console.error("[baker error]",e));
     await page.goto("http://127.0.0.1:4178/tools/kaykit-bake.html",{waitUntil:"domcontentloaded"});
-    await page.waitForFunction(()=>Boolean(window.__KAYKIT_DONE__||window.__KAYKIT_ERROR__),{timeout:120_000});
+    await page.waitForFunction(()=>Boolean(window.__KAYKIT_DONE__||window.__KAYKIT_ERROR__),null,{timeout:120_000});
     const out=await page.evaluate(()=>({data:window.__KAYKIT_DONE__,error:window.__KAYKIT_ERROR__}));
     if(out.error) throw new Error(out.error);
     if(!out.data?.startsWith("data:image/webp;base64,"))throw new Error("Renderer did not produce WebP atlas");
