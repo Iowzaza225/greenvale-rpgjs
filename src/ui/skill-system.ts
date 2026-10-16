@@ -31,6 +31,7 @@ type RuntimeState = {
 };
 
 let initialized = false;
+let mobileHotbarPage = 0;
 let activeTab: Tab = "tree";
 let selectedSkillId = "survivor_strike";
 let runtimeState: RuntimeState = { hp: 0, maxHp: 0, sp: 0, maxSp: 0 };
@@ -86,6 +87,9 @@ function renderHotbar(): void {
   const host = hotbarRoot();
   const character = getSelectedCharacter();
   if (!host || !character) return;
+  const pageCount = Math.max(1, Math.ceil(character.hotbar.length / 3));
+  mobileHotbarPage = mobileHotbarPage % pageCount;
+  host.dataset.page = String(mobileHotbarPage);
 
   host.innerHTML = `
     <div class="gv3-hotbar-status">${character.autoBattle.enabled ? escapeHtml(t("skill.ui.autoOn")) : escapeHtml(t("skill.ui.autoOff"))}</div>
@@ -93,13 +97,14 @@ function renderHotbar(): void {
       ${character.hotbar.map((skillId, slot) => {
         const skill = skillId ? getSkill(skillId) : null;
         const level = skillId ? getSkillLevel(character.learnedSkills, skillId) : 0;
-        return `<button class="gv3-hotbar-slot" data-hotbar-slot="${slot}" data-use-skill="${skillId || ""}" ${!skill ? "disabled" : ""}>
+        return `<button class="gv3-hotbar-slot" data-hotbar-slot="${slot}" data-mobile-page="${Math.floor(slot / 3)}" data-use-skill="${skillId || ""}" ${!skill ? "disabled" : ""}>
           <span class="gv3-slot-number">${slot}</span>
           <i class="gv3-skill-icon gv3-skill-icon--${skill?.type || "empty"}">${skill ? escapeHtml(t(skill.nameKey).slice(0, 2)) : "—"}</i>
           <small>${skill ? `${escapeHtml(t("skill.ui.levelShort"))}${level}` : escapeHtml(t("skill.ui.empty"))}</small>
           <span class="gv3-cooldown" data-cooldown-skill="${skillId || ""}"></span>
         </button>`;
       }).join("")}
+      <button type="button" class="gv3-page-toggle" data-hotbar-page-next aria-label="${document.documentElement.lang.startsWith("th") ? "สลับหน้าสกิล" : "Next skill page"}">↻<small data-hotbar-page-label>${mobileHotbarPage + 1}/${pageCount}</small></button>
     </div>`;
 
   host.querySelectorAll<HTMLElement>("[data-use-skill]").forEach((button) => {
@@ -107,6 +112,12 @@ function renderHotbar(): void {
       const id = button.dataset.useSkill;
       if (id) void useSkill(id, "hotbar");
     });
+  });
+  host.querySelector<HTMLButtonElement>("[data-hotbar-page-next]")?.addEventListener("click", () => {
+    mobileHotbarPage = (mobileHotbarPage + 1) % pageCount;
+    host.dataset.page = String(mobileHotbarPage);
+    const label = host.querySelector<HTMLElement>("[data-hotbar-page-label]");
+    if (label) label.textContent = `${mobileHotbarPage + 1}/${pageCount}`;
   });
   updateCooldownVisuals();
 }
