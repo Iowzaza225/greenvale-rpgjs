@@ -29,3 +29,11 @@ canvas{image-rendering:pixelated}
 @media (orientation:portrait) and (max-width:700px){
   :root{--rpg-hotbar-dock-bottom:calc(12px + env(safe-area-inset-bottom))}
 }
+
+/* Greenvale mobile hotbar: keep it above Safari's bottom chrome and between the control clusters. */
+@media (orientation:portrait) and (max-width:700px){
+  :root{
+    --rpg-hotbar-mobile-slot-size:42px;
+    --rpg-hotbar-dock-bottom:calc(92px + env(safe-area-inset-bottom));
+  }
+}
