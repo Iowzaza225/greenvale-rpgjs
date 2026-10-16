@@ -35,6 +35,9 @@ async function resolveLicensedKnight(id:string) {
     }catch { knightAtlasAvailable=false; }
   }
   if(!knightAtlasAvailable) return null;
+  if(typeof window!=="undefined" && (window as any).__GV_REBORN_ASSET_QA__) {
+    (window as any).__GV_REBORN_ASSET_QA__.loadedFor=id;
+  }
   const preset=Presets.RMSpritesheet(3,4,1);
   const anim=(bank:number)=>({
     animations:({direction}:{direction:string})=> [[...Array.from({length:3},(_,frame)=>({
