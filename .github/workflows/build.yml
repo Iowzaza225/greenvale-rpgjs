@@ -63,6 +63,9 @@ jobs:
       - name: REBORN compact mobile HUD iPhone WebKit
         run: pnpm run test:mobile-hud
 
+      - name: REBORN animated sprites and licensed Kenney icons
+        run: pnpm run test:reborn-art
+
       - name: Upload Playwright traces on failure
         if: failure()
         uses: actions/upload-artifact@v4
