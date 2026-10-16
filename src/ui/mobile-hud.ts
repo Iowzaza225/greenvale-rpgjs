@@ -1,5 +1,6 @@
 import { gameEvents } from "../core/event-bus";
 import "./mobile-hud.css";
+import "./kenney-hud-icons.css";
 
 /**
  * REBORN mobile HUD: PRESENTATION ONLY.
