@@ -453,6 +453,8 @@ function applyEnemyCombatDamage(
   const after = Math.max(0, before - damage);
 
   if (damage > 0) {
+    // Play the in-map monster reaction using the active enemy sprite, not a UI mockup.
+    target.setGraphicAnimation?.(after <= 0 ? "death" : "hit", 1);
     target.hp = after;
     try {
       target.battleAi?.handleDamage?.(activePlayer, {
@@ -611,6 +613,12 @@ function executeBasicAttack(source: "manual" | "auto" = "manual", approached = f
   const now = Date.now();
   if (now - lastBasicAttackAt < delay) return;
   lastBasicAttackAt = now;
+
+  // The original action-battle setup only animated its native attack path.
+  // Greenvale also has a custom manual/auto attack path, so drive the REAL
+  // RPGJS actor animation here instead of drawing a separate DOM placeholder.
+  // RPGJS v5 setGraphicAnimation(name, repeats) broadcasts to the map clients.
+  activePlayer.setGraphicAnimation("attack", 1);
 
   const result = resolveDamage(
     profileCombatStats(profile),
