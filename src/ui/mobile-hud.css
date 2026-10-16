@@ -227,3 +227,33 @@
 @media (prefers-reduced-motion: reduce) {
   body.gv-compact-hud #gv-combat-controls button { transition: none; }
 }
+
+/* Licensed CC0 Kenney UI Pack - Adventure textures, selectively re-skinned. */
+@media (pointer: coarse) and (max-width: 900px) {
+  body.gv-compact-hud #gv-combat-controls [data-combat="attack"] {
+    background-image:
+      linear-gradient(135deg,#c15e4970,#44261bbb),
+      url("/assets/vendor/kenney/hexagon_brown_dark.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover, 100% 100%;
+    border-radius: 23px;
+  }
+  body.gv-compact-hud #gv-combat-controls [data-combat="target"],
+  body.gv-compact-hud #gv-combat-controls [data-combat="auto"] {
+    background-image: url("/assets/vendor/kenney/hexagon_grey_green.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    border-radius: 16px;
+  }
+  body.gv-compact-hud .gv3-hotbar-slot {
+    background-image: linear-gradient(#1321219c,#1321219c),url("/assets/vendor/kenney/panel_brown_dark.png");
+    background-size: cover,100% 100%;
+  }
+  body.gv-compact-hud #gv-menu-btn {
+    background-image: url("/assets/vendor/kenney/button_brown.png");
+    background-size: 100% 100%;
+    border-radius: 10px;
+  }
+}
