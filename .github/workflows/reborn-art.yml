@@ -1,0 +1,58 @@
+name: REBORN – Bake CC0 KayKit Animated Character
+on:
+  push:
+    branches: [ reborn/02-licensed-character-assets ]
+    paths:
+      - 'scripts/bake-kaykit.mjs'
+      - 'tools/kaykit-bake.js'
+      - 'tools/kaykit-bake.html'
+      - '.github/workflows/reborn-art.yml'
+  workflow_dispatch:
+concurrency:
+  group: reborn-kaykit-asset-bake
+  cancel-in-progress: true
+permissions:
+  contents: write
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@11.6.0 --activate
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Install Chromium for offline sprite bake
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Download pinned CC0 KayKit source and bake 2.5D frames
+        run: pnpm run assets:bake
+      - name: Validate atlas exists and build game
+        run: |
+          test -s public/assets/characters/kaykit-knight-2p5d.webp
+          test -s public/assets/vendor/kaykit/Knight.glb
+          RPG_TYPE=rpg pnpm run build
+      - name: Commit licensed baked frames to REBORN branch (never main)
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/assets/characters/kaykit-knight-2p5d.webp public/assets/vendor/kaykit/Knight.glb
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets(reborn): bake verified KayKit Knight animation atlas [skip ci]'
+            git fetch origin reborn/02-licensed-character-assets
+            git rebase origin/reborn/02-licensed-character-assets
+            git push origin HEAD:reborn/02-licensed-character-assets
+          fi
+      - name: Upload atlas QA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: greenvale-reborn-kaykit-atlas
+          path: |
+            public/assets/characters/kaykit-knight-2p5d.webp
+          if-no-files-found: ignore

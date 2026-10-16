@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "shops": [
+    {
+      "id": "camp_supply",
+      "nameKey": "shop.camp_supply.name",
+      "currency": "scrap",
+      "items": [
+        {
+          "id": "field_patch",
+          "buy": 18,
+          "sell": 7
+        }
+      ]
+    }
+  ],
+  "currencies": [
+    {
+      "id": "scrap",
+      "nameKey": "currency.scrap.name",
+      "premium": false
+    },
+    {
+      "id": "signal_shard",
+      "nameKey": "currency.signal_shard.name",
+      "premium": true,
+      "realMoneyEnabled": false
+    }
+  ]
+}

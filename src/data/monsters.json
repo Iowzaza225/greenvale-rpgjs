@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "monsters": [
+    {
+      "id": "ashfang_wolf",
+      "nameKey": "monster.ashfang_wolf.name",
+      "level": 3,
+      "hp": 90,
+      "atk": 13,
+      "def": 3,
+      "mdef": 1,
+      "hit": 12,
+      "flee": 8,
+      "moveSpeed": 1.35,
+      "element": "neutral",
+      "size": "medium",
+      "race": "beast",
+      "baseExp": 18,
+      "jobExp": 8,
+      "visionRange": 230,
+      "attackRange": 58,
+      "ai": "aggressive",
+      "skills": [],
+      "dropTableId": "ashfang_wolf",
+      "sprite": "placeholder_wolf",
+      "sound": "placeholder_wolf",
+      "respawnMs": 8000,
+      "crit": 3,
+      "critResistance": 1,
+      "perfectDodge": 1,
+      "blockChance": 2,
+      "blockReduction": 0.35,
+      "aggro": {
+        "memoryMs": 5000,
+        "leashRange": 420,
+        "assistRadius": 90
+      },
+      "basicAttack": {
+        "element": "neutral",
+        "statusEffect": {
+          "id": "bleed",
+          "chance": 0.12,
+          "durationMs": 4000
+        }
+      },
+      "autoLootRadius": 120
+    }
+  ]
+}

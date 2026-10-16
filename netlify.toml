@@ -7,14 +7,29 @@
   PNPM_VERSION = "11.6.0"
   RPG_TYPE = "rpg"
 
+# Never cache the HTML shell. A stale index pointing at an old hashed JS file
+# was one source of "Importing a module script failed" on iPhone Safari.
 [[headers]]
-  for = "/*"
+  for = "/"
   [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Cache-Control = "no-cache"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Vite assets are content-hashed, so they are safe to cache forever.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+# This game currently has no client-side URL routes, so intentionally do NOT
+# rewrite every 404 to index.html. Missing JS must stay a real 404 instead of
+# returning HTML with a 200 status (which Safari reports as a module-script error).
