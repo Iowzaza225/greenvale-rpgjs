@@ -2,11 +2,17 @@
  * Greenvale Afterfall – Phase 5B smooth-fantasy runtime sprite atlas.
  *
  * Original, transparent Canvas 2D art (no remote/CDN assets).
- * Each atlas has 3 motion frames × 4 RPGJS facing rows:
+ * Each atlas contains nine distinct action banks of 3 frames × 4 facing rows:
  * down, left, right, up. Frames share the same ground anchor.
- * These are lightweight placeholders for future hand-authored PNG atlases.
+ * All poses are original, deterministic procedural placeholders; final hand-painted layered art is still pending.
  */
-export const SMOOTH_FRAME = { width: 96, height: 112, columns: 3, rows: 4 } as const;
+export const SMOOTH_ACTIONS = ["walk","idle","run","attack","cast","hit","death","rest","emote"] as const;
+export type SmoothAction = (typeof SMOOTH_ACTIONS)[number];
+export const SMOOTH_FRAMES_PER_ACTION = 3;
+export const SMOOTH_FRAME = { width: 96, height: 112, columns: SMOOTH_ACTIONS.length * SMOOTH_FRAMES_PER_ACTION, rows: 4 } as const;
+export function smoothActionOffset(action: SmoothAction): number {
+  return Math.max(0, SMOOTH_ACTIONS.indexOf(action)) * SMOOTH_FRAMES_PER_ACTION;
+}
 export type SmoothRole = "hero" | "monster";
 export type SmoothFacing = 0 | 1 | 2 | 3;
 export const SMOOTH_FACING_ORDER = ["down", "left", "right", "up"] as const;
@@ -183,17 +189,74 @@ function fantasyCreature(c:CanvasRenderingContext2D,key:string,p:Palette,facing:
     for(let i=0;i<3;i++)P(c,[27+i*16,50,30+i*16,35,36+i*16,49],p.dark);
   }
 }
-function paint(c:CanvasRenderingContext2D,id:string,frame:number,facing:SmoothFacing):void{
+function paint(c:CanvasRenderingContext2D,id:string,frame:number,facing:SmoothFacing,action:SmoothAction):void{
   const key=id.replace(/^(hero|monster|npc)-/,"");
   const role=id.startsWith("monster-")?"monster":"hero";
   const p=palettes[key]??palettes[role==="monster"?"ashfang_wolf":"novice"];
   const w=SMOOTH_FRAME.width,h=SMOOTH_FRAME.height;
-  c.save();c.translate(frame*w,facing*h);
-  // Ground marker is static for all 12 frames. Background alpha stays zero.
-  E(c,48,103,27,5,"#07131a55");
-  c.translate(0,frame===1?-2:0);
+  const offset=smoothActionOffset(action);
+  const phase=frame/2;
+  c.save();
+  c.translate((offset+frame)*w,facing*h);
+  // Ground contact remains anchored across every facing and every action.
+  E(c,48,104,27,5,"#07131a55");
+  if(action==="death"){
+    // A collapse has a distinct horizontal silhouette; not a reused idle pose.
+    c.translate(48,92+frame*3);c.rotate((frame+1)*.35);c.scale(1,1-(frame+1)*.17);c.translate(-48,-92);
+  } else if(action==="hit"){
+    c.translate((frame%2===0?-5:4),frame===1?3:0);
+  } else if(action==="rest"){
+    c.translate(0,18);c.scale(1,.76);
+  } else if(action==="attack"){
+    c.translate(frame===1?10:0,frame===1?-5:0);
+    c.rotate((frame-1)*.045);
+  } else if(action==="run"){
+    c.translate((frame-1)*7,frame===1?-7:0);
+    c.rotate((frame-1)*.055);
+  } else if(action==="walk"){
+    c.translate((frame-1)*2,frame===1?-3:0);
+  } else if(action==="idle"){
+    c.translate(0,frame===1?-1:0);
+  } else if(action==="cast"){
+    c.translate(0,frame===1?-3:0);
+  }
   if(role==="monster") fantasyCreature(c,key,p,facing,frame);
   else humanoid(c,key,p,facing,frame);
+
+  // Purpose-drawn FX and action silhouettes; idle/walk frames are never
+  // recycled as attack/cast/hit poses.
+  if(action==="attack"){
+    const angle=-1.3+phase*2.1;
+    const cx=role==="monster"?72:76,cy=role==="monster"?65:61;
+    c.strokeStyle=frame===1?"#fff4b8":"#edc178";
+    c.lineWidth=frame===1?6:4;c.lineCap="round";
+    c.beginPath();c.arc(cx,cy,23,angle,angle+.8);c.stroke();
+    S(c,[cx-8,cy+12,cx+Math.cos(angle)*27,cy+Math.sin(angle)*27],p.trim,5);
+  }
+  if(action==="cast"){
+    const x=48+(facing===1?-14:facing===2?14:0);
+    const size=6+frame*4;
+    E(c,x,25-frame*3,size,size,p.glow);
+    c.strokeStyle=p.trim;c.lineWidth=2;c.beginPath();
+    c.arc(x,25-frame*3,size+6,frame,frame+Math.PI*1.4);c.stroke();
+  }
+  if(action==="hit"){
+    c.globalAlpha=frame===1?.7:.35;
+    E(c,48,56,25+frame*4,30,p.glow);
+    c.globalAlpha=1;
+  }
+  if(action==="death" && frame===2){
+    S(c,[18,91,72,91],"#16242b",6);
+  }
+  if(action==="rest"){
+    E(c,48,93,25,5,p.trim);
+  }
+  if(action==="emote"){
+    const x=frame===0?70:frame===1?79:68;
+    S(c,[64,62,x,frame===1?16:28],p.trim,9);
+    E(c,x,frame===1?16:28,7,7,p.glow);
+    E(c,49,15-frame*3,4+frame,4+frame,p.glow);
+  }
   c.restore();
 }
 export function smoothFantasySheetDataUrl(id:string,_role:SmoothRole="hero"):string{
@@ -209,8 +272,9 @@ export function smoothFantasySheetDataUrl(id:string,_role:SmoothRole="hero"):str
   if(!ctx)throw new Error("Canvas 2D unavailable");
   ctx.imageSmoothingEnabled=true;
   for(let facing=0;facing<4;facing++)
-    for(let frame=0;frame<3;frame++)
-      paint(ctx,key,frame,facing as SmoothFacing);
+    for(const action of SMOOTH_ACTIONS)
+      for(let frame=0;frame<SMOOTH_FRAMES_PER_ACTION;frame++)
+        paint(ctx,key,frame,facing as SmoothFacing,action);
   const url=canvas.toDataURL("image/png");
   cache.set(key,url);
   return url;
