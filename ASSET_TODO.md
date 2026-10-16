@@ -67,3 +67,21 @@ The placeholder ids are stable so final art/audio can replace them without chang
 | Knockout overlay | Original downed/respawn treatment |
 
 All final combat presentation must remain original to Greenvale Afterfall.
+
+
+## Mobile-first 2.5D Smooth Fantasy animation slice
+
+Implemented on `phase/5-mobile-25d-animation`: new local 27×4 atlas with
+walk/idle/run/attack/cast/hit/death/rest/emote banks and 4 facings for 7
+careers, original monster families and NPCs. These are Canvas-drawn,
+non-pixel-art prototypes, not final hand-painted sprite sheets.
+
+Remaining original artwork:
+- Frame-clean hand-painted animated sprites for all 7 careers with actual
+  8-direction and class-weapon-specific attacks
+- Proper alpha-layered hair, clothing and equipment compositing driven by
+  the character save data
+- Unique hit/death/skill/emote in-world event playback and VFX timing
+- Hand-painted animation sheets for all 11 monsters and each NPC
+- Original 2.5D oblique camp, field and boss maps with collision, depth
+  ordering, warp and safe-zone verification on an actual iPhone
