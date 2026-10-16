@@ -94,6 +94,10 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
   await page.locator("#gv-resume").click();
 
   // Ranger starts close enough to the training wolf for Piercing Shot (range 300).
+  // Compact mobile HUD shows 3 of 10 slots at a time; reach slot 4 by using its real page button.
+  if (await page.locator("[data-hotbar-page-next]:visible").count()) {
+    await page.locator("[data-hotbar-page-next]").click();
+  }
   await page.locator("[data-hotbar-slot='3']").click();
   await expect.poll(async () => page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult?.skillId || "")).toBe("piercing_shot");
   const castResult = await page.evaluate(() => (window as any).__GV_SKILL_STATE__?.lastResult);
@@ -102,6 +106,9 @@ test("Phase 3 skill tree, hotbar, casting, auto and reset work on iPhone WebKit"
   expect(castResult.damage).toBeGreaterThan(0);
 
   // Cast bar must interrupt on a hit event for interruptible skills.
+  if (await page.locator("[data-hotbar-page-next]:visible").count()) {
+    for (let i=0;i<3;i++) await page.locator("[data-hotbar-page-next]").click();
+  }
   await page.locator("[data-hotbar-slot='1']").click();
   await expect(page.locator("#gv-castbar")).toBeVisible();
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("greenvale:player-hit", { detail: { damage: 4, hp: 80, maxHp: 100 } })));
