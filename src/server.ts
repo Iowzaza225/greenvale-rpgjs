@@ -277,6 +277,8 @@ function applyProfileToPlayer(player: RpgPlayer, profile: Profile, refill = fals
   const defense = Math.max(0, Number(derived.DEF) || stats.pdef);
 
   player.name = profile.name;
+  // Re-resolve the original class appearance when a job changes in-game.
+  if (!refill) player.setGraphic(`hero-${profile.classId}`);
   player.param[MAXHP] = maxHp;
   player.param[MAXSP] = maxSp;
   player.param[ATK] = attack;
@@ -1303,7 +1305,7 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
   return {
     name,
     onInit() {
-      this.setGraphic("monster");
+      this.setGraphic("monster-ashfang_wolf");
       this.name = "Ashfang Wolf";
       this.speed = 1.35;
       this.through = false;
@@ -1362,7 +1364,7 @@ function MutantWolf(name: string, x: number, y: number): EventDefinition {
 const Mara: EventDefinition = {
   name: "Mara",
   onInit() {
-    this.setGraphic("hero");
+    this.setGraphic("npc-mara");
     this.name = "Mara";
     this.through = false;
     this.teleport({ x: 690, y: 390 });
@@ -1383,7 +1385,7 @@ const player = {
   async onConnected(player: RpgPlayer) {
     const profile = getProfile();
     activePlayer = player;
-    player.setGraphic("hero");
+    player.setGraphic(`hero-${profile.classId}`);
     player.initializeDefaultStats();
     applyProfileToPlayer(player, profile, true);
     player.setVariable("greenvale.quest.kills", profile.kills);
