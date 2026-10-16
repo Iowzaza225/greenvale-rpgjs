@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills, phase/4-combat ]
+    branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills, phase/4-combat, phase/5-mobile-25d-animation ]
   pull_request:
     branches: [ main, feature/greenvale-menu-quests, phase/0-foundation, phase/1-character-onboarding, phase/2-character-jobs, phase/3-skills ]
   workflow_dispatch:
@@ -59,6 +59,9 @@ jobs:
 
       - name: Phase 4 iPhone WebKit combat
         run: pnpm run test:phase4
+
+      - name: Original 2.5D animation iPhone WebKit QA
+        run: pnpm run test:mobile-art
 
       - name: Upload Playwright traces on failure
         if: failure()
