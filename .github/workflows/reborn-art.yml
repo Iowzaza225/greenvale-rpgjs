@@ -8,6 +8,9 @@ on:
       - 'tools/kaykit-bake.html'
       - '.github/workflows/reborn-art.yml'
   workflow_dispatch:
+concurrency:
+  group: reborn-kaykit-asset-bake
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
@@ -41,6 +44,8 @@ jobs:
           git add public/assets/characters/kaykit-knight-2p5d.webp public/assets/vendor/kaykit/Knight.glb
           if ! git diff --cached --quiet; then
             git commit -m 'assets(reborn): bake verified KayKit Knight animation atlas [skip ci]'
+            git fetch origin reborn/02-licensed-character-assets
+            git rebase origin/reborn/02-licensed-character-assets
             git push origin HEAD:reborn/02-licensed-character-assets
           fi
       - name: Upload atlas QA artifact
