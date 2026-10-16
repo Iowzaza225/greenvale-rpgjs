@@ -39,7 +39,8 @@ async function run() {
         pathname==="/tools/kaykit-bake.js" ||
         pathname==="/assets/vendor/kaykit/Knight.glb";
       if(!allowed) {res.writeHead(404);res.end("not found");return;}
-      const absolute=resolve(root,"."+pathname);
+      const relative=pathname.startsWith("/assets/")?"public"+pathname:"."+pathname;
+      const absolute=resolve(root,relative);
       if(!absolute.startsWith(root+sep)) {res.writeHead(403);res.end();return;}
       const bytes=await readFile(absolute);
       const ext=pathname.endsWith(".html")?"text/html":
